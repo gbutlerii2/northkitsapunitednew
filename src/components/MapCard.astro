@@ -1,0 +1,30 @@
+---
+interface Props {
+  title: string;
+  src: string;
+  alt: string;
+}
+
+const { title, src, alt } = Astro.props;
+---
+
+<a
+  href={src}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="block rounded-lg overflow-hidden border border-gray-200 hover:border-nku-green hover:shadow-lg transition-all group"
+>
+  <div class="aspect-[4/3] bg-gray-100 overflow-hidden">
+    <img
+      src={src}
+      alt={alt}
+      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      loading="lazy"
+    />
+  </div>
+  <div class="p-3 bg-white">
+    <h3 class="font-semibold text-sm text-nku-gray group-hover:text-nku-green transition-colors text-center">
+      {title}
+    </h3>
+  </div>
+</a>

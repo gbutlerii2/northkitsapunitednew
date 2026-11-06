@@ -1,0 +1,205 @@
+---
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { label: 'Overview', href: '/' },
+  {
+    label: 'Concept',
+    href: '/concept/context',
+    children: [
+      { label: 'Context', href: '/concept/context' },
+      { label: 'History', href: '/history' },
+    ],
+  },
+  {
+    label: 'Partners',
+    href: '/planning-team/kingston-north-kitsap-rotary-club',
+    children: [
+      { label: 'Kingston-North Kitsap Rotary Club', href: '/planning-team/kingston-north-kitsap-rotary-club' },
+      { label: 'YMCA of Pierce and Kitsap Counties', href: '/planning-team/ymca-of-pierce-and-kitsap-counties' },
+    ],
+  },
+  { label: 'FAQ', href: '/faq' },
+  {
+    label: 'Materials',
+    href: '/materials/property-maps',
+    children: [
+      { label: 'Property Maps', href: '/materials/property-maps' },
+    ],
+  },
+  { label: 'Contact Us', href: '/contact-us' },
+  { label: 'Donate', href: '/donate', donate: true },
+];
+
+function isActive(href: string): boolean {
+  if (href === '/') return currentPath === '/';
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="bg-nku-green sticky top-0 z-50 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="/" class="flex items-center gap-3 shrink-0">
+        <img src="/images/logos/nku-logo.png" alt="North Kitsap United logo" class="h-10 w-auto" />
+        <span class="text-white font-bold text-xl tracking-tight">North Kitsap United</span>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+        {navItems.map((item) => (
+          item.children ? (
+            <div class="relative group">
+              <a
+                href={item.href}
+                class:list={[
+                  'px-3 py-2 text-sm font-medium rounded-md transition-colors inline-flex items-center gap-1',
+                  isActive(item.href) ? 'text-white bg-nku-green-dark' : 'text-green-100 hover:text-white hover:bg-nku-green-dark',
+                ]}
+              >
+                {item.label}
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </a>
+              <div class="absolute left-0 top-full pt-1 invisible group-hover:visible group-focus-within:visible">
+                <div class="bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[240px]">
+                  {item.children.map((child) => (
+                    <a
+                      href={child.href}
+                      class:list={[
+                        'block px-4 py-2 text-sm transition-colors',
+                        isActive(child.href) ? 'text-nku-green font-semibold bg-nku-cream' : 'text-nku-gray hover:text-nku-green hover:bg-nku-cream',
+                      ]}
+                    >
+                      {child.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : item.donate ? (
+            <a
+              href={item.href}
+              class:list={[
+                'px-4 py-2 text-sm font-bold rounded-md transition-colors border-2',
+                isActive(item.href)
+                  ? 'bg-white text-nku-green border-white'
+                  : 'bg-nku-brown text-white border-nku-brown hover:bg-nku-brown-light hover:border-nku-brown-light',
+              ]}
+            >
+              {item.label}
+            </a>
+          ) : (
+            <a
+              href={item.href}
+              class:list={[
+                'px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                isActive(item.href) ? 'text-white bg-nku-green-dark' : 'text-green-100 hover:text-white hover:bg-nku-green-dark',
+              ]}
+            >
+              {item.label}
+            </a>
+          )
+        ))}
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="mobile-menu-btn"
+        class="lg:hidden text-white p-2 rounded-md hover:bg-nku-green-dark transition-colors"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <svg class="w-6 h-6" id="menu-icon-open" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg class="w-6 h-6 hidden" id="menu-icon-close" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="lg:hidden hidden bg-nku-green-dark border-t border-green-800">
+    <nav class="px-4 py-3 space-y-1" aria-label="Mobile navigation">
+      {navItems.map((item) => (
+        item.children ? (
+          <div class="mobile-dropdown">
+            <button
+              class="w-full flex items-center justify-between px-3 py-2 text-sm font-medium text-green-100 hover:text-white rounded-md hover:bg-nku-green transition-colors"
+              aria-expanded="false"
+            >
+              {item.label}
+              <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            <div class="hidden pl-4 space-y-1 mt-1">
+              {item.children.map((child) => (
+                <a
+                  href={child.href}
+                  class:list={[
+                    'block px-3 py-2 text-sm rounded-md transition-colors',
+                    isActive(child.href) ? 'text-white font-semibold bg-nku-green' : 'text-green-200 hover:text-white hover:bg-nku-green',
+                  ]}
+                >
+                  {child.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : item.donate ? (
+          <a
+            href={item.href}
+            class:list={[
+              'block px-3 py-2 text-sm font-bold rounded-md transition-colors mt-2 border-2 text-center',
+              isActive(item.href)
+                ? 'bg-white text-nku-green border-white'
+                : 'bg-nku-brown text-white border-nku-brown hover:bg-nku-brown-light hover:border-nku-brown-light',
+            ]}
+          >
+            {item.label}
+          </a>
+        ) : (
+          <a
+            href={item.href}
+            class:list={[
+              'block px-3 py-2 text-sm font-medium rounded-md transition-colors',
+              isActive(item.href) ? 'text-white bg-nku-green' : 'text-green-100 hover:text-white hover:bg-nku-green',
+            ]}
+          >
+            {item.label}
+          </a>
+        )
+      ))}
+    </nav>
+  </div>
+</header>
+
+<script>
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+
+  menuBtn?.addEventListener('click', () => {
+    const isOpen = mobileMenu?.classList.toggle('hidden') === false;
+    iconOpen?.classList.toggle('hidden', isOpen);
+    iconClose?.classList.toggle('hidden', !isOpen);
+    menuBtn.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  // Mobile dropdown toggles
+  document.querySelectorAll('.mobile-dropdown > button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const submenu = btn.nextElementSibling;
+      const isOpen = submenu?.classList.toggle('hidden') === false;
+      btn.setAttribute('aria-expanded', String(isOpen));
+      btn.querySelector('svg')?.classList.toggle('rotate-180', isOpen);
+    });
+  });
+</script>

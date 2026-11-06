@@ -1,0 +1,41 @@
+---
+interface Props {
+  title: string;
+  youtubeId: string;
+  date?: string;
+}
+
+const { title, youtubeId, date } = Astro.props;
+
+// Extract video ID from various YouTube URL formats or use as-is if already an ID
+function extractVideoId(input: string): string {
+  // Already a plain ID (no slashes or dots)
+  if (/^[\w-]+$/.test(input)) return input;
+  // youtu.be/ID
+  const shortMatch = input.match(/youtu\.be\/([\w-]+)/);
+  if (shortMatch) return shortMatch[1];
+  // youtube.com/watch?v=ID or youtube.com/embed/ID
+  const longMatch = input.match(/(?:watch\?v=|embed\/)([\w-]+)/);
+  if (longMatch) return longMatch[1];
+  return input;
+}
+
+const videoId = extractVideoId(youtubeId);
+---
+
+<div class="rounded-lg overflow-hidden border border-gray-200">
+  <div class="aspect-video bg-black">
+    <iframe
+      src={`https://www.youtube.com/embed/${videoId}`}
+      title={title}
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen
+      loading="lazy"
+      class="w-full h-full"
+    ></iframe>
+  </div>
+  <div class="p-4 bg-white">
+    <h3 class="font-semibold text-nku-gray">{title}</h3>
+    {date && <p class="text-sm text-nku-gray-light mt-1">{date}</p>}
+  </div>
+</div>

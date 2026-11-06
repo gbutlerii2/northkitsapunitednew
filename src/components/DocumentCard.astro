@@ -1,0 +1,40 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  href: string;
+  date?: string;
+}
+
+const { title, description, href, date } = Astro.props;
+---
+
+<a
+  href={href}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="block p-4 rounded-lg border border-gray-200 hover:border-nku-green hover:shadow-md transition-all group"
+>
+  <div class="flex items-start gap-3">
+    <div class="shrink-0 mt-1">
+      <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zM6 20V4h7v5h5v11H6z"/>
+        <path d="M8 12h8v2H8zm0 4h8v2H8zm0-8h3v2H8z"/>
+      </svg>
+    </div>
+    <div class="flex-1 min-w-0">
+      <h3 class="font-semibold text-nku-gray group-hover:text-nku-green transition-colors">
+        {title}
+      </h3>
+      {date && (
+        <p class="text-sm text-nku-gray-light mt-1">{date}</p>
+      )}
+      {description && (
+        <p class="text-sm text-nku-gray-light mt-1">{description}</p>
+      )}
+    </div>
+    <svg class="w-5 h-5 text-nku-gray-light group-hover:text-nku-green shrink-0 mt-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg>
+  </div>
+</a>

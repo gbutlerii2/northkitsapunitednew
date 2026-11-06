@@ -1,0 +1,89 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+---
+
+<BaseLayout title="Kingston-North Kitsap Rotary Club" description="Learn about the Kingston-North Kitsap Rotary Club's role in the North Kitsap United project.">
+  <Hero title="Kingston-North Kitsap Rotary Club" subtitle="A non-profit service club focused on community service" />
+
+  <section class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Rotary Logo -->
+      <div class="text-center mb-8">
+        <img src="/images/logos/rotaryknk-logo-blue.png" alt="Kingston-North Kitsap Rotary Club logo" class="w-150 h-32 mx-auto object-contain" />
+      </div>
+
+      <div class="prose">
+        <p>
+          The Kingston-North Kitsap Rotary Club is a non-profit service club focused on community service and engagement 
+          in the North Kitsap area (Kingston, Hansville, Eglon, Indianola, Suquamish and unincorporated areas of Poulsbo). 
+          Over the years, the club has surveyed members of the Kingston and greater North Kitsap communities to identify 
+          the most pressing needs and focused their efforts on filling those needs.
+        </p>
+
+        <h2>Community Contributions</h2>
+        <p>
+          Past initiatives include trail markers in the Heritage Park, lights at the Kingston High School football and 
+          track & field, an improved library and community center (Village Green Community Center, Park & Picnic Pavilion), 
+          and a way to better communicate on-going information (electronic reader board).
+        </p>
+
+        <h2>Addressing Community Needs</h2>
+        <p>
+          Over the past few years, it has come to their attention that there is a lack of necessary sports and recreation 
+          facilities available for the youth in North Kitsap. A project to fulfil this need was officially announced at 
+          their February 2023 fundraising auction and immediately gained significant community support. Soon afterwards, 
+          they were made aware of the opportunity to work on a larger vision in collaboration with Raydient and YMCA that 
+          has the potential to better fill these sports and recreation needs.
+        </p>
+
+        <h2>Role in the Sports Complex</h2>
+        <p>
+          Rotary’s role in this vision is focusing on the creation of a multi-generational, multi-use sports and recreation 
+          complex that fulfils the community’s need and complements existing facilities in North Kitsap. The vision is for 
+          this complex to consist of indoor and outdoor facilities that provide a wide range of sports and recreation 
+          opportunities for all ages – as well as health and wellness amenities. The Kingston-North Kitsap Rotary Club plans 
+          on leading the fundraising efforts, raising awareness, and facilitating partnerships for this sports and recreation 
+          complex on behalf of the North Kitsap community.
+        </p>
+
+        <p class="mt-6">
+          <a href="https://rotaryknk.org" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2">
+            Visit the Kingston-North Kitsap Rotary Club website
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </a>
+        </p>
+      </div>
+
+      <div class="mt-8 flex justify-center">
+        <div class="w-full max-w-md rounded-lg overflow-hidden border border-gray-200">
+          <div class="aspect-[9/16] bg-black">
+            <iframe
+              src="https://www.youtube.com/embed/f8o-QvTkN-E"
+              title="If not Rotary, who?"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+              class="w-full h-full"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cross-links -->
+      <div class="mt-12 pt-8 border-t border-gray-200">
+        <h3 class="font-semibold text-nku-gray mb-4">Our Partners</h3>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="/planning-team/ymca-of-pierce-and-kitsap-counties" class="flex-1 p-4 rounded-lg border border-gray-200 hover:border-nku-green hover:shadow-md transition-all text-center">
+            <span class="font-medium text-nku-gray">YMCA of Pierce and Kitsap Counties</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <NewsletterSignup />
+</BaseLayout>

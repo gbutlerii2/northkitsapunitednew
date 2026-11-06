@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+---
+
+<BaseLayout title="Raydient Places + Properties" description="Learn about Raydient Places + Properties and their role as a landowner and supporter of the North Kitsap United project.">
+  <Hero title="Raydient Places + Properties" subtitle="Landowner & Project Supporter" />
+
+  <section class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Raydient Logo -->
+      <div class="text-center mb-8">
+        <img src="/images/logos/raydient_logo_no-tagline_vertcal_.png" alt="Raydient Places + Properties logo" class="w-150 h-50 mx-auto object-contain" />
+      </div>
+
+      <div class="prose">
+        <p>
+          Raydient Places + Properties is on a mission to create places with purpose.
+        </p>
+        <p>
+          The company's methodology involves pushing further by breaking convention and challenging the status
+          quo. Their process involves exhaustive market research, financial feasibility analysis, environmental
+          stewardship, inspired design, and master planning to deliver results beyond standard expectations.
+        </p>
+
+        <h2>Development Focus</h2>
+        <p>
+          Raydient creates two primary types of properties: individual country properties for families
+          (homesteads, farms, ranches) and communities designed to bring people together with quality schools,
+          healthy living options, and recreational opportunities.
+        </p>
+        <p class="text-lg font-medium text-nku-green italic">
+          "Each place we create has an important purpose to fulfill."
+        </p>
+      </div>
+
+      <div class="mt-8 p-4 bg-gray-50 rounded-lg text-sm text-nku-gray-light">
+        <p>
+          Raydient Places + Properties is a trademark of Raydient LLC, a taxable real estate investment trust
+          subsidiary of Rayonier. Development properties are owned by Raydient LLC and its subsidiaries.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <NewsletterSignup />
+</BaseLayout>

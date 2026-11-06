@@ -1,0 +1,10 @@
+# Cloudflare Pages redirects
+# See: https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Old URL patterns that may have changed
+/concept/process    /concept/context   301
+/contact            /contact-us        301
+/meetings           /materials/property-maps  301
+/materials          /materials/property-maps  301
+/maps               /materials/property-maps  301
+/planning-team/raydient-places-plus-properties  /supporters/raydient  301

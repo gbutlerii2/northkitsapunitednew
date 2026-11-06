@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import VideoEmbed from '../../components/VideoEmbed.astro';
+import DocumentCard from '../../components/DocumentCard.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+
+const publicMeetings = [
+  {
+    title: 'Public Outreach Meeting: Resharing Environmental Studies with Updated YMCA Information',
+    date: 'January 24, 2024',
+    youtubeId: 'https://youtu.be/ENdGzVPeJlE',
+  },
+  {
+    title: 'Public Outreach Meeting: Sharing First Environmental Studies and Feasibility Findings',
+    date: 'December 12, 2023',
+    youtubeId: 'https://youtu.be/HArtsClVUBc',
+  },
+  {
+    title: 'Follow-up Public Meeting: Providing Additional Opportunity for Q & A',
+    date: 'July 12, 2023',
+    youtubeId: 'https://youtu.be/Ej16wnGTw-8',
+  },
+  {
+    title: 'Public Outreach Meeting: Announcing Collaboration to Bring New Opportunities',
+    date: 'June 27, 2023',
+    youtubeId: 'https://youtu.be/ax_4OJrMl4g',
+  },
+];
+
+const historicMeetings = [
+  {
+    title: 'Pope Resources North Kitsap Lands: Community Meeting on Open Space Preservation',
+    date: '2007',
+    youtubeId: 'https://youtu.be/DF185tvYbCA',
+  },
+];
+
+const presentations = [
+  {
+    title: 'Public Outreach Meeting Presentation',
+    date: 'January 24, 2024',
+    href: '/media/meeting-ppt-jan-2024.pdf',
+  },
+  {
+    title: 'Public Outreach Meeting Presentation',
+    date: 'December 12, 2023',
+    href: '/media/meeting-ppt-dec-2023.pdf',
+  },
+  {
+    title: 'New Opportunities to North Kitsap',
+    date: 'June 27, 2023',
+    href: '/media/meeting-ppt-jun-2023-compressed.pdf',
+  },
+];
+---
+
+<BaseLayout title="Meetings" description="Watch recordings of North Kitsap United public meetings and download presentation materials.">
+  <Hero title="Meetings" subtitle="Public meeting recordings and presentations" />
+
+  <!-- Public Meeting Videos -->
+  <section class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-nku-green mb-8">Public Meeting Videos</h2>
+      <div class="space-y-8">
+        {publicMeetings.map((meeting) => (
+          <VideoEmbed
+            title={meeting.title}
+            youtubeId={meeting.youtubeId}
+            date={meeting.date}
+          />
+        ))}
+      </div>
+
+      <!-- Presentations -->
+      <h2 class="text-2xl font-bold text-nku-green mt-12 mb-6">Meeting Presentations</h2>
+      <div class="space-y-4">
+        {presentations.map((pres) => (
+          <DocumentCard
+            title={pres.title}
+            date={pres.date}
+            href={pres.href}
+            description="PowerPoint presentation (PDF)"
+          />
+        ))}
+      </div>
+
+      <!-- Historic Meetings -->
+      <h2 class="text-2xl font-bold text-nku-green mt-12 mb-8">Historic Community Meetings</h2>
+      <div class="space-y-8">
+        {historicMeetings.map((meeting) => (
+          <VideoEmbed
+            title={meeting.title}
+            youtubeId={meeting.youtubeId}
+            date={meeting.date}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <NewsletterSignup />
+</BaseLayout>

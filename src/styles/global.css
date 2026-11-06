@@ -1,0 +1,73 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+
+@theme {
+  --color-nku-green: #2d5016;
+  --color-nku-green-light: #4a7c28;
+  --color-nku-green-dark: #1a3009;
+  --color-nku-brown: #8b6914;
+  --color-nku-brown-light: #b8922e;
+  --color-nku-cream: #f5f0e8;
+  --color-nku-cream-dark: #e8dfd0;
+  --color-nku-gray: #374151;
+  --color-nku-gray-light: #6b7280;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+}
+
+/* Base typography */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-nku-gray);
+  line-height: 1.7;
+}
+
+/* Prose content styling */
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-nku-green);
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-nku-green-light);
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose p {
+  margin-bottom: 1rem;
+}
+
+.prose ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.prose ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.prose li {
+  margin-bottom: 0.25rem;
+}
+
+.prose a {
+  color: var(--color-nku-green-light);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  color: var(--color-nku-green);
+}

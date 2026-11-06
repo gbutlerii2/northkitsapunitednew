@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+---
+
+<BaseLayout title="Donate" description="Support the North Kitsap United project — help bring quality sports fields and recreation facilities to North Kitsap County.">
+  <Hero title="Support the Project" subtitle="Help bring world-class recreation to North Kitsap" />
+
+  <!-- Introduction -->
+  <section class="py-8 sm:py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
+        <div class="prose lg:flex-1">
+          <h2>Let's Make a Difference</h2>
+          <p class="text-lg sm:text-xl leading-relaxed">
+            The North Kitsap United project needs your support to acquire land and bring this vision to life.<br /><br />
+            Your contributions help acquire land for fields and recreation space, build safe facilities for
+            youth and families, create community gathering spaces, and support youth health and wellness
+            through sports.
+          </p>
+        </div>
+        <div class="w-full max-w-xs lg:max-w-sm shrink-0">
+          <div class="rounded-lg overflow-hidden border border-gray-200">
+            <div class="aspect-[9/16] bg-black">
+              <iframe
+                src="https://www.youtube.com/embed/VGDpvpDqQUA"
+                title="This is where future North Kitsap youth will play"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+                loading="lazy"
+                class="w-full h-full"
+              ></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Kitsap Great Give Section -->
+  <section class="relative overflow-hidden">
+    <img src="/images/KGG_RotaryKNK.jpg" alt="Volunteers working at the Kingston sports field" class="absolute inset-0 w-full h-full object-cover" />
+    <div class="absolute inset-0 bg-nku-green/85"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-0 sm:py-8">
+      <div class="flex flex-col items-center text-center">
+        <img src="/images/logos/KGG_2026_logo_no-date-heart.png" alt="Kitsap Great Give logo" class="w-60 sm:w-70 mb-8" />
+        <p class="text-5xl sm:text-6xl font-bold text-white mb-3">~$100,000</p>
+        <p class="text-xl sm:text-2xl font-semibold text-green-200 mb-6">raised for North Kitsap United</p>
+        <p class="text-green-100 max-w-4xl text-lg leading-relaxed">
+          The Kingston-North Kitsap Rotary Club participated in the{" "}
+          <a href="https://www.kitsapgreatgive.org/organization/kingston-north-kitsap-rotary-club" target="_blank" rel="noopener noreferrer" class="text-white underline hover:text-green-200">Kitsap Great Give</a>
+          {" "}- Kitsap Community Foundation's annual day of giving - as its first active fundraising endeavor
+          for the NKU project. The community response was overwhelming, demonstrating the strong desire
+          for quality recreation facilities in North Kitsap.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 sm:py-16">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="prose">
+
+        <h2>How to Donate</h2>
+        <p>There are several ways you can contribute to the North Kitsap United project:</p>
+      </div>
+
+      <!-- Donation Methods -->
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Check -->
+        <div class="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="text-nku-green mb-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-nku-gray mb-2">By Check</h3>
+          <p class="text-sm text-nku-gray">
+            Make checks payable to <strong>Kingston Rotary Foundation</strong> and mail to:
+          </p>
+          <p class="text-sm text-nku-gray mt-2">
+            P.O. Box 432<br />
+            Kingston, WA 98346
+          </p>
+          <p class="text-sm text-nku-gray mt-2 italic">
+            Please mark "Attention: NKU"
+          </p>
+        </div>
+
+        <!-- DAF / Stock / In-Kind -->
+        <div class="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="text-nku-green mb-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-nku-gray mb-2">Donor-Advised Funds, Stock & In-Kind</h3>
+          <p class="text-sm text-nku-gray">
+            For donor-advised fund grants, stock transfers, or in-kind donations, please contact us directly:
+          </p>
+          <p class="text-sm mt-3">
+            <a href="mailto:kingstonsportscomplex@gmail.com" class="text-nku-green font-semibold hover:underline">kingstonsportscomplex@gmail.com</a>
+          </p>
+        </div>
+
+        <!-- GoFundMe -->
+        <div class="p-6 bg-white rounded-lg border border-gray-200 shadow-sm">
+          <div class="text-nku-green mb-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            </svg>
+          </div>
+          <h3 class="text-lg font-semibold text-nku-gray mb-2">GoFundMe</h3>
+          <p class="text-sm text-nku-gray">
+            Donate online through our GoFundMe campaign:
+          </p>
+          <p class="text-sm mt-3">
+            <a href="https://www.gofundme.com/f/kingston-sports-field-complex" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-nku-green font-semibold hover:underline">
+              Donate on GoFundMe
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Notice -->
+      <div class="prose">
+        <p class="text-xs text-green-700 mt-4 text-center sm:text-left">
+          Notice: All funds are collected and managed solely by the Kingston Rotary Foundation (a 501(c)(3) nonprofit). Raydient Places + 
+          Properties is the current landowner and is not involved in the solicitation or management of these charitable contributions.
+        </p>
+      </div>
+
+      <!-- Closing -->
+      <div class="mt-12 prose text-center">
+        <p class="text-lg font-medium text-nku-green italic">
+          "We believe we are better together.<br />Every contribution - large or small - brings us closer to making this vision a reality."
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <NewsletterSignup />
+</BaseLayout>

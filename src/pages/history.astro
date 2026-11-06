@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+---
+
+<BaseLayout title="History" description="The history of trails, open spaces, and community collaboration in North Kitsap.">
+  <Hero title="History" subtitle="A legacy of community collaboration and conservation" />
+
+  <section class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- String of Pearls -->
+      <div class="prose mb-12">
+        <h2>String of Pearls</h2>
+        <p>
+          In 2007, the Olympic Property Group (OPG), proposed a trail system as one of several key elements
+          in a plan for 8,000 acres in the Port Gamble area.
+        </p>
+        <p>
+          Over 500 residents attended the initial meeting and expressed support for establishing trails and
+          maintaining public access to the woodlands.
+        </p>
+        <p>
+          The idea of a regional network of trails took fire, fueling the eventual creation of the North
+          Kitsap Trail Association (NKTA), comprised of community volunteers.
+        </p>
+        <p>
+          The NKTA secured a National Park Service grant to develop a comprehensive trail plan.
+        </p>
+        <p>
+          The result is Kitsap County's "String of Pearls Trail Plan", connecting local
+          communities, parks, and open space with recreational and non-motorized transportation options.
+        </p>
+        <p>
+          The name references Boston's "Emerald Necklace Park", designed by Frederick Law
+          Olmsted over 150 years ago.
+        </p>
+
+        <img src="/images/maps/string_pearls_map.jpg" alt="String of Pearls Trail Plan map showing the regional trail network in North Kitsap" class="mt-6 rounded-lg w-full" />
+      </div>
+
+      <!-- Port Gamble Heritage Park -->
+      <div class="prose mb-12">
+        <h2>Port Gamble Forest Heritage Park</h2>
+        <p>
+          Port Gamble Forest Heritage Park has been used by the public for decades with permission from the
+          previous owner, Pope Resources, a timber company.
+        </p>
+        <p>
+          Now owned and managed by Kitsap County, the 3,500-acre park in northern Kitsap County is one of
+          the largest county parks in the Continental United States.
+        </p>
+        <p>
+          The park features 65 miles of trails and will soon include a 177-acre mountain bike park.
+        </p>
+      </div>
+
+      <!-- Sound to Olympics Trail -->
+      <div class="prose">
+        <h2>Sound to Olympics Trail</h2>
+        <p>
+          Located between Seattle and the Olympic Peninsula, more than 6 miles of the Sound to Olympics
+          (STO) Trail - a regional trail corridor - are in development through the park.
+        </p>
+        <p>
+          The STO connects ferry systems and aligns with the Rails-to-Trails Conservancy's Great American
+          Rail Trail.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <NewsletterSignup />
+</BaseLayout>

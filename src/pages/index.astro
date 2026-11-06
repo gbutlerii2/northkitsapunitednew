@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import MapCard from '../components/MapCard.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
+---
+
+<BaseLayout title="Home" description="North Kitsap United (NKU) - A Community-Driven Vision to Unite Our Community Through Recreation, Health & Wellness.">
+  <Hero
+    title="North Kitsap United (NKU)"
+    subtitle="A Community-Driven Vision to Unite Our Community Through Recreation, Health & Wellness"
+  />
+
+  <!-- Overview Section -->
+  <section class="pt-12 sm:pt-16 pb-6 sm:pb-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 prose">
+      <p>
+        North Kitsap United (NKU) is a collaborative initiative created to meet the growing need for
+        quality sports fields and active recreation facilities in North Kitsap County — a region where
+        youth and families currently face limited and overcrowded play spaces and little to no options
+        for active recreational activities.
+      </p>
+      <p>
+        As our community grows, so does the demand for accessible places where kids can play, practice,
+        compete, and stay healthy. This NKU project brings together local partners and leaders - from
+        public, private, government and non-profit - to deliver multi-generational recreation space that
+        serves ALL ages.
+      </p>
+    </div>
+  </section>
+
+  <!-- Vision + Project Map Section -->
+  <section class="pt-6 sm:pt-8 pb-12 sm:pb-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8 lg:gap-12 items-center">
+      <div class="prose lg:flex-1">
+        <h2>Our Vision:</h2>
+        <p>
+          We envision a vibrant sports and recreation complex centered around a YMCA on centrally-located 
+          land made possible through community support, strong partnerships, and strategic conservation. 
+          The complex is expected to offer:
+        </p>
+        <ul class="list-disc list-inside space-y-1 text-nku-gray">
+          <li>Multiple sports fields for soccer, baseball/softball, football, basketball, lacrosse, pickleball and more.</li>
+          <li>Space for numerous community leagues, practices, and tournaments</li>
+          <li>Year-round opportunities for play, fitness and active recreation, and extended family activities</li>
+          <li>YMCA equipped with an aquatic center, indoor gym space and childcare</li>
+          <li>Connections to and an extension of existing trails and public green spaces</li>
+          <li>Provisions for a frisbee golf course and dog park</li>
+          <li>Amenities that promotes health, teamwork, leadership, and community pride</li>
+          <li>300+ acres of open space with animal corridors and an extension of (with more) hiking/walking/biking trails to the Port Gamble Heritage Park</li>
+        </ul>
+        <p>
+          This project will strengthen the youth sports leagues of today, support local clubs for continued 
+          advancement, and foster active lifestyles for generations to come. 
+        </p>
+        <p>
+          The vision for the complex is focused on the centrally-located 400+ acres Raydient LLC owns on SR307 - just 
+          north of the intersection of Stottlemeyer Road and Bond Road.
+        </p>
+        <p class="text-lg font-medium text-nku-green italic">
+          "We believe we are better together. We invite your collaboration and welcome your feedback."
+        </p>
+      </div>
+      <div class="lg:flex-1">
+        <img src="/images/maps/nku-project-map.jpg" alt="North Kitsap United project map showing the 400-acre property on SR 307" class="rounded-lg w-full" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Maps Section -->
+  <section class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <MapCard title="NKU Activity Map" src="/images/maps/nku-activity-map.png" alt="North Kitsap United activity map" />
+        <MapCard title="NKU Landscape Map" src="/images/maps/nku-landscape-map.png" alt="North Kitsap United landscape map" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Partners Section -->
+  <section class="bg-nku-green py-12 sm:py-16 relative overflow-hidden">
+    <img src="/images/transition-top.png" alt="" class="absolute top-0 left-0 w-full z-20 pointer-events-none" />
+    <div class="absolute inset-0 opacity-60" style="background-image: url('/images/Topo_Repeat_Header.png'); background-repeat: repeat; background-size: 800px;"></div>
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <h2 class="text-3xl font-bold text-green-100 text-center mb-8">Our Partners</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-8">
+        <a href="/planning-team/kingston-north-kitsap-rotary-club" class="text-center group">
+          <div class="w-96 h-48 mx-auto mb-3 bg-white rounded-lg flex items-center justify-center p-4">
+            <img src="/images/logos/rotaryknk-logo-blue.png" alt="Kingston-North Kitsap Rotary Club logo" class="max-w-full max-h-full object-contain" />
+          </div>
+          <h3 class="font-semibold text-green-100 group-hover:text-green-200 transition-colors">Kingston-North Kitsap Rotary Club</h3>
+        </a>
+        <a href="/planning-team/ymca-of-pierce-and-kitsap-counties" class="text-center group">
+          <div class="w-96 h-48 mx-auto mb-3 bg-white rounded-lg flex items-center justify-center p-4">
+            <img src="/images/logos/ymca-logo.png" alt="YMCA of Pierce and Kitsap Counties logo" class="max-w-full max-h-full object-contain" />
+          </div>
+          <h3 class="font-semibold text-green-100 group-hover:text-green-200 transition-colors">YMCA of Pierce and Kitsap Counties</h3>
+        </a>
+      </div>
+    </div>
+    <img src="/images/transition-bottom.png" alt="" class="absolute bottom-0 left-0 w-full z-20 pointer-events-none" />
+  </section>
+
+  <!-- Supporters Section -->
+  <section class="py-12 sm:py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl font-bold text-nku-green text-center mb-8">Our Supporters</h2>
+      <div class="flex flex-wrap justify-center gap-8 items-center">
+        <a href="https://portofkingston.org/" target="_blank" rel="noopener noreferrer" class="group">
+          <img src="/images/logos/POK-logo.png" alt="Port of Kingston" class="w-48 h-24 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+        </a>
+        <a href="https://www.wsdga.org/" target="_blank" rel="noopener noreferrer" class="group">
+          <img src="/images/logos/wsdga-logo.jpg" alt="West Sound Disc Golf Association" class="w-48 h-24 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+        </a>
+        <a href="https://www.kitsapeda.org/" target="_blank" rel="noopener noreferrer" class="group">
+          <img src="/images/logos/keda-logo.png" alt="Kitsap Economic Development Alliance" class="w-48 h-24 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+        </a>
+        <a href="https://kitsapbuilds.com/" target="_blank" rel="noopener noreferrer" class="group">
+          <img src="/images/logos/kba_logo.jpg" alt="Kingston Building Association" class="w-48 h-24 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+        </a>
+        <a href="/supporters/raydient" class="group">
+          <img src="/images/logos/raydient_logo_no-tagline_vertcal_.png" alt="Raydient Places + Properties" class="w-48 h-24 object-contain opacity-80 group-hover:opacity-100 transition-opacity" />
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <NewsletterSignup />
+</BaseLayout>
