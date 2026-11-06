@@ -1,32 +1,19 @@
 ---
 const currentYear = new Date().getFullYear();
-
 const footerLinks = [
   { label: 'Privacy Statement', href: '/privacy-statement' },
   { label: 'Terms of Use', href: '/terms-of-use' },
   { label: 'Accessibility', href: '/accessibility' },
 ];
 ---
-
-<footer class="bg-nku-green-dark text-green-100">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
-      <p class="text-sm">
-        &copy; {currentYear} Rotary Club of Kingston North Kitsap, for North Kitsap United. All rights reserved.
-      </p>
-      <nav class="flex gap-6" aria-label="Footer navigation">
-        {footerLinks.map((link) => (
-          <a
-            href={link.href}
-            class="text-sm text-green-200 hover:text-white transition-colors"
-          >
-            {link.label}
-          </a>
-        ))}
-      </nav>
-    </div>
-    <p class="text-xs text-green-300 mt-4 text-center sm:text-left">
-      North Kitsap United is a community project website operated by the Rotary Club of Kingston North Kitsap.<br />
+<footer class="footer">
+  <div class="footer-inner">
+    <nav class="footer-links" aria-label="Footer navigation">
+      {footerLinks.map((link) => <a class="footer-link" href={link.href}>{link.label}</a>)}
+    </nav>
+    <p style="margin:0">&copy; {currentYear} Rotary Club of Kingston North Kitsap, for North Kitsap United. All rights reserved.</p>
+    <p class="footer-fine" style="margin:0">
+      North Kitsap United is a community project website operated by the Rotary Club of Kingston North Kitsap.
       Raydient Places + Properties is a landowner and project supporter, but does not operate this website or manage website submissions.
     </p>
   </div>

@@ -14,51 +14,39 @@ Requires Node.js >= 22.12.0. No test framework is configured.
 
 ## Architecture
 
-This is a static informational website for the North Kitsap United community project, built with **Astro 6** and **Tailwind CSS 4**, deployed to **Cloudflare Pages**.
+This is a static informational website for the North Kitsap United community project, built with **Astro** and **Tailwind CSS 4**, deployed to **Netlify** (project `northkitsapunitednew`).
+
+**The pages are generated from the "NKU Website" Design canvas** (claude.ai artifact UQenrFEvnNf9sGLw3BHRJX). Each page in `src/pages/` (except the three legal pages) holds its markup in a `html` string built from that design; the classes it uses are defined in `src/styles/site.css`. Edit the design and regenerate rather than hand-editing a page, or the two will drift apart.
 
 - **No SSR** — pure static output (`output: 'static'`), no adapter needed
 - **No framework islands** — vanilla JS only (mobile menu toggle, dropdown accordions)
 - **No content collections** — ~14 pages with infrequent changes, all hardcoded `.astro` files
 
-### Layout & Component Hierarchy
+### Layout
 
-`BaseLayout.astro` wraps every page: `<Header />` → `<slot />` → `<Footer />`. It handles meta/OG tags, favicon, and canonical URLs. Title format: `"Page Title | North Kitsap United"` (homepage is just `"North Kitsap United"`).
-
-### Key Components
-
-- **Header.astro** — Sticky nav with dropdown menus. Navigation structure is defined as a hierarchical array at the top of the file. Desktop uses CSS `:hover`/`:focus-within` dropdowns; mobile uses JS toggle with accordion submenus.
-- **Hero.astro** — Full-width banner with topo pattern overlay (`Topo_Repeat_Header.png`) and a `transition-bottom.png` decorative edge.
-- **NewsletterSignup.astro** — Appears on most pages. Links to Google Forms for subscribe/unsubscribe.
-- **VideoEmbed.astro** — Accepts full YouTube URLs, `youtu.be` short links, or plain video IDs via the `youtubeId` prop. Has a `extractVideoId()` helper that normalizes all formats.
-- **FaqItem.astro** — Uses native `<details>`/`<summary>` (no JS needed).
-- **DocumentCard.astro** / **MapCard.astro** — Card components for PDF links and map images.
+`BaseLayout.astro` wraps every page: `<SiteHeader current=…>` (partner logos, NKU brand, main menu with Partners and Donate dropdowns) → title band (`eyebrow`, `heroTitle`, `heroSub` props) → `<main class="main"><slot /></main>` → `<Footer />`. Title format: `"Page Title | North Kitsap United - New"` (the " - New" marks this build in browser tabs while the old site is still up; remove it at launch).
 
 ### Styling
 
-Tailwind CSS 4 configured as a Vite plugin (not the Astro integration). Theme tokens defined in `src/styles/global.css` via `@theme`:
+`src/styles/site.css` holds the site's classes (cards, buttons, forms, stats). Colors follow the NKU tokens in `src/styles/global.css` (`nku-green` #2d5016, `nku-brown-light` #b8922e, `nku-cream` #f5f0e8). Tailwind is still loaded; the legal pages use its utilities and the `.prose` class.
 
-- Primary: `nku-green` (#2d5016), `nku-green-light`, `nku-green-dark`
-- Accent: `nku-brown`, `nku-brown-light`
-- Background: `nku-cream`, `nku-cream-dark`
-- Text: `nku-gray`, `nku-gray-light`
-- Font: Inter Variable
+### NKU Tracker connection
 
-Use these as Tailwind classes: `bg-nku-green`, `text-nku-cream`, etc. A `.prose` class in global.css styles long-form content blocks.
+`public/js/nku-site.js` talks to the NKU Tracker API (default `https://nku-tracker.com`; override with the `PUBLIC_TRACKER_API` build variable):
+- Every `<form data-nku-form="KIND">` posts JSON to `/api/submit/KIND` (contact, donation-question, gift, zeffy, pledge, inkind, volunteer, updates). Submissions land in the Tracker's website inbox (nku-tracker.com/inbox.html).
+- The Zeffy form records the gift in the Tracker first, then sends the donor on to Zeffy (links set as `ZEFFY_CARD_URL` / `ZEFFY_EFT_URL` on the nku-tracker Netlify project).
+- The Home page's Overview (`[data-nku-campaign]`) fills Pledged, Received to date, Estimated cost and the progress bar from `/api/public/campaign`.
 
 ### Static Assets
 
 - `public/images/` — Logos, maps, background patterns, transition graphics
 - `public/media/` — PDF reports and meeting presentations (preserves `/media/` URL pattern from old site)
-- `public/_redirects` — Cloudflare Pages redirect rules for old URL preservation
-
-### External Integrations
-
-- **Google Forms** — Contact form embedded via iframe on `/contact-us`; newsletter subscribe/unsubscribe linked from `NewsletterSignup` component
-- **YouTube** — Meeting videos embedded via `VideoEmbed` component on `/meetings-materials/meetings`
+- `public/images/site/` — images and logos used by the new pages
+- `public/_redirects` — redirects from the old site's addresses
 
 ### URL Structure
 
 Pages mirror the original site's URL paths. The `_redirects` file maps old paths that changed. When adding pages, place them in `src/pages/` matching the desired URL path.
 
-- **Partner pages** live at `/planning-team/` (Rotary, YMCA) — linked from the "Partners" nav dropdown
-- **Supporter pages** live at `/supporters/` (Raydient) — not all supporters need individual pages; only major or special-case supporters get one
+- **Partner pages** live at `/planning-team/` (Rotary, YMCA); other partners and supporters are on `/partners`
+- **Donate** is `/donate` (cash, pledges, gift notices) and `/donate/in-kind`
