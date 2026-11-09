@@ -1,8 +1,217 @@
 ---
-// Generated from the NKU Website design (build/pages.py). Edit the content there and regenerate.
+// Donate page: four buttons, each opening its form in a popup (<dialog>).
+// Hand-edited on 2026-11-09 to add the popups; the "NKU Website" design canvas
+// still shows the older one-long-page layout.
+// Forms post to the NKU Tracker through public/js/nku-site.js (data-nku-form="KIND").
 import BaseLayout from '../layouts/BaseLayout.astro';
-const html = "\n<div class=\"btn-row\">\n  <a class=\"btn\" href=\"#one-time\">One-Time Donation</a>\n  <a class=\"btn\" href=\"#pledge\">Pledge</a>\n  <a class=\"btn btn-ghost\" href=\"#tell-us\">Tell us about your gift</a>\n  <a class=\"btn btn-ghost\" href=\"#contact\">Contact Us</a>\n</div>\n<img class=\"img-flier\" src=\"/images/site/sponsorship-levels.jpg\" alt=\"Build More Than Fields, Build Opportunity: the nine sponsorship levels from Legacy Partner at $1,000,000 to Rising Star Sponsor at $1,000, with photos of youth soccer, swimming, mountain biking and the fields\">\n\n<section class=\"card\" id=\"one-time\">\n  <h2 class=\"h2\">One-Time Donation</h2>\n  <div class=\"sub-card\">\n    <h3 class=\"h3\">Check</h3>\n    <p class=\"p\">Payable to: <strong>Kingston North Kitsap Rotary Foundation</strong><br>Mail to: P.O. Box 832, Kingston, WA 98346 · Memo: NKU</p>\n    <p class=\"p\">Please also fill out <a class=\"link\" href=\"#tell-us\">Tell us about your gift</a> so we can thank you. Not using the form? Please include a note in your envelope with your name, address, phone and email.</p>\n    <p class=\"p\">You will receive a receipt.</p>\n  </div>\n  <div class=\"sub-card\">\n    <h3 class=\"h3\">Card or bank transfer (EFT): one-time, monthly or quarterly</h3>\n    <p class=\"p\">Tell us a little about your gift, then continue to Zeffy to pay. This lets us thank you and list you the way you’d like.</p>\n    <form class=\"form\" data-nku-form=\"zeffy\" novalidate><label class=\"hp\" aria-hidden=\"true\">Leave this empty<input type=\"text\" name=\"website\" tabindex=\"-1\" autocomplete=\"off\"></label><div class=\"row\"><label class=\"field\">Name *<input class=\"input\" type=\"text\" name=\"name\" autocomplete=\"name\" required></label><label class=\"field\">Email *<input class=\"input\" type=\"email\" name=\"email\" autocomplete=\"email\" required></label><label class=\"field\">Phone<input class=\"input\" type=\"tel\" name=\"phone\" autocomplete=\"tel\"></label></div><label class=\"field\">Mailing address<input class=\"input\" type=\"text\" name=\"address\" autocomplete=\"street-address\"></label><div class=\"row\"><label class=\"field\">Amount ($) *<input class=\"input\" type=\"text\" name=\"amount\" placeholder=\"$\" required></label><label class=\"field\">How often<select class=\"input\" name=\"frequency\"><option>One-time</option><option>Monthly</option><option>Quarterly</option></select></label></div><div class=\"row\"><label class=\"field\">Name for recognition (as you’d like to be listed)<input class=\"input\" type=\"text\" name=\"recognitionName\"></label><label class=\"field\">In honor or memory of (optional)<input class=\"input\" type=\"text\" name=\"inHonorOf\"></label></div><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"anonymous\" value=\"yes\"> Please keep my gift anonymous</label><label class=\"field\">Why I gave (optional)<textarea class=\"textarea\" name=\"whyIGave\" rows=\"3\"></textarea></label><div class=\"btn-row-left\"><button class=\"btn\" type=\"submit\" name=\"via\" value=\"card\">Continue to Zeffy: card</button><button class=\"btn\" type=\"submit\" name=\"via\" value=\"eft\">Continue to Zeffy: bank transfer (EFT)</button></div><p class=\"status\" role=\"status\" aria-live=\"polite\"></p></form>\n    <p class=\"p\">Card (up to $4,999 a payment) or bank transfer (EFT, up to $20,000). Card and bank details are handled by Zeffy and its processor, Stripe, and never touch this site.</p>\n    <p class=\"p\">You will receive a receipt.</p>\n    <p class=\"p\">Zeffy is free for the Foundation. At checkout, Zeffy asks for an optional contribution to Zeffy; you can change it to $0. Every dollar of your gift goes to NKU.</p>\n  </div>\n  <div class=\"sub-card\" id=\"other-gifts\">\n    <h3 class=\"h3\">Wire transfer, stock, bonds, mutual funds, donor-advised fund (DAF), IRA or real estate</h3>\n    <p class=\"p\">Giving one of these ways takes two steps:</p>\n    <ol class=\"list\">\n      <li><strong>Call Ameriprise Financial at 360-297-4848</strong> for instructions. This number is for help with making your gift. For other questions, please use <a class=\"link\" href=\"#contact\">Contact Us</a>.</li>\n      <li><strong>Fill out <a class=\"link\" href=\"#tell-us\">Tell us about your gift</a></strong> so we can watch for your gift and thank you. These gifts often arrive without the donor’s name.</li>\n    </ol>\n    <div class=\"btn-row-left\"><a class=\"btn btn-ghost\" href=\"#tell-us\">Tell us about your gift ↓</a></div>\n    <div class=\"grid3\">\n      <div style=\"display:flex;flex-direction:column;gap:8px\">\n        <h4 class=\"h4\">Wire transfer</h4>\n        <p class=\"p\">You can give by wire transfer. For instructions, call Ameriprise Financial at 360-297-4848.</p>\n        <ul class=\"list\"><li>Ameriprise does not charge a fee to receive wires.</li><li>You will receive a receipt.</li><li>After you send a wire, please fill out <a class=\"link\" href=\"#tell-us\">Tell us about your gift</a> so we can thank you. Wires often arrive without the sender’s name.</li></ul>\n      </div>\n      <div style=\"display:flex;flex-direction:column;gap:8px\">\n        <h4 class=\"h4\">Donor-advised fund (DAF)</h4>\n        <p class=\"p\">You can give through your donor-advised fund (DAF). For instructions, call Ameriprise Financial at 360-297-4848.</p>\n        <ul class=\"list\"><li>Your fund company sends the grant, usually within two weeks or more.</li><li>You took your tax deduction when you put money into your fund, so you’ll receive a thank-you letter that is not a tax receipt.</li><li>A DAF grant can’t pay for anything you receive in return, such as event tickets, golf or raffle tickets.</li><li>Please also fill out <a class=\"link\" href=\"#tell-us\">Tell us about your gift</a> so we know to expect it.</li></ul>\n      </div>\n      <div style=\"display:flex;flex-direction:column;gap:8px\">\n        <h4 class=\"h4\">IRA qualified charitable distribution (QCD)</h4>\n        <p class=\"p\">If you are 70½ or older, you can give directly from your IRA. For instructions, call Ameriprise Financial at 360-297-4848.</p>\n        <ul class=\"list\"><li>The gift can count toward your required minimum distribution and is not taxable income to you.</li><li>Nothing can be received in return, such as event tickets or raffle tickets.</li><li>Up to $111,000 per person in 2026.</li><li>The deadline is December 31. Ask your custodian by early December, because processing takes time.</li><li>You will receive an acknowledgment.</li><li>Please also fill out <a class=\"link\" href=\"#tell-us\">Tell us about your gift</a> so we know to expect it.</li></ul>\n      </div>\n    </div>\n    <p class=\"privacy\"><strong>Make your gift to:</strong> Kingston North Kitsap Rotary Foundation · EIN 20-2960627 · P.O. Box 832, Kingston, WA 98346. Please designate it for North Kitsap United (NKU).</p>\n  </div>\n</section>\n\n<section class=\"card-strong\" id=\"tell-us\">\n  <span class=\"step-pill\">Step 2 for gifts not made through Zeffy</span>\n  <h2 class=\"h2\">Tell us about your gift</h2>\n  <p class=\"p\">Giving by check, wire, stock, bonds, mutual funds, donor-advised fund, IRA or real estate? Please let us know so we can watch for your gift and thank you.</p>\n  <form class=\"form\" data-nku-form=\"gift\" novalidate><label class=\"hp\" aria-hidden=\"true\">Leave this empty<input type=\"text\" name=\"website\" tabindex=\"-1\" autocomplete=\"off\"></label><div class=\"row\"><label class=\"field\">Name *<input class=\"input\" type=\"text\" name=\"name\" autocomplete=\"name\" required></label><label class=\"field\">Email *<input class=\"input\" type=\"email\" name=\"email\" autocomplete=\"email\" required></label><label class=\"field\">Phone<input class=\"input\" type=\"tel\" name=\"phone\" autocomplete=\"tel\"></label></div><label class=\"field\">Mailing address<input class=\"input\" type=\"text\" name=\"address\" autocomplete=\"street-address\"></label><div class=\"row\"><label class=\"field\">How are you giving?<select class=\"input\" name=\"method\"><option>Check</option><option>Wire transfer</option><option>Stock</option><option>Bonds</option><option>Mutual funds</option><option>Donor-advised fund (DAF)</option><option>IRA distribution (QCD)</option><option>Real estate</option></select></label><label class=\"field\">Amount ($)<input class=\"input\" type=\"text\" name=\"amount\" placeholder=\"$\"></label><label class=\"field\">Expected date<input class=\"input\" type=\"date\" name=\"expectedDate\"></label></div><div class=\"row\"><label class=\"field\">For stock, bonds or mutual funds: name and number of shares<input class=\"input\" type=\"text\" name=\"shares\"></label><label class=\"field\">For a DAF or IRA: fund or IRA company<input class=\"input\" type=\"text\" name=\"fundCompany\"></label></div><div class=\"row\"><label class=\"field\">Name for recognition (as you’d like to be listed)<input class=\"input\" type=\"text\" name=\"recognitionName\"></label><label class=\"field\">In honor or memory of (optional)<input class=\"input\" type=\"text\" name=\"inHonorOf\"></label></div><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"anonymous\" value=\"yes\"> Please keep my gift anonymous</label><label class=\"field\">Why I gave (optional)<textarea class=\"textarea\" name=\"whyIGave\" rows=\"4\"></textarea></label><p class=\"privacy\"><strong>Your privacy.</strong> We use the information you share only to record your gift, send your receipt and thank you.</p><div class=\"btn-row-left\"><button class=\"btn\" type=\"submit\">Send</button></div><p class=\"status\" role=\"status\" aria-live=\"polite\"></p></form>\n</section>\n\n<section class=\"card\" id=\"pledge\">\n  <h2 class=\"h2\">Pledge</h2>\n  <form class=\"form\" data-nku-form=\"pledge\" novalidate><label class=\"hp\" aria-hidden=\"true\">Leave this empty<input type=\"text\" name=\"website\" tabindex=\"-1\" autocomplete=\"off\"></label><div class=\"row\"><label class=\"field\">Total amount ($) *<input class=\"input\" type=\"text\" name=\"amount\" placeholder=\"$\" required></label><label class=\"field\">Number of installments<input class=\"input\" type=\"number\" name=\"installments\"></label></div><fieldset class=\"fieldset\"><legend class=\"legend\">How often</legend><label class=\"check\"><input class=\"check-input\" type=\"radio\" name=\"frequency\" value=\"Monthly\"> Monthly, beginning: <input class=\"inline-input\" type=\"date\" name=\"begin_monthly\" aria-label=\"Monthly start date\"></label><label class=\"check\"><input class=\"check-input\" type=\"radio\" name=\"frequency\" value=\"Quarterly\"> Quarterly, beginning: <input class=\"inline-input\" type=\"date\" name=\"begin_quarterly\" aria-label=\"Quarterly start date\"></label><label class=\"check\"><input class=\"check-input\" type=\"radio\" name=\"frequency\" value=\"Semi-annually\"> Semi-annually, beginning: <input class=\"inline-input\" type=\"date\" name=\"begin_semiannually\" aria-label=\"Semi-annually start date\"></label><label class=\"check\"><input class=\"check-input\" type=\"radio\" name=\"frequency\" value=\"Annually\"> Annually, beginning: <input class=\"inline-input\" type=\"date\" name=\"begin_annually\" aria-label=\"Annually start date\"></label></fieldset><div class=\"row\"><label class=\"field\">Name *<input class=\"input\" type=\"text\" name=\"name\" autocomplete=\"name\" required></label><label class=\"field\">Email *<input class=\"input\" type=\"email\" name=\"email\" autocomplete=\"email\" required></label><label class=\"field\">Phone<input class=\"input\" type=\"tel\" name=\"phone\" autocomplete=\"tel\"></label></div><label class=\"field\">Mailing address<input class=\"input\" type=\"text\" name=\"address\" autocomplete=\"street-address\"></label><fieldset class=\"fieldset\"><legend class=\"legend\">How do you plan to pay? (check any)</legend><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"payment\" value=\"Card or bank transfer (EFT) through Zeffy, monthly or quarterly\"> Card or bank transfer (EFT) through Zeffy, monthly or quarterly</label><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"payment\" value=\"Check\"> Check</label><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"payment\" value=\"Wire transfer\"> Wire transfer</label><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"payment\" value=\"Stock, bonds or mutual funds\"> Stock, bonds or mutual funds</label><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"payment\" value=\"Donor-advised fund\"> Donor-advised fund</label><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"payment\" value=\"IRA (QCD)\"> IRA (QCD)</label><label class=\"check\"><input class=\"check-input\" type=\"checkbox\" name=\"payment\" value=\"Real estate\"> Real estate</label></fieldset><div class=\"btn-row-left\"><button class=\"btn\" type=\"submit\">Send pledge</button></div><p class=\"status\" role=\"status\" aria-live=\"polite\"></p></form>\n</section>\n\n<section class=\"card\" id=\"contact\">\n  <h2 class=\"h2\">Contact Us</h2>\n  <p class=\"p\">For questions about a donation or pledge, send us a message:</p>\n  <form class=\"form\" data-nku-form=\"donation-question\" novalidate><label class=\"hp\" aria-hidden=\"true\">Leave this empty<input type=\"text\" name=\"website\" tabindex=\"-1\" autocomplete=\"off\"></label><div class=\"row\"><label class=\"field\">Name *<input class=\"input\" type=\"text\" name=\"name\" autocomplete=\"name\" required></label><label class=\"field\">Email *<input class=\"input\" type=\"email\" name=\"email\" autocomplete=\"email\" required></label><label class=\"field\">Phone<input class=\"input\" type=\"tel\" name=\"phone\" autocomplete=\"tel\"></label></div><label class=\"field\">How can we help? *<textarea class=\"textarea\" name=\"message\" rows=\"3\" required></textarea></label><div class=\"btn-row-left\"><button class=\"btn\" type=\"submit\">Send</button></div><p class=\"status\" role=\"status\" aria-live=\"polite\"></p></form>\n</section>\n<div class=\"btn-row\"><a class=\"btn btn-ghost\" href=\"/get-involved\">Get Involved</a></div>\n";
+
+const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="text" name="website" tabindex="-1" autocomplete="off"></label>';
 ---
 <BaseLayout title="Donate" current="cash" heroTitle="Donate" heroSub="Build more than fields. Build opportunity." eyebrow="Donate · Cash">
-  <Fragment set:html={html} />
+  <div class="btn-row">
+    <button class="btn" type="button" data-open="zeffy">Donate with Zeffy</button>
+    <button class="btn" type="button" data-open="investments">Donate with Investments</button>
+    <button class="btn btn-ghost" type="button" data-open="other-ways">Other ways to Donate</button>
+    <button class="btn btn-ghost" type="button" data-open="other">Other Donations</button>
+  </div>
+
+  <img class="img-flier" src="/images/site/sponsorship-levels.jpg" alt="Build More Than Fields, Build Opportunity: the nine sponsorship levels from Legacy Partner at $1,000,000 to Rising Star Sponsor at $1,000, with photos of youth soccer, swimming, mountain biking and the fields" />
+
+  <!-- 1. Donate with Zeffy -->
+  <dialog class="modal" id="zeffy" aria-labelledby="zeffy-title">
+    <div class="modal-body">
+      <button class="modal-close" type="button" data-close aria-label="Close">×</button>
+      <h2 class="h2" id="zeffy-title">Donate with Zeffy</h2>
+      <h3 class="h3">Card or bank transfer (EFT): one-time, monthly or quarterly</h3>
+      <p class="p">Tell us a little about your gift, then continue to Zeffy to pay. This lets us thank you and list you the way you’d like.</p>
+      <form class="form" data-nku-form="zeffy" novalidate>
+        <Fragment set:html={hp} />
+        <div class="row">
+          <label class="field">Name *<input class="input" type="text" name="name" autocomplete="name" required></label>
+          <label class="field">Email *<input class="input" type="email" name="email" autocomplete="email" required></label>
+          <label class="field">Phone<input class="input" type="tel" name="phone" autocomplete="tel"></label>
+        </div>
+        <label class="field">Mailing address<input class="input" type="text" name="address" autocomplete="street-address"></label>
+        <div class="row">
+          <label class="field">Amount ($) *<input class="input" type="text" name="amount" placeholder="$" required></label>
+          <label class="field">How often<select class="input" name="frequency"><option>One-time</option><option>Monthly</option><option>Quarterly</option></select></label>
+        </div>
+        <div class="row">
+          <label class="field">Name for recognition (as you’d like to be listed)<input class="input" type="text" name="recognitionName"></label>
+          <label class="field">In honor or memory of (optional)<input class="input" type="text" name="inHonorOf"></label>
+        </div>
+        <label class="check"><input class="check-input" type="checkbox" name="anonymous" value="yes"> Please keep my gift anonymous</label>
+        <label class="field">Why I gave (optional)<textarea class="textarea" name="whyIGave" rows="3"></textarea></label>
+        <div class="btn-row-left">
+          <button class="btn" type="submit" name="via" value="card">Continue to Zeffy: card</button>
+          <button class="btn" type="submit" name="via" value="eft">Continue to Zeffy: bank transfer (EFT)</button>
+        </div>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+      <p class="p">Card (up to $4,999 a payment) or bank transfer (EFT, up to $20,000). Card and bank details are handled by Zeffy and its processor, Stripe, and never touch this site.</p>
+      <p class="p">You will receive a receipt.</p>
+      <p class="p">Zeffy is free for the Foundation. At checkout, Zeffy asks for an optional contribution to Zeffy; you can change it to $0. Every dollar of your gift goes to NKU.</p>
+    </div>
+  </dialog>
+
+  <!-- 2. Donate with Investments -->
+  <dialog class="modal" id="investments" aria-labelledby="investments-title">
+    <div class="modal-body">
+      <button class="modal-close" type="button" data-close aria-label="Close">×</button>
+      <h2 class="h2" id="investments-title">Donate with Investments</h2>
+      <h3 class="h3">Wire transfer, stock, bonds, mutual funds, donor-advised fund (DAF), IRA or real estate</h3>
+      <p class="p">Giving one of these ways takes two steps:</p>
+      <ol class="list">
+        <li><strong>Call Ameriprise Financial at 360-297-4848</strong> for instructions. This number is for help with making your gift. For other questions, please use the form below.</li>
+        <li><strong>Fill out the form below</strong> so we can watch for your gift and thank you. These gifts often arrive without the donor’s name.</li>
+      </ol>
+      <div class="grid3">
+        <div class="modal-col">
+          <h4 class="h4">Wire transfer</h4>
+          <p class="p">You can give by wire transfer. For instructions, call Ameriprise Financial at 360-297-4848.</p>
+          <ul class="list"><li>Ameriprise does not charge a fee to receive wires.</li><li>You will receive a receipt.</li><li>After you send a wire, please fill out the form below so we can thank you. Wires often arrive without the sender’s name.</li></ul>
+        </div>
+        <div class="modal-col">
+          <h4 class="h4">Donor-advised fund (DAF)</h4>
+          <p class="p">You can give through your donor-advised fund (DAF). For instructions, call Ameriprise Financial at 360-297-4848.</p>
+          <ul class="list"><li>Your fund company sends the grant, usually within two weeks or more.</li><li>You took your tax deduction when you put money into your fund, so you’ll receive a thank-you letter that is not a tax receipt.</li><li>A DAF grant can’t pay for anything you receive in return, such as event tickets, golf or raffle tickets.</li></ul>
+        </div>
+        <div class="modal-col">
+          <h4 class="h4">IRA qualified charitable distribution (QCD)</h4>
+          <p class="p">If you are 70½ or older, you can give directly from your IRA. For instructions, call Ameriprise Financial at 360-297-4848.</p>
+          <ul class="list"><li>The gift can count toward your required minimum distribution and is not taxable income to you.</li><li>Nothing can be received in return, such as event tickets or raffle tickets.</li><li>Up to $111,000 per person in 2026.</li><li>The deadline is December 31. Ask your custodian by early December, because processing takes time.</li><li>You will receive an acknowledgment.</li></ul>
+        </div>
+      </div>
+      <p class="privacy"><strong>Make your gift to:</strong> Kingston North Kitsap Rotary Foundation · EIN 20-2960627 · P.O. Box 832, Kingston, WA 98346. Please designate it for North Kitsap United (NKU).</p>
+
+      <div class="sub-card">
+        <h3 class="h3">Contact us about your gift</h3>
+        <form class="form" data-nku-form="gift" novalidate>
+          <Fragment set:html={hp} />
+          <input type="hidden" name="method" value="Investments (wire, stock, bonds, mutual funds, DAF, IRA or real estate)">
+          <div class="row">
+            <label class="field">Name *<input class="input" type="text" name="name" autocomplete="name" required></label>
+            <label class="field">Phone<input class="input" type="tel" name="phone" autocomplete="tel"></label>
+            <label class="field">Email *<input class="input" type="email" name="email" autocomplete="email" required></label>
+          </div>
+          <label class="field">Address<input class="input" type="text" name="address" autocomplete="street-address"></label>
+          <label class="field">Notes<textarea class="textarea" name="whyIGave" rows="4"></textarea></label>
+          <p class="privacy"><strong>Your privacy.</strong> We use the information you share only to record your gift, send your receipt and thank you.</p>
+          <div class="btn-row-left"><button class="btn" type="submit">Send</button></div>
+          <p class="status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- 3. Other ways to Donate (pledge) -->
+  <dialog class="modal" id="other-ways" aria-labelledby="other-ways-title">
+    <div class="modal-body">
+      <button class="modal-close" type="button" data-close aria-label="Close">×</button>
+      <h2 class="h2" id="other-ways-title">Other ways to Donate: make a pledge</h2>
+      <p class="p">Fill out the form below and someone from our team will contact you to set up the particulars of your pledge or other donation, such as timing, payment method and how you’d like to be recognized.</p>
+      <form class="form" data-nku-form="pledge" novalidate>
+        <Fragment set:html={hp} />
+        <div class="row">
+          <label class="field">Total amount ($) *<input class="input" type="text" name="amount" placeholder="$" required></label>
+          <label class="field">Number of installments<input class="input" type="number" name="installments"></label>
+        </div>
+        <fieldset class="fieldset">
+          <legend class="legend">How often</legend>
+          <label class="check"><input class="check-input" type="radio" name="frequency" value="Monthly"> Monthly, beginning: <input class="inline-input" type="date" name="begin_monthly" aria-label="Monthly start date"></label>
+          <label class="check"><input class="check-input" type="radio" name="frequency" value="Quarterly"> Quarterly, beginning: <input class="inline-input" type="date" name="begin_quarterly" aria-label="Quarterly start date"></label>
+          <label class="check"><input class="check-input" type="radio" name="frequency" value="Semi-annually"> Semi-annually, beginning: <input class="inline-input" type="date" name="begin_semiannually" aria-label="Semi-annually start date"></label>
+          <label class="check"><input class="check-input" type="radio" name="frequency" value="Annually"> Annually, beginning: <input class="inline-input" type="date" name="begin_annually" aria-label="Annually start date"></label>
+        </fieldset>
+        <div class="row">
+          <label class="field">Name *<input class="input" type="text" name="name" autocomplete="name" required></label>
+          <label class="field">Email *<input class="input" type="email" name="email" autocomplete="email" required></label>
+          <label class="field">Phone<input class="input" type="tel" name="phone" autocomplete="tel"></label>
+        </div>
+        <label class="field">Mailing address<input class="input" type="text" name="address" autocomplete="street-address"></label>
+        <fieldset class="fieldset">
+          <legend class="legend">How do you plan to pay? (check any)</legend>
+          <label class="check"><input class="check-input" type="checkbox" name="payment" value="Card or bank transfer (EFT) through Zeffy, monthly or quarterly"> Card or bank transfer (EFT) through Zeffy, monthly or quarterly</label>
+          <label class="check"><input class="check-input" type="checkbox" name="payment" value="Check"> Check</label>
+          <label class="check"><input class="check-input" type="checkbox" name="payment" value="Wire transfer"> Wire transfer</label>
+          <label class="check"><input class="check-input" type="checkbox" name="payment" value="Stock, bonds or mutual funds"> Stock, bonds or mutual funds</label>
+          <label class="check"><input class="check-input" type="checkbox" name="payment" value="Donor-advised fund"> Donor-advised fund</label>
+          <label class="check"><input class="check-input" type="checkbox" name="payment" value="IRA (QCD)"> IRA (QCD)</label>
+          <label class="check"><input class="check-input" type="checkbox" name="payment" value="Real estate"> Real estate</label>
+        </fieldset>
+        <div class="btn-row-left"><button class="btn" type="submit">Send pledge</button></div>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- 4. Other Donations (contact form) -->
+  <dialog class="modal" id="other" aria-labelledby="other-title">
+    <div class="modal-body">
+      <button class="modal-close" type="button" data-close aria-label="Close">×</button>
+      <h2 class="h2" id="other-title">Other Donations</h2>
+      <p class="p">Have another way you’d like to give, or a question about a donation? Send us a message and we’ll get back to you.</p>
+      <div class="sub-card">
+        <h3 class="h3">Giving by check?</h3>
+        <p class="p">Payable to: <strong>Kingston North Kitsap Rotary Foundation</strong><br>Mail to: P.O. Box 832, Kingston, WA 98346 · Memo: NKU</p>
+        <p class="p">Please also send the form below so we can thank you, or include a note in your envelope with your name, address, phone and email. You will receive a receipt.</p>
+      </div>
+      <form class="form" data-nku-form="donation-question" novalidate>
+        <Fragment set:html={hp} />
+        <div class="row">
+          <label class="field">Name *<input class="input" type="text" name="name" autocomplete="name" required></label>
+          <label class="field">Email *<input class="input" type="email" name="email" autocomplete="email" required></label>
+          <label class="field">Phone<input class="input" type="tel" name="phone" autocomplete="tel"></label>
+        </div>
+        <label class="field">How would you like to donate? *<textarea class="textarea" name="message" rows="4" required></textarea></label>
+        <div class="btn-row-left"><button class="btn" type="submit">Send</button></div>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </dialog>
+
+  <div class="btn-row"><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
 </BaseLayout>
+
+<style is:global>
+  .modal{margin:auto;inset:0;width:min(880px,calc(100vw - 32px));max-height:calc(100dvh - 48px);padding:0;border:none;border-radius:12px;background:#ffffff;color:#374151;box-shadow:0 20px 60px rgba(26,48,9,.35)}
+  .modal::backdrop{background:rgba(26,48,9,.6)}
+  .modal-body{position:relative;padding:36px 40px;display:flex;flex-direction:column;gap:18px}
+  .modal-close{position:absolute;top:10px;right:10px;width:44px;height:44px;border:none;border-radius:8px;background:transparent;color:#2d5016;font-size:30px;line-height:1;cursor:pointer}
+  .modal-close:hover{background:#f5f0e8}
+  .modal .h2{padding-right:44px}
+  .modal-col{display:flex;flex-direction:column;gap:8px}
+  body.modal-open{overflow:hidden}
+  @media (max-width:760px){.modal-body{padding:28px 20px}}
+</style>
+
+<script is:inline>
+  (function () {
+    // Old addresses (#one-time, #pledge, ...) still open the matching popup.
+    var alias = { 'one-time': 'zeffy', 'pledge': 'other-ways', 'tell-us': 'investments', 'other-gifts': 'investments', 'contact': 'other' };
+    function open(id) {
+      var d = document.getElementById(alias[id] || id);
+      if (!d || d.tagName !== 'DIALOG' || d.open) return;
+      document.querySelectorAll('dialog.modal[open]').forEach(function (x) { x.close(); });
+      d.showModal();
+      document.body.classList.add('modal-open');
+      var s = d.querySelector('.status'); if (s) { s.textContent = ''; s.classList.remove('is-error'); }
+      var first = d.querySelector('.input'); if (first) first.focus({ preventScroll: true });
+    }
+    document.querySelectorAll('[data-open]').forEach(function (b) {
+      b.addEventListener('click', function () { open(b.getAttribute('data-open')); });
+    });
+    document.querySelectorAll('dialog.modal').forEach(function (d) {
+      d.addEventListener('close', function () {
+        document.body.classList.remove('modal-open');
+        if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+      });
+      d.addEventListener('click', function (e) {
+        if (e.target === d || e.target.closest('[data-close]')) d.close();
+      });
+    });
+    function fromHash() { var h = location.hash.slice(1); if (h) open(h); }
+    window.addEventListener('hashchange', fromHash);
+    fromHash();
+  })();
+</script>
