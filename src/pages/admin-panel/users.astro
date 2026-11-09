@@ -1,0 +1,50 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { listUsers } from '../../lib/auth';
+
+const me = Astro.locals.admin!.email;
+const users = await listUsers();
+---
+
+<AdminLayout title="Users & password" active="users">
+  <div class="grid lg:grid-cols-2 gap-6">
+    <form id="pw-form" class="nku-card space-y-3">
+      <h2 class="text-lg font-bold text-nku-green">Change your password</h2>
+      <input type="text" name="username" value={me} autocomplete="username" class="hidden" readonly />
+      <div>
+        <label class="block text-sm font-medium mb-1" for="currentPassword">Current password</label>
+        <input id="currentPassword" type="password" autocomplete="current-password" class="nku-input" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="newPassword">New password</label>
+        <input id="newPassword" type="password" autocomplete="new-password" class="nku-input" required minlength="10" />
+        <p class="text-xs text-nku-gray-light mt-1">At least 10 characters, with letters and numbers.</p>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="newPassword2">New password again</label>
+        <input id="newPassword2" type="password" autocomplete="new-password" class="nku-input" required />
+      </div>
+      <button class="nku-btn" type="submit">Change password</button>
+    </form>
+
+    <div class="nku-card space-y-4">
+      <h2 class="text-lg font-bold text-nku-green">People who can edit the site</h2>
+      <ul class="divide-y divide-gray-100 text-sm">
+        {users.map((u) => (
+          <li class="py-2 flex items-center justify-between gap-2">
+            <span><span class="font-medium break-all">{u.email}</span>{u.name && <span class="text-nku-gray-light"> &middot; {u.name}</span>}{u.email === me && <span class="text-nku-gray-light"> (you)</span>}</span>
+            {u.email !== me && <button class="nku-btn nku-btn-sm nku-btn-danger" data-remove-user={u.email}>Remove</button>}
+          </li>
+        ))}
+      </ul>
+      <form id="add-user-form" class="space-y-3 border-t border-gray-100 pt-4">
+        <h3 class="font-semibold">Add a person</h3>
+        <input id="newEmail" type="email" placeholder="Email" class="nku-input" required autocomplete="off" />
+        <input id="newName" placeholder="Name (optional)" class="nku-input" autocomplete="off" />
+        <input id="newUserPassword" type="password" placeholder="Starting password" class="nku-input" required minlength="10" autocomplete="new-password" />
+        <p class="text-xs text-nku-gray-light">Share the starting password with them privately. They'll be asked to change it.</p>
+        <button class="nku-btn" type="submit">Add person</button>
+      </form>
+    </div>
+  </div>
+</AdminLayout>

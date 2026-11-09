@@ -1,0 +1,36 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { listNews } from '../../../lib/content';
+
+const posts = await listNews({ includeDrafts: true });
+---
+
+<AdminLayout title="News" active="news">
+  <div class="flex justify-between items-center mb-6 gap-4">
+    <p class="text-sm">Posts show on the <a href="/news" class="underline text-nku-green-light">News page</a>, newest date first. Drafts stay hidden.</p>
+    <a href="/admin-panel/news/edit" class="nku-btn shrink-0">+ New post</a>
+  </div>
+  {posts.length === 0 ? (
+    <div class="nku-card text-sm">No posts yet. Click <strong>New post</strong> to write the first one.</div>
+  ) : (
+    <div class="nku-card p-0 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-nku-cream-dark text-left"><tr><th class="p-3">Title</th><th class="p-3">Date</th><th class="p-3">Status</th><th class="p-3"></th></tr></thead>
+        <tbody>
+          {posts.map((p) => (
+            <tr class="border-t border-gray-100">
+              <td class="p-3 font-medium"><a href={`/admin-panel/news/edit?id=${p.id}`} class="hover:underline">{p.title}</a></td>
+              <td class="p-3 whitespace-nowrap">{p.date}</td>
+              <td class="p-3">{p.published ? <span class="px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-semibold">Live</span> : <span class="px-2 py-0.5 rounded bg-gray-100 text-gray-700 text-xs font-semibold">Draft</span>}</td>
+              <td class="p-3 text-right whitespace-nowrap">
+                <a href={`/admin-panel/news/edit?id=${p.id}`} class="nku-btn nku-btn-sm">Edit</a>
+                <a href={`/news/${p.slug}`} class="nku-btn nku-btn-sm nku-btn-ghost ml-1">View</a>
+                <button class="nku-btn nku-btn-sm nku-btn-danger ml-1" data-delete-news={p.id} data-title={p.title}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )}
+</AdminLayout>

@@ -14,17 +14,18 @@ Requires Node.js >= 22.12.0. No test framework is configured.
 
 ## Architecture
 
-This is a static informational website for the North Kitsap United community project, built with **Astro** and **Tailwind CSS 4**, deployed to **Netlify** (project `northkitsapunitednew`).
+This is an informational website for the North Kitsap United community project, built with **Astro** and **Tailwind CSS 4**, deployed to **Netlify** (project `northkitsapunitednew`).
 
 **The pages are generated from the "NKU Website" Design canvas** (claude.ai artifact UQenrFEvnNf9sGLw3BHRJX). Each page in `src/pages/` (except the three legal pages) holds its markup in a `html` string built from that design; the classes it uses are defined in `src/styles/site.css`. Edit the design and regenerate rather than hand-editing a page, or the two will drift apart.
 
-- **No SSR** — pure static output (`output: 'static'`), no adapter needed
+- **Server output on Netlify** — `output: 'server'` with `@astrojs/netlify`, so `/admin-panel` edits go live without a rebuild. Pages are cached on Netlify's CDN (cache tag `nku-pages`), purged on every admin save. Netlify only: drag-and-drop deploys and Cloudflare Pages won't run it.
+- **Admin panel** at `/admin-panel` — email/password login, on-page editing, News, image uploads, users. Data lives in Netlify Blobs. See `docs/ADMIN.md`. Admin edits to a page override that page's generated `html` until "Reset to original" is used, so regenerating a page from the design won't show on an edited page until it's reset.
 - **No framework islands** — vanilla JS only (mobile menu toggle, dropdown accordions)
 - **No content collections** — ~14 pages with infrequent changes, all hardcoded `.astro` files
 
 ### Layout
 
-`BaseLayout.astro` wraps every page: `<SiteHeader current=…>` (partner logos, NKU brand, main menu with Partners and Donate dropdowns) → title band (`eyebrow`, `heroTitle`, `heroSub` props) → `<main class="main"><slot /></main>` → `<Footer />`. Title format: `"Page Title | North Kitsap United - New"` (the " - New" marks this build in browser tabs while the old site is still up; remove it at launch).
+`BaseLayout.astro` wraps every page: `<SiteHeader current=…>` (partner logos, NKU brand, main menu with Partners and Donate dropdowns) → title band (`eyebrow`, `heroTitle`, `heroSub` props; editable region `hero`) → `<main class="main"><slot /></main>` (editable region `main`) → `<Footer />`. Pass `editable="regions"` for pages with live lists (News) or `"none"` to switch editing off. Title format: `"Page Title | North Kitsap United - New"` (the " - New" marks this build in browser tabs while the old site is still up; remove it at launch).
 
 ### Styling
 

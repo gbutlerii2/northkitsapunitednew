@@ -12,7 +12,7 @@ The official website for [North Kitsap United](https://www.northkitsapunited.com
 
 - [Astro](https://astro.build/) — Static site generator
 - [Tailwind CSS v4](https://tailwindcss.com/) — Utility-first CSS
-- [Cloudflare Pages](https://pages.cloudflare.com/) — Hosting with automatic deployments from GitHub
+- [Netlify](https://www.netlify.com/) — Hosting (builds from GitHub), on-request rendering, and Netlify Blobs for admin-edited content
 
 ## Getting Started
 
@@ -27,13 +27,14 @@ npm run preview   # Preview production build locally
 
 ## Deployment
 
-The site is hosted on Cloudflare Pages and deploys automatically when changes are pushed to the `main` branch on GitHub. The production build output is the `dist/` directory.
+The site runs on the Netlify project `northkitsapunitednew`, which builds from this repo's `main` branch (`netlify.toml`: `npm run build`, Node 22). Pages are rendered by a Netlify Function so the admin panel can publish edits instantly; drag-and-drop deploys and Cloudflare Pages can't run this version.
 
-Build settings on Cloudflare Pages:
-- **Framework preset:** Astro
-- **Build command:** `npm run build`
-- **Build output directory:** `dist`
-- **Environment variable:** `NODE_VERSION` = `22`
+Netlify environment variables (never commit these):
+- `ADMIN_EMAIL` — first admin's login email
+- `ADMIN_PASSWORD_HASH` — from `npm run hash-password`
+- `SESSION_SECRET` — random string, 32+ characters
+
+See [docs/ADMIN.md](docs/ADMIN.md) for the admin panel.
 
 ## Project Structure
 

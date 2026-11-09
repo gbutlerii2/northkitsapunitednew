@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin-panel
+Disallow: /api/
 
 Sitemap: https://www.northkitsapunited.com/sitemap-index.xml
