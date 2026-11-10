@@ -1,0 +1,74 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { getUser } from '../../lib/auth';
+import { listEditedRegions, listNews } from '../../lib/content';
+
+const admin = Astro.locals.admin;
+let mustChange = false;
+let stats = { edited: 0, posts: 0, drafts: 0 };
+if (admin) {
+  const [user, regions, news] = await Promise.all([getUser(admin.email), listEditedRegions(), listNews({ includeDrafts: true })]);
+  mustChange = !!user?.mustChangePassword;
+  stats = { edited: regions.length, posts: news.filter((n) => n.published).length, drafts: news.filter((n) => !n.published).length };
+}
+const next = Astro.url.searchParams.get('next') || '';
+const safeNext = next.startsWith('/') && !next.startsWith('//') ? next : '/admin-panel';
+---
+
+<AdminLayout title={admin ? 'Dashboard' : 'Log in'} active="dashboard">
+  {!admin ? (
+    <div class="min-h-screen flex items-center justify-center p-4">
+      <form id="login-form" class="bg-white rounded-xl shadow-lg p-8 w-full max-w-sm" data-next={safeNext}>
+        <div class="flex items-center gap-3 mb-6">
+          <img src="/images/logos/nku-logo.png" alt="" class="h-10 w-auto" />
+          <div>
+            <p class="font-bold text-nku-green text-lg leading-tight">North Kitsap United</p>
+            <p class="text-sm text-nku-gray-light">Site admin</p>
+          </div>
+        </div>
+        <label class="block text-sm font-medium mb-1" for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="username" required class="nku-input mb-4" />
+        <label class="block text-sm font-medium mb-1" for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required class="nku-input mb-6" />
+        <p id="login-error" class="text-red-700 text-sm mb-4 hidden" role="alert"></p>
+        <button type="submit" class="nku-btn w-full">Log in</button>
+      </form>
+    </div>
+  ) : (
+    <>
+      {mustChange && (
+        <div class="mb-6 p-4 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-900">
+          <strong>Please change your password.</strong> You're using the starting password.
+          <a href="/admin-panel/users" class="underline font-semibold ml-1">Change it now</a>
+        </div>
+      )}
+      <div class="grid sm:grid-cols-3 gap-4 mb-8">
+        <a href="/admin-panel/pages" class="nku-card hover:shadow-md">
+          <p class="text-3xl font-bold text-nku-green">{stats.edited}</p>
+          <p class="text-sm">page sections edited</p>
+        </a>
+        <a href="/admin-panel/news" class="nku-card hover:shadow-md">
+          <p class="text-3xl font-bold text-nku-green">{stats.posts}</p>
+          <p class="text-sm">news posts live{stats.drafts ? `, ${stats.drafts} draft${stats.drafts > 1 ? 's' : ''}` : ''}</p>
+        </a>
+        <a href="/admin-panel/media" class="nku-card hover:shadow-md">
+          <p class="text-3xl font-bold text-nku-green">&#8679;</p>
+          <p class="text-sm">upload images</p>
+        </a>
+      </div>
+
+      <div class="nku-card">
+        <h2 class="text-lg font-bold text-nku-green mb-3">How editing works</h2>
+        <ol class="list-decimal pl-5 space-y-2 text-sm">
+          <li>Go to any page on the site while you're logged in. A green bar appears at the bottom. Click <strong>Edit this page</strong>.</li>
+          <li>Click on any heading, paragraph or list and type to change it. Select text to get <strong>bold, italic and link</strong> buttons.</li>
+          <li>Hover over a block to <strong>drag it</strong> to a new spot (&#10303; handle), add a paragraph after it, duplicate or delete it.</li>
+          <li><strong>Drag a photo</strong> from your computer onto an image to replace it, onto a "Photo to come" box to fill it, or onto text to add it there. Click an image to change its description or size.</li>
+          <li>The big title band at the top of each page is editable too.</li>
+          <li>Click <strong>Save</strong>. Changes are live right away. <strong>History</strong> lets you go back to an earlier version or to the original.</li>
+        </ol>
+        <p class="mt-4 text-sm">For news, use <a href="/admin-panel/news" class="underline text-nku-green-light">News</a>. Posts appear on the <a href="/news" class="underline text-nku-green-light">News page</a>.</p>
+      </div>
+    </>
+  )}
+</AdminLayout>

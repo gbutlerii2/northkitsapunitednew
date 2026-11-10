@@ -1,0 +1,14 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Images" active="media">
+  <div id="media-drop" class="nku-drop mb-6" tabindex="0" role="button" aria-label="Drop images here or click to choose">
+    <p class="font-medium">Drag photos here to upload, or click to choose</p>
+    <p class="text-xs text-nku-gray-light mt-1">JPG, PNG, GIF or WebP. Large photos are resized automatically.</p>
+  </div>
+  <p class="text-sm mb-4">Images you upload can be used in news posts and dropped into pages. Click <strong>Copy link</strong> to paste an image address somewhere else.</p>
+  <div id="media-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+    <p class="text-sm text-nku-gray-light col-span-full">Loading&hellip;</p>
+  </div>
+</AdminLayout>

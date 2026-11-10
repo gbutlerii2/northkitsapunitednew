@@ -1,0 +1,61 @@
+/* On-page editor UI (only loaded for logged-in editors). */
+.nku-ed-ui { font-family: 'Inter Variable', system-ui, sans-serif; font-size: 14px; line-height: 1.3; box-sizing: border-box; }
+.nku-ed-ui button { font: inherit; cursor: pointer; border: 1px solid #cfd8c6; background: #fff; color: #1a3009; border-radius: 6px; padding: 6px 10px; }
+.nku-ed-ui button:hover { background: #f5f0e8; }
+.nku-ed-ui button:disabled { opacity: .6; cursor: wait; }
+.nku-ed-ui button.nku-ed-primary { background: #4a7c28; border-color: #4a7c28; color: #fff; font-weight: 600; }
+.nku-ed-ui button.nku-ed-primary:hover { background: #2d5016; }
+.nku-ed-ui button.nku-ed-danger { color: #a11; border-color: #e3b4b4; }
+
+body.nku-ed-has-bar { padding-bottom: 64px; }
+.nku-ed-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 2147483000; background: #1a3009; color: #e7f3dd; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; box-shadow: 0 -2px 12px rgba(0,0,0,.25); flex-wrap: wrap; }
+.nku-ed-bar-left { display: flex; gap: 10px; align-items: baseline; }
+.nku-ed-who { opacity: .75; font-size: 12px; }
+.nku-ed-bar-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.nku-ed-note { font-size: 12px; opacity: .8; margin-right: 6px; }
+.nku-ed-link { color: #e7f3dd; text-decoration: underline; padding: 6px 4px; }
+.nku-ed-bar.nku-ed-dirty .nku-ed-primary { box-shadow: 0 0 0 3px #b8922e; }
+
+body.nku-ed-editing [data-nku-ed="text"] { outline: 1px dashed rgba(74,124,40,.35); outline-offset: 2px; border-radius: 2px; cursor: text; }
+body.nku-ed-editing [data-nku-ed="text"]:hover { outline: 1px dashed #4a7c28; }
+body.nku-ed-editing [data-nku-ed="text"]:focus { outline: 2px solid #4a7c28; background: rgba(255,255,255,.08); }
+body.nku-ed-editing [data-nku-region] img { cursor: pointer; }
+body.nku-ed-editing .nku-ed-hover { box-shadow: 0 0 0 2px rgba(184,146,46,.55); }
+body.nku-ed-editing .nku-ed-filehover { box-shadow: 0 0 0 4px #b8922e !important; }
+body.nku-ed-editing .nku-ed-dragging { opacity: .35; }
+body.nku-ed-editing .nku-ed-busy { opacity: .5; filter: grayscale(1); }
+body.nku-ed-editing [data-nku-region] a { cursor: text; }
+
+.nku-ed-handle { position: absolute; z-index: 2147482990; display: none; flex-direction: column; gap: 3px; }
+.nku-ed-handle.show { display: flex; }
+.nku-ed-handle button, .nku-ed-grip { width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.nku-ed-grip { cursor: grab; background: #4a7c28; color: #fff; border-radius: 6px; user-select: none; font-size: 18px; }
+
+.nku-ed-dropline { position: absolute; z-index: 2147482995; background: #b8922e; border-radius: 2px; display: none; pointer-events: none; }
+.nku-ed-dropline.show { display: block; }
+
+.nku-ed-fmt { position: absolute; z-index: 2147483001; display: none; gap: 4px; background: #1a3009; padding: 5px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+.nku-ed-fmt.show { display: flex; }
+.nku-ed-fmt button { padding: 4px 9px; border-color: transparent; }
+
+.nku-ed-imgpop { position: absolute; z-index: 2147483001; display: none; gap: 4px; background: rgba(26,48,9,.95); padding: 5px; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,.3); flex-wrap: wrap; max-width: 420px; }
+.nku-ed-imgpop.show { display: flex; }
+.nku-ed-imgpop button { padding: 4px 8px; }
+
+.nku-ed-uploading { padding: 18px; text-align: center; background: #f5f0e8; border: 2px dashed #b8922e; border-radius: 8px; color: #8b6914; }
+
+.nku-ed-undo { position: fixed; bottom: 76px; left: 50%; transform: translateX(-50%); background: #1a3009; color: #fff; padding: 8px 12px; border-radius: 8px; z-index: 2147483002; display: flex; gap: 10px; align-items: center; }
+
+.nku-ed-modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 2147483003; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.nku-ed-modal { background: #fff; color: #374151; border-radius: 12px; padding: 20px; width: min(520px, 100%); max-height: 80vh; overflow: auto; }
+.nku-ed-modal h2 { font-size: 20px; font-weight: 700; color: #2d5016; margin: 0 0 12px; }
+.nku-ed-modal h3 { font-size: 15px; font-weight: 600; margin: 12px 0 6px; }
+.nku-ed-modal ul { list-style: none; padding: 0; margin: 0 0 10px; }
+.nku-ed-modal li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid #eee; font-size: 13px; }
+.nku-ed-hist { margin-bottom: 14px; }
+
+.nku-toast { position: fixed; top: 16px; left: 50%; transform: translate(-50%, -150%); background: #2d5016; color: #fff; padding: 10px 16px; border-radius: 8px; z-index: 2147483004; transition: transform .25s, visibility .25s; visibility: hidden; max-width: 90vw; box-shadow: 0 4px 16px rgba(0,0,0,.25); font-family: 'Inter Variable', system-ui, sans-serif; font-size: 14px; }
+.nku-toast.show { transform: translate(-50%, 0); visibility: visible; }
+.nku-toast[data-kind="error"] { background: #a11; }
+body.nku-ed-editing [data-nku-region] .photo[role="img"] { cursor: pointer; outline: 2px dashed #b8922e; outline-offset: -6px; }
+body.nku-ed-editing [data-nku-region] .photo[role="img"]::after { content: 'Click or drop a photo here'; font-size: 13px; font-weight: 700; color: #8b6914; }
