@@ -1,0 +1,63 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import { getNews } from '../../../lib/content';
+
+const id = Astro.url.searchParams.get('id');
+const post = id ? await getNews(id) : null;
+if (id && !post) return Astro.redirect('/admin-panel/news');
+const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+const data = post ?? { id: '', title: '', date: today, summary: '', image: '', imageAlt: '', body: '', published: false, slug: '' };
+---
+
+<AdminLayout title={post ? 'Edit post' : 'New post'} active="news">
+  <form id="news-form" class="space-y-5" data-id={data.id}>
+    <div class="nku-card space-y-4">
+      <div>
+        <label class="block text-sm font-medium mb-1" for="title">Title</label>
+        <input id="title" name="title" class="nku-input text-lg" required value={data.title} />
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium mb-1" for="date">Date</label>
+          <input id="date" name="date" type="date" class="nku-input" value={data.date} />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="slug">Web address</label>
+          <div class="flex items-center gap-1 text-sm"><span class="text-nku-gray-light">/news/</span><input id="slug" name="slug" class="nku-input" value={data.slug} placeholder="made from the title" /></div>
+        </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="summary">Short summary <span class="text-nku-gray-light font-normal">(shown on the News list)</span></label>
+        <textarea id="summary" name="summary" rows="2" class="nku-input">{data.summary}</textarea>
+      </div>
+    </div>
+
+    <div class="nku-card">
+      <p class="block text-sm font-medium mb-2">Main image</p>
+      <div id="cover-drop" class="nku-drop" tabindex="0" role="button" aria-label="Drop an image here or click to choose one">
+        <img id="cover-preview" src={data.image || undefined} alt="" class:list={['max-h-56 mx-auto rounded', !data.image && 'hidden']} />
+        <p id="cover-hint" class:list={['text-sm text-nku-gray-light', data.image && 'hidden']}>Drag a photo here, or click to choose one</p>
+      </div>
+      <input type="hidden" id="image" name="image" value={data.image} />
+      <div class="flex gap-3 mt-3 items-center">
+        <input id="imageAlt" name="imageAlt" class="nku-input" placeholder="Describe the image (for screen readers)" value={data.imageAlt} />
+        <button type="button" id="cover-remove" class="nku-btn nku-btn-sm nku-btn-ghost shrink-0">Remove image</button>
+      </div>
+    </div>
+
+    <div class="nku-card">
+      <p class="block text-sm font-medium mb-2">Story</p>
+      <div id="body-editor" class="nku-rte" data-html={data.body}></div>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-3 sticky bottom-0 bg-nku-cream py-3">
+      <label class="inline-flex items-center gap-2 text-sm font-medium mr-4">
+        <input type="checkbox" id="published" name="published" checked={data.published} class="w-4 h-4" /> Published (visible on the site)
+      </label>
+      <button type="submit" class="nku-btn">Save</button>
+      <a href="/admin-panel/news" class="nku-btn nku-btn-ghost">Back to list</a>
+      {post && <a href={`/news/${post.slug}`} class="text-sm underline ml-auto" target="_blank">View on site &nearr;</a>}
+    </div>
+  </form>
+  <script is:inline src="/admin-assets/rte.js"></script>
+</AdminLayout>

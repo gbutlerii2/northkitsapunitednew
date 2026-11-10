@@ -3,6 +3,8 @@ import '../styles/global.css';
 import '../styles/site.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import Footer from '../components/Footer.astro';
+import EditableRegion from '../components/EditableRegion.astro';
+import { getFormEmailSettings } from '../lib/content';
 
 interface Props {
   title: string;
@@ -12,6 +14,12 @@ interface Props {
   heroTitle?: string;
   heroSub?: string;
   eyebrow?: string;
+  /**
+   * 'page' (default): the title band and page body can be edited from /admin-panel.
+   * 'regions': only the title band and <EditableRegion> blocks inside the page (for pages with live lists, like News).
+   * 'none': not editable in place.
+   */
+  editable?: 'page' | 'regions' | 'none';
 }
 
 const {
@@ -22,7 +30,17 @@ const {
   heroTitle = title,
   heroSub = '',
   eyebrow = '',
+  editable = 'page',
 } = Astro.props;
+const admin = Astro.locals.admin;
+// Admin > Forms can switch off sending form submissions to the NKU Tracker.
+let formSettings = { sendToTracker: true, zeffyCardUrl: '', zeffyEftUrl: '' };
+try {
+  formSettings = await getFormEmailSettings();
+} catch {
+  /* storage unreachable: keep defaults */
+}
+const sendTracker = formSettings.sendToTracker;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // " - New" marks this build in browser tabs while the old site is still up; remove it at launch.
@@ -32,7 +50,7 @@ const trackerApi = import.meta.env.PUBLIC_TRACKER_API || 'https://nku-tracker.co
 ---
 
 <!doctype html>
-<html lang="en" data-tracker-api={trackerApi}>
+<html lang="en" data-tracker-api={trackerApi} data-send-tracker={sendTracker ? "1" : "0"} data-zeffy-card={formSettings.zeffyCardUrl || undefined} data-zeffy-eft={formSettings.zeffyEftUrl || undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -49,17 +67,37 @@ const trackerApi = import.meta.env.PUBLIC_TRACKER_API || 'https://nku-tracker.co
   </head>
   <body class="page">
     <SiteHeader current={current} />
-    <section class="hero">
-      <div class="hero-inner">
-        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
-        <h1 class="hero-title">{heroTitle}</h1>
-        {heroSub && <p class="hero-sub">{heroSub}</p>}
-      </div>
-    </section>
+    {editable === 'none' ? (
+      <section class="hero">
+        <div class="hero-inner">
+          {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+          <h1 class="hero-title">{heroTitle}</h1>
+          {heroSub && <p class="hero-sub">{heroSub}</p>}
+        </div>
+      </section>
+    ) : (
+      <EditableRegion id="hero">
+        <section class="hero">
+          <div class="hero-inner">
+            {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+            <h1 class="hero-title">{heroTitle}</h1>
+            {heroSub && <p class="hero-sub">{heroSub}</p>}
+          </div>
+        </section>
+      </EditableRegion>
+    )}
     <main class="main">
-      <slot />
+      {editable === 'page' ? <EditableRegion id="main"><slot /></EditableRegion> : <slot />}
     </main>
     <Footer />
     <script is:inline src="/js/nku-site.js" defer></script>
+    {admin && (
+      <>
+        <link rel="stylesheet" href="/admin-assets/editor.css" />
+        <script is:inline type="application/json" id="nku-admin-data" set:html={JSON.stringify({ email: admin.email, editable }).replace(/</g, '\\u003c')} />
+        <script is:inline src="/admin-assets/upload.js"></script>
+        <script is:inline src="/admin-assets/editor.js"></script>
+      </>
+    )}
   </body>
 </html>

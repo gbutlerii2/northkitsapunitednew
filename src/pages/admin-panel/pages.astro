@@ -1,0 +1,49 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { SITE_PAGES } from '../../lib/site-pages.mjs';
+import { listEditedRegions } from '../../lib/content';
+
+const regions = await listEditedRegions();
+const fmt = (iso: string) => new Date(iso).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Los_Angeles' });
+const rows = SITE_PAGES.map((p) => {
+  const edits = regions.filter((r) => r.path === p.path).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  return { ...p, edits, last: edits[0] };
+});
+---
+
+<AdminLayout title="Edit pages" active="pages">
+  <p class="mb-6 text-sm">Open a page to edit it right on the site. Pages marked <em>Edited</em> show your saved changes instead of the original text.</p>
+  <div class="nku-card p-0 overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-nku-cream-dark text-left">
+        <tr><th class="p-3">Page</th><th class="p-3">Status</th><th class="p-3"></th></tr>
+      </thead>
+      <tbody>
+        {rows.map((r) => (
+          <tr class="border-t border-gray-100">
+            <td class="p-3">
+              <div class="font-medium">{r.label}</div>
+              <div class="text-xs text-nku-gray-light">{r.path}</div>
+            </td>
+            <td class="p-3">
+              {r.last ? (
+                <span><span class="inline-block px-2 py-0.5 rounded bg-green-100 text-green-800 text-xs font-semibold mr-1">Edited</span>
+                <span class="text-xs text-nku-gray-light">{fmt(r.last.updatedAt)} by {r.last.updatedBy}</span></span>
+              ) : (
+                <span class="text-xs text-nku-gray-light">Original</span>
+              )}
+            </td>
+            <td class="p-3 text-right whitespace-nowrap">
+              <a href={`${r.path}?edit=1`} class="nku-btn nku-btn-sm">Edit on page</a>
+              {r.edits.length > 0 && (
+                <button class="nku-btn nku-btn-sm nku-btn-ghost ml-1" data-reset-path={r.path} data-reset-ids={r.edits.map((e) => e.id).join(',')}>
+                  Reset to original
+                </button>
+              )}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</AdminLayout>

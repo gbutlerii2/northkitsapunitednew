@@ -1,0 +1,23 @@
+---
+// Wraps content that can be edited in place from /admin-panel.
+// If an edited version is saved it is shown instead of the built-in content.
+// Scripts from the built-in content are kept, so interactive bits keep working.
+import { extractScripts, getRegion, pagePath } from '../lib/content';
+
+interface Props {
+  id: string;
+}
+
+const { id } = Astro.props;
+const path = pagePath(Astro.url.pathname);
+const saved = await getRegion(path, id);
+let html = '';
+if (saved) {
+  const original = await Astro.slots.render('default');
+  html = saved.html + '\n' + extractScripts(original);
+}
+---
+
+<div data-nku-region={id} data-nku-path={path} style="display: contents">
+  {saved ? <Fragment set:html={html} /> : <slot />}
+</div>

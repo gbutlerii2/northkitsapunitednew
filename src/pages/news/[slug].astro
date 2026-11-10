@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getNewsBySlug } from '../../lib/content';
+
+const post = await getNewsBySlug(Astro.params.slug || '');
+const admin = Astro.locals.admin;
+if (!post || (!post.published && !admin)) {
+  return new Response(null, { status: 404, statusText: 'Not found' });
+}
+const date = new Date(post.date + 'T12:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+---
+
+<BaseLayout title={post.title} current="news" heroTitle={post.title} heroSub={date} eyebrow="News" description={post.summary || post.title} ogImage={post.image || undefined} editable="none">
+  <article class="card">
+    {!post.published && <p class="note">Draft: only logged-in editors can see this post.</p>}
+    {admin && <p class="p"><a class="link" href={`/admin-panel/news/edit?id=${post.id}`}>Edit this post</a></p>}
+    {post.image && <img src={post.image} alt={post.imageAlt || ''} class="img-full" />}
+    <div class="prose" set:html={post.body} />
+  </article>
+  <div class="btn-row"><a class="btn btn-ghost" href="/news">&larr; All news</a></div>
+</BaseLayout>
