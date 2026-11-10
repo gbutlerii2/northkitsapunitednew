@@ -61,7 +61,7 @@ The Netlify site builds from this GitHub repo. Merging to `main` deploys. Admin 
 
 ## Form emails
 
-Admin panel → **Form emails** sets who receives a copy of each website form by email. Enter addresses separated by semicolons. One list covers all forms, and each form (Online Donation, Gift Notice, Pledge, Donation Question, In-Kind Donation, Contact, Volunteer, Updates Signup) can have its own list instead.
+Admin panel → **Forms & emails** sets who receives a copy of each website form by email. Enter addresses separated by semicolons. One list covers all forms, and each form (Online Donation, Gift Notice, Pledge, Donation Question, In-Kind Donation, Contact, Volunteer, Updates Signup) can have its own list instead.
 
 - Subject: `<Form name> - <person's name>` (for example `Pledge - Jane Smith`), handy for mail filters. Signups with no name use their email.
 - Body: one field per line (`Label: value`), then the form name, page and time. Reply goes to the person who filled in the form.
@@ -75,3 +75,12 @@ Sending needs one of these on Netlify (Environment variables, mark passwords/key
 | Any mailbox over SMTP | `SMTP_HOST`, `SMTP_PORT` (587, or 465), `SMTP_USER`, `SMTP_PASS`, optional `MAIL_FROM`. Gmail / Google Workspace: `smtp.gmail.com`, an App Password. Microsoft 365: `smtp.office365.com` (SMTP AUTH must be enabled for the mailbox). |
 
 Use **Send a test email** on the Form emails page to check it.
+
+### NKU Tracker switch and Zeffy links
+
+On **Forms & emails**:
+- **Send form submissions to the NKU Tracker** (on by default). Off means forms go only to the email lists, with nothing sent to nku-tracker.com. The Home page's campaign figures still come from the Tracker.
+- **Recent submissions** keeps the last 1,000 form submissions sent through the website (whether or not email worked), so nothing is lost while email is being set up.
+- **Zeffy (online giving)**: the public links of the Zeffy donation forms (card and bank transfer). When set, the "Give online" form sends donors there, whether or not the Tracker is on. With the Tracker off and no links set, donors are told online giving isn't available yet. No Zeffy login is needed for this.
+
+The switch and links are written into each page (`data-send-tracker`, `data-zeffy-card`, `data-zeffy-eft` on `<html>`), and saving them refreshes the cached pages.

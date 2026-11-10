@@ -3,6 +3,8 @@
 (function () {
   "use strict";
   var API = (document.documentElement.getAttribute("data-tracker-api") || "https://nku-tracker.com").replace(/\/$/, "");
+  // Set in Admin > Forms. When "0", forms go only to this website (email + log), not the Tracker.
+  var SEND_TRACKER = document.documentElement.getAttribute("data-send-tracker") !== "0";
 
   // ---------------------------------------------------------------- forms ---
   function collect(form, submitter) {
@@ -55,14 +57,19 @@
 
   // Also sends the form to this website, which emails it to the people listed
   // under Admin > Form emails. Runs alongside the Tracker and never blocks it.
+  function siteData(form, submitter) {
+    var data = collect(form, submitter);
+    var labels = {};
+    Array.prototype.forEach.call(form.elements, function (el) {
+      if (el.name && !labels[el.name]) { var t = labelFor(el); if (t) labels[el.name] = t; }
+    });
+    data._labels = labels;
+    return data;
+  }
+
   function notifyByEmail(kind, form, submitter) {
     try {
-      var data = collect(form, submitter);
-      var labels = {};
-      Array.prototype.forEach.call(form.elements, function (el) {
-        if (el.name && !labels[el.name]) { var t = labelFor(el); if (t) labels[el.name] = t; }
-      });
-      data._labels = labels;
+      var data = siteData(form, submitter);
       fetch("/api/forms/" + encodeURIComponent(kind), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,18 +94,37 @@
     var buttons = form.querySelectorAll("button[type=submit]");
     Array.prototype.forEach.call(buttons, function (b) { b.disabled = true; });
     say(form, "Sending…");
-    notifyByEmail(kind, form, submitter);
-    fetch(API + "/api/submit/" + encodeURIComponent(kind), {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(collect(form, submitter)),
-    })
+    var request;
+    if (SEND_TRACKER) {
+      notifyByEmail(kind, form, submitter);
+      request = fetch(API + "/api/submit/" + encodeURIComponent(kind), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(collect(form, submitter)),
+      });
+    } else {
+      request = fetch("/api/forms/" + encodeURIComponent(kind), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(siteData(form, submitter)),
+      });
+    }
+    request
       .then(function (r) { return r.json().catch(function () { return { ok: false }; }).then(function (j) { j.status = r.status; return j; }); })
       .then(function (j) {
         if (!j.ok) throw new Error(j.error || "Sorry, that didn't send. Please try again in a moment.");
         say(form, j.message || "Thank you. Your message has been sent to the North Kitsap United team, and we’ll get back to you soon.");
+        var redirect = j.redirect;
+        if (kind === "zeffy") {
+          // Zeffy links set in Admin > Forms & emails take priority.
+          var via = (collect(form, submitter).via || "card");
+          var html = document.documentElement;
+          var card = html.getAttribute("data-zeffy-card"), eft = html.getAttribute("data-zeffy-eft");
+          var mine = via === "eft" ? (eft || card) : (card || eft);
+          if (mine) redirect = mine;
+        }
         form.reset();
-        if (j.redirect) setTimeout(function () { location.href = j.redirect; }, 900);
+        if (redirect) setTimeout(function () { location.href = redirect; }, 900);
       })
       .catch(function (e) {
         var msg = e && e.message && e.message !== "Failed to fetch" ? e.message

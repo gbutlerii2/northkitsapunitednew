@@ -353,6 +353,11 @@ export interface FormEmailSettings {
   defaultTo: string;
   /** Optional list per form kind; when filled in, it replaces defaultTo for that form. */
   perForm: Record<string, string>;
+  /** Also send each form to the NKU Tracker (nku-tracker.com). */
+  sendToTracker: boolean;
+  /** Zeffy links used when the Tracker is off (it normally supplies them). */
+  zeffyCardUrl: string;
+  zeffyEftUrl: string;
   updatedAt?: string;
   updatedBy?: string;
 }
@@ -369,18 +374,54 @@ export function parseEmailList(s: string): { valid: string[]; invalid: string[] 
 
 export async function getFormEmailSettings(): Promise<FormEmailSettings> {
   const saved = await store('content').getJSON<FormEmailSettings>(FORM_SETTINGS_KEY);
-  return { defaultTo: saved?.defaultTo ?? '', perForm: saved?.perForm ?? {}, updatedAt: saved?.updatedAt, updatedBy: saved?.updatedBy };
+  return {
+    defaultTo: saved?.defaultTo ?? '',
+    perForm: saved?.perForm ?? {},
+    sendToTracker: saved?.sendToTracker ?? true,
+    zeffyCardUrl: saved?.zeffyCardUrl ?? '',
+    zeffyEftUrl: saved?.zeffyEftUrl ?? '',
+    updatedAt: saved?.updatedAt,
+    updatedBy: saved?.updatedBy,
+  };
 }
 
-export async function saveFormEmailSettings(input: { defaultTo?: string; perForm?: Record<string, string> }, by: string): Promise<FormEmailSettings> {
+/** Whether forms go to the NKU Tracker. Defaults to on if storage can't be read. */
+export async function sendsToTracker(): Promise<boolean> {
+  try {
+    return (await getFormEmailSettings()).sendToTracker;
+  } catch {
+    return true;
+  }
+}
+
+const httpsUrl = (s: unknown) => {
+  const v = String(s || '').trim();
+  return /^https:\/\/[^\s"'<>]+$/.test(v) ? v : '';
+};
+
+export async function saveFormEmailSettings(
+  input: { defaultTo?: string; perForm?: Record<string, string>; sendToTracker?: boolean; zeffyCardUrl?: string; zeffyEftUrl?: string },
+  by: string,
+): Promise<FormEmailSettings> {
+  const before = await getFormEmailSettings();
   const norm = (s: unknown) => parseEmailList(String(s || '')).valid.join('; ');
   const perForm: Record<string, string> = {};
   for (const kind of Object.keys(FORM_KINDS)) {
     const v = norm(input.perForm?.[kind]);
     if (v) perForm[kind] = v;
   }
-  const rec: FormEmailSettings = { defaultTo: norm(input.defaultTo), perForm, updatedAt: new Date().toISOString(), updatedBy: by };
+  const rec: FormEmailSettings = {
+    defaultTo: norm(input.defaultTo),
+    perForm,
+    sendToTracker: typeof input.sendToTracker === 'boolean' ? input.sendToTracker : before.sendToTracker,
+    zeffyCardUrl: input.zeffyCardUrl === undefined ? before.zeffyCardUrl : httpsUrl(input.zeffyCardUrl),
+    zeffyEftUrl: input.zeffyEftUrl === undefined ? before.zeffyEftUrl : httpsUrl(input.zeffyEftUrl),
+    updatedAt: new Date().toISOString(),
+    updatedBy: by,
+  };
   await store('content').setJSON(FORM_SETTINGS_KEY, rec);
+  // Pages carry the Tracker on/off switch, so refresh the cached copies.
+  if (rec.sendToTracker !== before.sendToTracker || rec.zeffyCardUrl !== before.zeffyCardUrl || rec.zeffyEftUrl !== before.zeffyEftUrl) await purgePages();
   return rec;
 }
 
@@ -413,4 +454,41 @@ export function buildFormEmail(kind: string, data: Record<string, unknown>, labe
   if (data.page) lines.push(`Page: ${str(data.page)}`);
   lines.push(`Sent: ${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', dateStyle: 'medium', timeStyle: 'short' })} (Pacific)`);
   return { subject: `${formName} - ${who}`.replace(/[\r\n]+/g, ' '), text: lines.join('\n'), replyTo: str(data.email) };
+}
+
+// ---------- submissions log ----------
+// Every form sent to the website is kept here too, so nothing is lost if
+// email isn't set up or the Tracker is switched off.
+
+export interface Submission {
+  id: string;
+  kind: string;
+  at: string;
+  data: Record<string, unknown>;
+  labels: Record<string, string>;
+  emailedTo: string[];
+  emailError?: string;
+}
+
+const MAX_SUBMISSIONS = 1000;
+
+export async function saveSubmission(sub: Omit<Submission, 'id' | 'at'>): Promise<Submission> {
+  const s = store('content');
+  const at = new Date().toISOString();
+  const id = `${Date.now().toString().padStart(15, '0')}-${crypto.randomUUID().slice(0, 6)}`;
+  const rec: Submission = { id, at, ...sub };
+  await s.setJSON(`submission:${id}`, rec);
+  const keys = (await s.list('submission:')).sort();
+  for (const old of keys.slice(0, Math.max(0, keys.length - MAX_SUBMISSIONS))) await s.delete(old);
+  return rec;
+}
+
+export async function updateSubmission(rec: Submission): Promise<void> {
+  await store('content').setJSON(`submission:${rec.id}`, rec);
+}
+
+export async function listSubmissions(limit = 100): Promise<Submission[]> {
+  const s = store('content');
+  const keys = (await s.list('submission:')).sort().reverse().slice(0, limit);
+  return (await Promise.all(keys.map((k) => s.getJSON<Submission>(k)))).filter(Boolean) as Submission[];
 }

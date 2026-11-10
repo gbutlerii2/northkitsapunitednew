@@ -2,7 +2,7 @@
 // people listed under Admin > Form emails get a copy by email.
 import type { APIRoute } from 'astro';
 import { fail, json, readJson } from '../../../lib/api';
-import { buildFormEmail, FORM_KINDS, recipientsFor } from '../../../lib/content';
+import { buildFormEmail, FORM_KINDS, getFormEmailSettings, recipientsFor, saveSubmission, updateSubmission } from '../../../lib/content';
 import { mailMethod, sendMail } from '../../../lib/mail';
 import { store } from '../../../lib/store';
 
@@ -39,20 +39,42 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
   }
   if (await tooMany(ip)) return fail('Too many messages. Please try again later.', 429);
 
-  const to = await recipientsFor(kind);
-  if (!to.length || !mailMethod()) return json({ ok: true, emailed: false });
-
-  const labels = body._labels && typeof body._labels === 'object' ? (body._labels as Record<string, string>) : {};
+  const labels: Record<string, string> = {};
+  if (body._labels && typeof body._labels === 'object') {
+    for (const [k, v] of Object.entries(body._labels as Record<string, unknown>).slice(0, 80)) labels[k.slice(0, 60)] = String(v).slice(0, 200);
+  }
   const data: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(body)) {
-    if (k.startsWith('_')) continue;
+    if (k.startsWith('_') || k === 'website') continue;
     data[k.slice(0, 60)] = Array.isArray(v) ? v.slice(0, 30).map((x) => String(x).slice(0, 500)) : String(v ?? '').slice(0, 5000);
   }
-  try {
-    await sendMail({ to, ...buildFormEmail(kind, data, labels) });
-    return json({ ok: true, emailed: true });
-  } catch (err) {
-    console.error('[nku] form email failed', kind, err);
-    return json({ ok: false, emailed: false }, 502);
+
+  const settings = await getFormEmailSettings();
+  const to = await recipientsFor(kind);
+  const rec = await saveSubmission({ kind, data, labels, emailedTo: [] });
+
+  if (to.length && mailMethod()) {
+    try {
+      await sendMail({ to, ...buildFormEmail(kind, data, labels) });
+      rec.emailedTo = to;
+    } catch (err) {
+      console.error('[nku] form email failed', kind, err);
+      rec.emailError = String((err as Error).message || err).slice(0, 300);
+    }
+    await updateSubmission(rec);
   }
+
+  // With the Tracker off, this is what the visitor's browser waits on.
+  // The Zeffy form then needs to send the donor on to Zeffy itself.
+  let redirect: string | undefined;
+  if (kind === 'zeffy' && !settings.sendToTracker) {
+    redirect = (data.via === 'eft' ? settings.zeffyEftUrl : settings.zeffyCardUrl) || settings.zeffyCardUrl || settings.zeffyEftUrl || undefined;
+    if (!redirect) return fail('Online giving is not available right now. Please contact us and we will help you give.', 503);
+  }
+  return json({
+    ok: true,
+    emailed: rec.emailedTo.length > 0,
+    redirect,
+    message: kind === 'zeffy' ? 'Thank you. Taking you to Zeffy to complete your gift…' : undefined,
+  });
 };

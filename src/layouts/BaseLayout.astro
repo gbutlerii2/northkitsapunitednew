@@ -4,6 +4,7 @@ import '../styles/site.css';
 import SiteHeader from '../components/SiteHeader.astro';
 import Footer from '../components/Footer.astro';
 import EditableRegion from '../components/EditableRegion.astro';
+import { getFormEmailSettings } from '../lib/content';
 
 interface Props {
   title: string;
@@ -32,6 +33,14 @@ const {
   editable = 'page',
 } = Astro.props;
 const admin = Astro.locals.admin;
+// Admin > Forms can switch off sending form submissions to the NKU Tracker.
+let formSettings = { sendToTracker: true, zeffyCardUrl: '', zeffyEftUrl: '' };
+try {
+  formSettings = await getFormEmailSettings();
+} catch {
+  /* storage unreachable: keep defaults */
+}
+const sendTracker = formSettings.sendToTracker;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 // " - New" marks this build in browser tabs while the old site is still up; remove it at launch.
@@ -41,7 +50,7 @@ const trackerApi = import.meta.env.PUBLIC_TRACKER_API || 'https://nku-tracker.co
 ---
 
 <!doctype html>
-<html lang="en" data-tracker-api={trackerApi}>
+<html lang="en" data-tracker-api={trackerApi} data-send-tracker={sendTracker ? "1" : "0"} data-zeffy-card={formSettings.zeffyCardUrl || undefined} data-zeffy-eft={formSettings.zeffyEftUrl || undefined}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
