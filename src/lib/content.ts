@@ -333,3 +333,84 @@ export async function deleteUpload(key: string): Promise<void> {
   if (!validUploadKey(key)) return;
   await store('media').delete(key);
 }
+
+// ---------- form notification emails ----------
+
+/** The site's forms (data-nku-form="…") and the name used in email subjects. */
+export const FORM_KINDS: Record<string, string> = {
+  zeffy: 'Online Donation',
+  gift: 'Gift Notice',
+  pledge: 'Pledge',
+  'donation-question': 'Donation Question',
+  inkind: 'In-Kind Donation',
+  contact: 'Contact',
+  volunteer: 'Volunteer',
+  updates: 'Updates Signup',
+};
+
+export interface FormEmailSettings {
+  /** Everyone listed here gets every form, unless a form has its own list. */
+  defaultTo: string;
+  /** Optional list per form kind; when filled in, it replaces defaultTo for that form. */
+  perForm: Record<string, string>;
+  updatedAt?: string;
+  updatedBy?: string;
+}
+
+const FORM_SETTINGS_KEY = 'settings:form-emails';
+const EMAIL_RE = /^[^\s@<>;,]+@[^\s@<>;,]+\.[^\s@<>;,]+$/;
+
+/** Splits "a@x.org; b@y.org" (semicolons, commas or new lines) into valid addresses. */
+export function parseEmailList(s: string): { valid: string[]; invalid: string[] } {
+  const parts = String(s || '').split(/[;,\n]+/).map((p) => p.trim()).filter(Boolean);
+  const valid = [...new Set(parts.filter((p) => EMAIL_RE.test(p)).map((p) => p.toLowerCase()))];
+  return { valid, invalid: parts.filter((p) => !EMAIL_RE.test(p)) };
+}
+
+export async function getFormEmailSettings(): Promise<FormEmailSettings> {
+  const saved = await store('content').getJSON<FormEmailSettings>(FORM_SETTINGS_KEY);
+  return { defaultTo: saved?.defaultTo ?? '', perForm: saved?.perForm ?? {}, updatedAt: saved?.updatedAt, updatedBy: saved?.updatedBy };
+}
+
+export async function saveFormEmailSettings(input: { defaultTo?: string; perForm?: Record<string, string> }, by: string): Promise<FormEmailSettings> {
+  const norm = (s: unknown) => parseEmailList(String(s || '')).valid.join('; ');
+  const perForm: Record<string, string> = {};
+  for (const kind of Object.keys(FORM_KINDS)) {
+    const v = norm(input.perForm?.[kind]);
+    if (v) perForm[kind] = v;
+  }
+  const rec: FormEmailSettings = { defaultTo: norm(input.defaultTo), perForm, updatedAt: new Date().toISOString(), updatedBy: by };
+  await store('content').setJSON(FORM_SETTINGS_KEY, rec);
+  return rec;
+}
+
+export async function recipientsFor(kind: string): Promise<string[]> {
+  const s = await getFormEmailSettings();
+  return parseEmailList(s.perForm[kind] || s.defaultTo).valid;
+}
+
+/** "firstName" / "first_name" -> "First name" */
+export function humanize(key: string): string {
+  const s = key.replace(/[_-]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').trim().toLowerCase();
+  return s.charAt(0).toUpperCase() + s.slice(1);
+}
+
+/** Builds the notification: subject "<Form> - <Name>", one field per line. */
+export function buildFormEmail(kind: string, data: Record<string, unknown>, labels: Record<string, string> = {}) {
+  const formName = FORM_KINDS[kind] || humanize(kind);
+  const str = (v: unknown) => (Array.isArray(v) ? v.map(String).join(', ') : String(v ?? '')).trim();
+  const who = str(data.name) || str(data.email) || 'No name given';
+  const lines: string[] = [];
+  for (const [key, value] of Object.entries(data)) {
+    if (key === 'website' || key === 'page' || key.startsWith('_')) continue;
+    const v = str(value);
+    if (!v) continue;
+    const label = String(labels[key] || humanize(key)).replace(/\s*\*\s*$/, '').replace(/\s+/g, ' ').trim().slice(0, 120);
+    lines.push(`${label}: ${v.replace(/\r\n/g, '\n')}`);
+  }
+  lines.push('');
+  lines.push(`Form: ${formName}`);
+  if (data.page) lines.push(`Page: ${str(data.page)}`);
+  lines.push(`Sent: ${new Date().toLocaleString('en-US', { timeZone: 'America/Los_Angeles', dateStyle: 'medium', timeStyle: 'short' })} (Pacific)`);
+  return { subject: `${formName} - ${who}`.replace(/[\r\n]+/g, ' '), text: lines.join('\n'), replyTo: str(data.email) };
+}

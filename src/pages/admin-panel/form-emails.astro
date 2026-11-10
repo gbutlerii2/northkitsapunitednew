@@ -1,0 +1,67 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { FORM_KINDS, getFormEmailSettings } from '../../lib/content';
+import { mailFrom, mailMethod } from '../../lib/mail';
+
+const settings = await getFormEmailSettings();
+const method = mailMethod();
+const from = mailFrom();
+const donateKinds = ['zeffy', 'gift', 'pledge', 'donation-question', 'inkind'];
+const otherKinds = Object.keys(FORM_KINDS).filter((k) => !donateKinds.includes(k));
+const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Los_Angeles' }) : '');
+---
+
+<AdminLayout title="Form emails" active="form-emails">
+  {method ? (
+    <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-900 text-sm">
+      Email sending is on ({method === 'resend' ? 'Resend' : 'SMTP'}), from <strong>{from}</strong>.
+    </div>
+  ) : (
+    <div class="mb-6 p-4 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-900 text-sm">
+      <strong>Email sending isn't set up yet.</strong> You can save the addresses now. Emails start once the email settings are added in Netlify (see docs/ADMIN.md, "Form emails").
+    </div>
+  )}
+
+  <form id="form-emails" class="space-y-6">
+    <div class="nku-card space-y-3">
+      <h2 class="text-lg font-bold text-nku-green">Who gets the forms</h2>
+      <p class="text-sm">Enter email addresses separated by semicolons, for example <code>treasurer@example.org; gerry@example.org</code>. Everyone here gets a copy of every form that doesn't have its own list below.</p>
+      <label class="block text-sm font-medium" for="defaultTo">All forms</label>
+      <textarea id="defaultTo" rows="2" class="nku-input" placeholder="name@example.org; other@example.org">{settings.defaultTo}</textarea>
+      <p class="text-xs text-nku-gray-light">Each email's subject is the form name, a dash, then the person's name (for example "Pledge - Jane Smith"), so you can set up mail filters. Every field is on its own line, and hitting Reply goes to the person who filled in the form.</p>
+    </div>
+
+    <div class="nku-card space-y-4">
+      <h2 class="text-lg font-bold text-nku-green">Different people for one form <span class="text-sm font-normal text-nku-gray-light">(optional)</span></h2>
+      <p class="text-sm">Leave a box empty to use the "All forms" list. Filling one in sends that form only to those addresses.</p>
+      <h3 class="font-semibold text-sm uppercase tracking-wide text-nku-brown">Donate section</h3>
+      {donateKinds.map((k) => (
+        <div>
+          <label class="block text-sm font-medium mb-1" for={`pf-${k}`}>{FORM_KINDS[k]}</label>
+          <input id={`pf-${k}`} data-kind={k} class="nku-input" value={settings.perForm[k] || ''} placeholder="Uses the All forms list" />
+        </div>
+      ))}
+      <h3 class="font-semibold text-sm uppercase tracking-wide text-nku-brown pt-2">Other forms</h3>
+      {otherKinds.map((k) => (
+        <div>
+          <label class="block text-sm font-medium mb-1" for={`pf-${k}`}>{FORM_KINDS[k]}</label>
+          <input id={`pf-${k}`} data-kind={k} class="nku-input" value={settings.perForm[k] || ''} placeholder="Uses the All forms list" />
+        </div>
+      ))}
+    </div>
+
+    <div class="flex flex-wrap gap-3 items-center">
+      <button type="submit" class="nku-btn">Save</button>
+      {settings.updatedAt && <span class="text-xs text-nku-gray-light">Last saved {fmt(settings.updatedAt)} by {settings.updatedBy}</span>}
+    </div>
+  </form>
+
+  <form id="form-emails-test" class="nku-card mt-8 space-y-3">
+    <h2 class="text-lg font-bold text-nku-green">Send a test email</h2>
+    <p class="text-sm">Sends a sample "Pledge" email so you can check that it arrives and set up filters.</p>
+    <div class="flex gap-3">
+      <input id="testTo" class="nku-input" value={Astro.locals.admin!.email} />
+      <button type="submit" class="nku-btn shrink-0" disabled={!method}>Send test</button>
+    </div>
+  </form>
+</AdminLayout>

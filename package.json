@@ -19,8 +19,10 @@
     "@netlify/blobs": "^11.1.9",
     "@netlify/cache": "^4.2.1",
     "@tailwindcss/vite": "^4.2.1",
+    "@types/nodemailer": "^8.0.2",
     "@types/sanitize-html": "^2.16.2",
     "astro": "^7.0.7",
+    "nodemailer": "^10.5.0",
     "sanitize-html": "^2.18.1",
     "tailwindcss": "^4.2.1"
   }

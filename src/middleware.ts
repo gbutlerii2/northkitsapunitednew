@@ -17,6 +17,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   const { pathname } = ctx.url;
   const method = ctx.request.method.toUpperCase();
   const isAdminApi = pathname.startsWith('/api/admin/');
+  const isFormApi = pathname.startsWith('/api/forms/');
   const isAdminPage = pathname === '/admin-panel' || pathname.startsWith('/admin-panel/');
   const isUpload = pathname.startsWith('/uploads/');
 
@@ -24,8 +25,8 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   const session = cookie && !isUpload ? await readSession(cookie) : null;
   ctx.locals.admin = session ? { email: session.email } : null;
 
-  if (isAdminApi) {
-    // Block cross-site requests to the admin API.
+  if (isAdminApi || isFormApi) {
+    // Block cross-site requests to the admin and form APIs.
     if (method !== 'GET' && method !== 'HEAD') {
       const origin = ctx.request.headers.get('origin');
       let sameHost = false;
@@ -36,7 +37,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
       }
       if (!sameHost) return json(403, { error: 'Cross-site request blocked.' });
     }
-    if (!session && pathname !== '/api/admin/login') return json(401, { error: 'Please log in again.' });
+    if (isAdminApi && !session && pathname !== '/api/admin/login') return json(401, { error: 'Please log in again.' });
   }
 
   if (isAdminPage && !session && pathname !== '/admin-panel' && pathname !== '/admin-panel/') {
@@ -45,7 +46,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
 
   const res = await next();
 
-  if (isAdminApi || isAdminPage) {
+  if (isAdminApi || isAdminPage || isFormApi) {
     setHeader(res, 'Cache-Control', 'private, no-store');
     setHeader(res, 'X-Robots-Tag', 'noindex, nofollow');
     return res;

@@ -58,3 +58,20 @@ Netlify Blobs needs no setup. Netlify keeps Blobs data across deploys.
 ## Deploys
 
 The Netlify site builds from this GitHub repo. Merging to `main` deploys. Admin content lives in Netlify Blobs, so deploys never overwrite it.
+
+## Form emails
+
+Admin panel → **Form emails** sets who receives a copy of each website form by email. Enter addresses separated by semicolons. One list covers all forms, and each form (Online Donation, Gift Notice, Pledge, Donation Question, In-Kind Donation, Contact, Volunteer, Updates Signup) can have its own list instead.
+
+- Subject: `<Form name> - <person's name>` (for example `Pledge - Jane Smith`), handy for mail filters. Signups with no name use their email.
+- Body: one field per line (`Label: value`), then the form name, page and time. Reply goes to the person who filled in the form.
+- Forms still go to the NKU Tracker as before; the email is an extra copy sent at the same time (`public/js/nku-site.js` → `/api/forms/<kind>`). Bot submissions (hidden `website` field filled in) are dropped, and each visitor is limited to 12 submissions per 10 minutes.
+
+Sending needs one of these on Netlify (Environment variables, mark passwords/keys secret):
+
+| Option | Variables |
+| --- | --- |
+| Resend (recommended, free tier) | `RESEND_API_KEY`, `MAIL_FROM` (an address on a domain verified in Resend, e.g. `NKU Website <forms@gb2solutions.net>`) |
+| Any mailbox over SMTP | `SMTP_HOST`, `SMTP_PORT` (587, or 465), `SMTP_USER`, `SMTP_PASS`, optional `MAIL_FROM`. Gmail / Google Workspace: `smtp.gmail.com`, an App Password. Microsoft 365: `smtp.office365.com` (SMTP AUTH must be enabled for the mailbox). |
+
+Use **Send a test email** on the Form emails page to check it.

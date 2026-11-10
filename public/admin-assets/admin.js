@@ -160,6 +160,29 @@
     render();
   }
 
+  // ---- form emails ----
+  var fe = $('#form-emails');
+  if (fe) {
+    fe.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      var perForm = {};
+      $$('[data-kind]', fe).forEach(function (i) { perForm[i.dataset.kind] = i.value; });
+      try {
+        var r = await nkuApi('/api/admin/form-emails', 'POST', { action: 'save', defaultTo: $('#defaultTo').value, perForm: perForm });
+        $('#defaultTo').value = r.settings.defaultTo;
+        $$('[data-kind]', fe).forEach(function (i) { i.value = r.settings.perForm[i.dataset.kind] || ''; });
+        nkuToast('Saved.');
+      } catch (ex) { nkuToast(ex.message, 'error'); }
+    });
+    $('#form-emails-test').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      try {
+        await nkuApi('/api/admin/form-emails', 'POST', { action: 'test', to: $('#testTo').value });
+        nkuToast('Test email sent. Check your inbox (and spam folder).');
+      } catch (ex) { nkuToast(ex.message, 'error'); }
+    });
+  }
+
   // ---- users ----
   var pw = $('#pw-form');
   if (pw) {

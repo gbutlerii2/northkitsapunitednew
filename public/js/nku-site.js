@@ -41,6 +41,37 @@
     s.classList.toggle("is-error", !!isError);
   }
 
+  // The question or label a field belongs to, for the notification email.
+  function labelFor(el) {
+    var fs = el.closest("fieldset");
+    var legend = fs && fs.querySelector("legend");
+    if (legend && (el.type === "radio" || el.type === "checkbox")) return legend.textContent;
+    var label = el.closest("label");
+    if (!label) return "";
+    var text = "";
+    Array.prototype.forEach.call(label.childNodes, function (n) { if (n.nodeType === 3) text += n.textContent; });
+    return text.replace(/\s+/g, " ").replace(/[:*\s]+$/, "").trim();
+  }
+
+  // Also sends the form to this website, which emails it to the people listed
+  // under Admin > Form emails. Runs alongside the Tracker and never blocks it.
+  function notifyByEmail(kind, form, submitter) {
+    try {
+      var data = collect(form, submitter);
+      var labels = {};
+      Array.prototype.forEach.call(form.elements, function (el) {
+        if (el.name && !labels[el.name]) { var t = labelFor(el); if (t) labels[el.name] = t; }
+      });
+      data._labels = labels;
+      fetch("/api/forms/" + encodeURIComponent(kind), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+        keepalive: true,
+      }).catch(function () {});
+    } catch (e) { /* the email copy is best-effort */ }
+  }
+
   document.addEventListener("submit", function (ev) {
     var form = ev.target;
     var kind = form.getAttribute("data-nku-form");
@@ -56,6 +87,7 @@
     var buttons = form.querySelectorAll("button[type=submit]");
     Array.prototype.forEach.call(buttons, function (b) { b.disabled = true; });
     say(form, "Sending…");
+    notifyByEmail(kind, form, submitter);
     fetch(API + "/api/submit/" + encodeURIComponent(kind), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
