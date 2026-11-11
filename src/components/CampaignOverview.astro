@@ -1,0 +1,26 @@
+---
+// The campaign Overview (Pledged, Received to date, Estimated cost, progress bar).
+// Copied from the Home page's design; public/js/nku-site.js fills in the figures
+// from the NKU Tracker on any page with [data-nku-campaign].
+---
+<section class="card" id="campaign" data-nku-campaign>
+  <div class="split">
+    <div style="display:flex;flex-direction:column;gap:4px"><span class="eyebrow" style="color:#8b6914">The Campaign</span><h2 class="h2">Overview</h2></div>
+  </div>
+  <div class="stat-grid">
+    <div class="stat"><span class="stat-label">Pledged</span><span class="stat-value" data-stat="pledged">—</span></div>
+    <div class="stat"><span class="stat-label">Received to date</span><span class="stat-value" data-stat="received">—</span></div>
+    <div class="stat"><span class="stat-label">Estimated cost</span><span class="stat-value" data-stat="estimatedCost">—</span></div>
+  </div>
+  <span class="stat-label">Progress toward estimated cost</span>
+  <div class="bar" role="img" aria-label="Campaign progress toward the estimated cost" data-bar-label>
+    <div class="bar-received" data-bar="received" style="width:0%"></div>
+    <div class="bar-pledged" data-bar="pledged" style="width:0%"></div>
+  </div>
+  <div class="legend-row">
+    <span class="legend-item"><span class="swatch swatch-received"></span>Received <span data-stat="received">—</span></span>
+    <span class="legend-item"><span class="swatch swatch-pledged"></span>Pledged <span data-stat="pledged">—</span></span>
+    <span class="legend-item"><span class="swatch swatch-cost"></span>Estimated cost <span data-stat="estimatedCost">—</span></span>
+  </div>
+  <p class="note" data-stat="asOf"></p>
+</section>

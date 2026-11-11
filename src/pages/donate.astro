@@ -1,5 +1,5 @@
 ---
-// Donate page: four buttons, each opening its form in a popup (<dialog>).
+// Donate page: five buttons, each opening its form in a popup (<dialog>).
 // Hand-edited on 2026-11-09 to add the popups; the "NKU Website" design canvas
 // still shows the older one-long-page layout.
 // Forms post to the NKU Tracker through public/js/nku-site.js (data-nku-form="KIND").
@@ -11,8 +11,9 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
   <div class="btn-row">
     <button class="btn" type="button" data-open="zeffy">Donate with Zeffy</button>
     <button class="btn" type="button" data-open="investments">Donate with Investments</button>
-    <button class="btn btn-ghost" type="button" data-open="other-ways">Other ways to Donate</button>
-    <button class="btn btn-ghost" type="button" data-open="other">Other Donations</button>
+    <button class="btn" type="button" data-open="other-ways">Pledge a Donation</button>
+    <button class="btn" type="button" data-open="in-kind">In Kind Donation</button>
+    <button class="btn" type="button" data-open="other">Other Donations</button>
   </div>
 
   <img class="img-flier" src="/images/site/sponsorship-levels.jpg" alt="Build More Than Fields, Build Opportunity: the nine sponsorship levels from Legacy Partner at $1,000,000 to Rising Star Sponsor at $1,000, with photos of youth soccer, swimming, mountain biking and the fields" />
@@ -100,11 +101,11 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
     </div>
   </dialog>
 
-  <!-- 3. Other ways to Donate (pledge) -->
+  <!-- 3. Pledge a Donation -->
   <dialog class="modal" id="other-ways" aria-labelledby="other-ways-title">
     <div class="modal-body">
       <button class="modal-close" type="button" data-close aria-label="Close">×</button>
-      <h2 class="h2" id="other-ways-title">Other ways to Donate: make a pledge</h2>
+      <h2 class="h2" id="other-ways-title">Pledge a Donation</h2>
       <p class="p">Fill out the form below and someone from our team will contact you to set up the particulars of your pledge or other donation, such as timing, payment method and how you’d like to be recognized.</p>
       <form class="form" data-nku-form="pledge" novalidate>
         <Fragment set:html={hp} />
@@ -141,7 +142,38 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
     </div>
   </dialog>
 
-  <!-- 4. Other Donations (contact form) -->
+  <!-- 4. In Kind Donation. Posts as "inkind"; the Tracker requires a company name, so a hidden copy of Name is sent as "company". -->
+  <dialog class="modal" id="in-kind" aria-labelledby="in-kind-title">
+    <div class="modal-body">
+      <button class="modal-close" type="button" data-close aria-label="Close">×</button>
+      <h2 class="h2" id="in-kind-title">In Kind Donation</h2>
+      <p class="p">Fill out the form below and someone from our team will contact you to set up the particulars of your In Kind Donation.</p>
+      <form class="form" data-nku-form="inkind" novalidate>
+        <Fragment set:html={hp} />
+        <input type="hidden" name="company" data-copy-of="name">
+        <div class="row">
+          <label class="field">Name *<input class="input" type="text" name="name" autocomplete="name" required></label>
+          <label class="field">Email *<input class="input" type="email" name="email" autocomplete="email" required></label>
+          <label class="field">Phone<input class="input" type="tel" name="phone" autocomplete="tel"></label>
+        </div>
+        <label class="field">Mailing address<input class="input" type="text" name="address" autocomplete="street-address"></label>
+        <fieldset class="fieldset">
+          <legend class="legend">Type of In Kind Donation (check any)</legend>
+          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Goods"> Goods</label>
+          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Supplies"> Supplies</label>
+          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Equipment"> Equipment</label>
+          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Property"> Property</label>
+          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Professional services"> Professional services</label>
+          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Expertise"> Expertise</label>
+        </fieldset>
+        <label class="field">Description of In Kind Donation *<span class="field-hint">Detailed inventory of items or services, including quantities, model/brand names, and physical condition (new, used, or refurbished).</span><textarea class="textarea" name="offer" rows="5" required></textarea></label>
+        <div class="btn-row-left"><button class="btn" type="submit">Send</button></div>
+        <p class="status" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- 5. Other Donations (contact form) -->
   <dialog class="modal" id="other" aria-labelledby="other-title">
     <div class="modal-body">
       <button class="modal-close" type="button" data-close aria-label="Close">×</button>
@@ -166,7 +198,7 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
     </div>
   </dialog>
 
-  <div class="btn-row"><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
+  <div class="btn-row"><a class="btn" href="/get-involved">Get Involved</a></div>
 </BaseLayout>
 
 <style is:global>
@@ -178,13 +210,14 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
   .modal .h2{padding-right:44px}
   .modal-col{display:flex;flex-direction:column;gap:8px}
   body.modal-open{overflow:hidden}
+  .field-hint{display:block;font-weight:400;font-size:14px;color:#6b7280}
   @media (max-width:760px){.modal-body{padding:28px 20px}}
 </style>
 
 <script is:inline>
   (function () {
     // Old addresses (#one-time, #pledge, ...) still open the matching popup.
-    var alias = { 'one-time': 'zeffy', 'pledge': 'other-ways', 'tell-us': 'investments', 'other-gifts': 'investments', 'contact': 'other' };
+    var alias = { 'one-time': 'zeffy', 'pledge': 'other-ways', 'inkind': 'in-kind', 'tell-us': 'investments', 'other-gifts': 'investments', 'contact': 'other' };
     function open(id) {
       var d = document.getElementById(alias[id] || id);
       if (!d || d.tagName !== 'DIALOG' || d.open) return;
@@ -194,6 +227,11 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
       var s = d.querySelector('.status'); if (s) { s.textContent = ''; s.classList.remove('is-error'); }
       var first = d.querySelector('.input'); if (first) first.focus({ preventScroll: true });
     }
+    // Hidden fields that mirror another field (the In Kind form's company = name).
+    document.querySelectorAll('input[data-copy-of]').forEach(function (h) {
+      var src = h.form && h.form.elements[h.getAttribute('data-copy-of')];
+      if (src) src.addEventListener('input', function () { h.value = src.value; });
+    });
     document.querySelectorAll('[data-open]').forEach(function (b) {
       b.addEventListener('click', function () { open(b.getAttribute('data-open')); });
     });

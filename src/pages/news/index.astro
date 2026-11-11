@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import EditableRegion from '../../components/EditableRegion.astro';
+import CampaignOverview from '../../components/CampaignOverview.astro';
 import { listNews } from '../../lib/content';
 
 const posts = await listNews();
@@ -9,6 +10,8 @@ const fmt = (d: string) =>
 ---
 
 <BaseLayout title="News" current="news" heroTitle="News" heroSub="Updates on the North Kitsap United project" eyebrow="News" editable="regions">
+  <CampaignOverview />
+
   <EditableRegion id="intro">
     <p class="lead">The latest news, meeting announcements and project milestones from North Kitsap United.</p>
   </EditableRegion>
