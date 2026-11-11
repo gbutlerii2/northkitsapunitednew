@@ -104,6 +104,7 @@
 ul.list{list-style:disc} ol.list{list-style:decimal}
 a.nav-link:hover,a.nav-link[aria-current]{background:#2d5016;color:#ffffff}
 a.nav-donate:hover{background:#d0a83a}
+.nav-donate+.nav-donate{margin-left:8px}
 .nav-item:hover>.nav-sub,.nav-item:focus-within>.nav-sub{display:block;position:absolute;top:100%;left:0;z-index:60;min-width:260px;background:#ffffff;border-radius:8px;padding:6px 0;box-shadow:0 8px 24px rgba(26,48,9,.18)}
 .nav-item:last-child:hover>.nav-sub,.nav-item:last-child:focus-within>.nav-sub{left:auto;right:0;min-width:160px}
 a.nav-sub-link:hover,a.nav-sub-link:focus{background:#f5f0e8}
@@ -128,6 +129,7 @@ a.footer-link:hover{color:#ffffff;text-decoration:underline}
  .brand-name{font-size:20px}
  .nav-inner{justify-content:center}
  .nav-item[style]{margin-left:0!important}
+ .nav-donate{margin-left:0}
  .hero{padding:22px 16px 0}
  .hero-title{font-size:32px}
  .hero-sub{font-size:17px}
