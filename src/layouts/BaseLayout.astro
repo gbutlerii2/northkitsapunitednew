@@ -14,6 +14,8 @@ interface Props {
   heroTitle?: string;
   heroSub?: string;
   eyebrow?: string;
+  /** Keep the title band for screen readers only (the Home page goes straight from the menu to the hero photo). */
+  heroHidden?: boolean;
   /**
    * 'page' (default): the title band and page body can be edited from /admin-panel.
    * 'regions': only the title band and <EditableRegion> blocks inside the page (for pages with live lists, like News).
@@ -30,6 +32,7 @@ const {
   heroTitle = title,
   heroSub = '',
   eyebrow = '',
+  heroHidden = false,
   editable = 'page',
 } = Astro.props;
 const admin = Astro.locals.admin;
@@ -68,7 +71,7 @@ const trackerApi = import.meta.env.PUBLIC_TRACKER_API || 'https://nku-tracker.co
   <body class="page">
     <SiteHeader current={current} />
     {editable === 'none' ? (
-      <section class="hero">
+      <section class:list={["hero", { "hero-sr": heroHidden }]}>
         <div class="hero-inner">
           {eyebrow && <span class="eyebrow">{eyebrow}</span>}
           <h1 class="hero-title">{heroTitle}</h1>
@@ -77,7 +80,7 @@ const trackerApi = import.meta.env.PUBLIC_TRACKER_API || 'https://nku-tracker.co
       </section>
     ) : (
       <EditableRegion id="hero">
-        <section class="hero">
+        <section class:list={["hero", { "hero-sr": heroHidden }]}>
           <div class="hero-inner">
             {eyebrow && <span class="eyebrow">{eyebrow}</span>}
             <h1 class="hero-title">{heroTitle}</h1>
