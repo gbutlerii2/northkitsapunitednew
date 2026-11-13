@@ -1,8 +1,103 @@
 ---
-// Generated from the NKU Website design (build/pages.py). Edit the content there and regenerate.
+// Materials / News: one page with a toggle between the list of studies (Materials)
+// and the News posts written in Admin > News. /news redirects here (?view=news).
+// The Materials text was generated from the NKU Website design (build/pages.py).
 import BaseLayout from '../layouts/BaseLayout.astro';
+import EditableRegion from '../components/EditableRegion.astro';
+import { listNews } from '../lib/content';
 const html = "\n<section class=\"card\">\n  <h2 class=\"h2\">Berk &amp; Associates, North Kitsap Recreation Facility Feasibility Study (December 2024)</h2>\n  <p class=\"p\">The need to address lack of fields for youth sports was a top topic at a Kingston North Kitsap Rotary Club “visioning” session. It was thought the number of fields to be insufficient; it was known the quality of fields was also an issue (kids often playing on muddy fields in near-darkness). To confirm the need, Rotary commissioned a study by Berk Consulting in 2024.</p>\n  <p class=\"p\">Among the findings, “North Kitsap has around half the average number of athletic fields for a community of their size.” Berk further estimated drive times from Hansville, Kingston, Port Gamble, Poulsbo and Suquamish would be roughly half that of current drive times to Strawberry Fields, one of today’s primary sports complexes.</p>\n  <p class=\"p\">Additionally, a study by Kitsap Economic Development Alliance (KEDA) estimated a revenue potential of a new YMCA-centered sports, recreation, and well-being campus of $447K per year.</p>\n  <a class=\"link\" href=\"/media/north-kitsap-rec-facility-study.pdf\">Read the full study (PDF) →</a>\n</section>\n<section class=\"card\">\n  <h2 class=\"h2\">YMCA market study (2016)</h2>\n  <p class=\"p\">In 2016, the YMCA of Pierce and Kitsap Counties studied the need and ideal location for a future Y in North Kitsap. Although Poulsbo was thought to be a logical choice, research showed the ideal location to be somewhere between Poulsbo and Kingston, roughly along Bond Road. Based on prior relationships with Raydient Places and Properties, owner of about 400 acres at the ideal location, the Y engaged in discussions with Raydient, and later Kingston North Kitsap Rotary Club, resulting in the purchase of about 100 acres in late 2026 for what would become known as North Kitsap United (NKU), a YMCA-centered sports, recreation and well-being campus.</p>\n  <p class=\"p\">More than 3,000 households in North Kitsap are currently YMCA members. A new community Y would expand service and reduce commute times for existing members. The 2016 research indicated 66% of North Kitsap respondents were very likely to use a YMCA facility.</p>\n  <a class=\"link\" href=\"/media/nk-poulsbo-market-study.pdf\">Read the full study (PDF) →</a>\n</section>\n<section class=\"card\">\n  <h2 class=\"h2\">Kitsap Economic Development Alliance economic-impact research</h2>\n  <p class=\"p\">[Summary to come.]</p>\n  <p class=\"note\">Full study (PDF) coming soon.</p>\n</section>\n<section class=\"card\">\n  <h2 class=\"h2\">[Environmental study title to follow]</h2>\n  <p class=\"p\">Over the past three years environmental, traffic, and noise research was conducted by David Evans and Associates, a Seattle-based land development consulting firm. Studies found highly permeable soils that are good for stormwater. No streams or standing wetlands were observed. Additionally, no sensitive native areas were found. Traffic studies point to improvements along Bond Road, such as signals or roundabouts. The project will go through full State Environmental Policy Act (SEPA) review, covering water quality, traffic, noise, and lighting.</p>\n  <p class=\"note\">Full study (PDF) coming soon.</p>\n</section>\n<div class=\"btn-row\"><a class=\"btn btn-gold\" href=\"/donate\">Donate</a><a class=\"btn btn-ghost\" href=\"/get-involved\">Get Involved</a></div>\n";
+
+const view = Astro.url.searchParams.get('view') === 'news' ? 'news' : 'materials';
+const posts = await listNews();
+const fmt = (d: string) =>
+  new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
 ---
-<BaseLayout title="Materials" current="materials" heroTitle="Materials" heroSub="The studies behind North Kitsap United, each with a short summary and the full report." eyebrow="Materials">
-  <Fragment set:html={html} />
+<BaseLayout title="Materials / News" current="materials" heroTitle="Materials / News" heroSub="The studies behind North Kitsap United, and the latest news from the project." eyebrow="Materials / News" editable="regions">
+  <div class="mn-toggle" role="tablist" aria-label="Show materials or news">
+    <a class="mn-tab" role="tab" id="mn-tab-materials" href="/materials" aria-controls="mn-materials" aria-selected={view === 'materials' ? 'true' : 'false'} data-mn-view="materials">Materials</a>
+    <a class="mn-tab" role="tab" id="mn-tab-news" href="/materials?view=news" aria-controls="mn-news" aria-selected={view === 'news' ? 'true' : 'false'} data-mn-view="news">News</a>
+  </div>
+
+  <div class="mn-panel" id="mn-materials" role="tabpanel" aria-labelledby="mn-tab-materials" hidden={view !== 'materials'}>
+    <EditableRegion id="main">
+      <Fragment set:html={html} />
+    </EditableRegion>
+  </div>
+
+  <div class="mn-panel" id="mn-news" role="tabpanel" aria-labelledby="mn-tab-news" hidden={view !== 'news'}>
+    <EditableRegion id="news-intro">
+      <p class="lead">The latest news, meeting announcements and project milestones from North Kitsap United.</p>
+    </EditableRegion>
+    {posts.length === 0 ? (
+      <section class="card"><p class="p">No news has been posted yet. Please check back soon.</p></section>
+    ) : (
+      posts.map((post) => (
+        <article class="card news-card">
+          {post.image && (
+            <a href={`/news/${post.slug}`} class="news-card-img"><img src={post.image} alt={post.imageAlt || ''} class="img-full" loading="lazy" /></a>
+          )}
+          <div class="news-card-body">
+            <p class="news-date">{fmt(post.date)}</p>
+            <h2 class="h2"><a href={`/news/${post.slug}`}>{post.title}</a></h2>
+            {post.summary && <p class="p">{post.summary}</p>}
+            <a class="link" href={`/news/${post.slug}`}>Read more &rarr;</a>
+          </div>
+        </article>
+      ))
+    )}
+    <div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
+  </div>
 </BaseLayout>
+
+<script is:inline>
+  (function () {
+    var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-mn-view]'));
+    function show(view, push) {
+      tabs.forEach(function (t) {
+        var on = t.getAttribute('data-mn-view') === view;
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+        var panel = document.getElementById(t.getAttribute('aria-controls'));
+        if (panel) panel.hidden = !on;
+      });
+      if (push) {
+        var url = new URL(location.href);
+        if (view === 'news') url.searchParams.set('view', 'news'); else url.searchParams.delete('view');
+        history.replaceState(null, '', url.pathname + url.search + url.hash);
+      }
+    }
+    tabs.forEach(function (t, i) {
+      t.addEventListener('click', function (e) {
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+        e.preventDefault();
+        show(t.getAttribute('data-mn-view'), true);
+      });
+      t.addEventListener('keydown', function (e) {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        var next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        next.focus();
+        show(next.getAttribute('data-mn-view'), true);
+      });
+    });
+    var params = new URLSearchParams(location.search);
+    show(params.get('view') === 'news' || location.hash === '#news' ? 'news' : 'materials', false);
+  })();
+</script>
+
+<style is:global>
+  .mn-toggle { display: inline-flex; align-self: center; padding: 4px; gap: 4px; border-radius: 999px; background: #ffffff; border: 2px solid #2d5016; }
+  .mn-tab { padding: 10px 28px; border-radius: 999px; font-weight: 700; font-size: 17px; color: #2d5016; text-decoration: none; }
+  .mn-tab:hover { background: #f5f0e8; }
+  .mn-tab[aria-selected="true"] { background: #2d5016; color: #ffffff; }
+  .mn-tab:focus-visible { outline: 3px solid #b8922e; outline-offset: 2px; }
+  .mn-panel { display: flex; flex-direction: column; gap: inherit; }
+  .mn-panel[hidden] { display: none; }
+  .news-card { flex-direction: row; gap: 28px; align-items: flex-start; }
+  .news-card-img { flex: 0 0 280px; }
+  .news-card-img img { aspect-ratio: 4 / 3; object-fit: cover; }
+  .news-card-body { display: flex; flex-direction: column; gap: 10px; }
+  .news-card .h2 a { color: inherit; text-decoration: none; }
+  .news-card .h2 a:hover { text-decoration: underline; }
+  .news-date { margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #8b6914; }
+  @media (max-width: 720px) { .news-card { flex-direction: column; } .news-card-img { flex-basis: auto; width: 100%; } .mn-tab { padding: 10px 20px; } }
+</style>
