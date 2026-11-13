@@ -9,7 +9,11 @@ The admin lets approved people change the website without touching code.
 | Change text on any page | Log in, open the page, click **Edit this page** in the green bar at the bottom |
 | Bold, italic, links | Select text while editing; a small toolbar appears |
 | Move a paragraph, image or list item | Hover it and drag the ⠿ handle |
-| Add, duplicate or delete a block | Hover it: **+**, **⧉**, **🗑** (delete has an Undo) |
+| Add, duplicate or delete a block | Hover it: **+**, **⧉**, **🗑** (delete has an Undo). The handle stays put while you move the mouse over to it |
+| Add a new section | Hover a block, click **+** and pick Paragraph, Heading, Text card, Logo card, Image or Button. It goes below that block |
+| Duplicate or delete a whole card | Hover anything inside a card: the **Card** buttons under the handle act on the whole card |
+| Add a logo to a card | Click the **[Logo]** box (or drop an image on it) |
+| Change the header banner | Edit any page, click the banner, choose **Replace…**. The header and footer are shared, so a change shows on every page |
 | Replace a picture | Drag a photo from your computer onto it, or click it and choose **Replace…** |
 | Add a picture | Drag a photo onto a paragraph (placed after it) or onto a "Photo to come" box (fills it) |
 | Change the big page title band | It's editable like any other text |
@@ -23,16 +27,18 @@ Edits go live as soon as you click **Save**. There is no rebuild.
 
 ## What is not editable in place
 
-- The top menu and footer (change these in `src/components/SiteHeader.astro` / `Footer.astro`).
+- The top menu buttons (change these in `src/components/SiteHeader.astro`). The banner above the menu and the footer are editable.
 - Background patterns and the green banner artwork (CSS backgrounds).
 - Page titles and descriptions used by search engines.
 
-Once a page has been edited in the admin, the saved version is shown instead of the text in the code. If a page is later regenerated from the design (or its `.astro` file changes), the change shows only after **Reset to original** in the admin.
+Once a page has been edited in the admin, the saved version is shown instead of the text in the code. If a page is later regenerated from the design (or its `.astro` file changes), the change shows only after **Reset to original** in the admin. Editors see a yellow warning on such a page, with links to see the built version (`?original=1`), open History / Reset, or mark the page as up to date.
 
 ## How it works (for developers)
 
 - `output: 'server'` with `@astrojs/netlify`. Pages are rendered by one Netlify Function and cached on the CDN with the tag `nku-pages`; every save purges that tag.
 - `src/components/EditableRegion.astro` wraps each page's title band (`hero`) and `<main>` content (`main`); `BaseLayout` does this automatically. Forms survive edits (they still post to the NKU Tracker), and form submits are blocked while editing. Saved HTML is cleaned with `sanitize-html` and stored in Netlify Blobs store `nku-content` under `region:<path>::<id>`. Scripts from the original page are re-attached, so interactive pieces keep working.
+- The header banner and footer are shared regions with path `/_site` (ids `header`, `footer`), shown on every page.
+- Stale warning: each save stores `baseHash`, a hash of the region's built HTML. If the current build's hash differs, admins see the warning. Older saves without a hash are flagged as "maybe" when saved before the build time (`__NKU_BUILD_TIME__`). The `ack` action on `/api/admin/region` marks a region as up to date.
 - Pages with live lists use `editable="regions"` and wrap only their static parts (see `src/pages/news/index.astro`).
 - News posts: `news:<id>` in `nku-content`. Images: `nku-media`, served from `/uploads/...`.
 - Accounts: `nku-users`. Passwords are PBKDF2-SHA256 hashes (210,000 rounds). Logins are locked for 15 minutes after 8 failures. The login cookie is HttpOnly, SameSite=Lax, signed with `SESSION_SECRET`, and lasts 8 hours. Admin API calls must come from the same site.

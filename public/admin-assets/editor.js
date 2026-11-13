@@ -1,7 +1,9 @@
 /*
  * NKU on-page editor. Loaded only for logged-in editors.
  * - Click text to edit it; select text for bold / italic / link.
- * - Hover a block for a handle: drag to move, add, duplicate, delete.
+ * - Hover a block for a handle: drag to move, add (paragraph, heading, card,
+ *   logo card, image, button), duplicate, delete; cards have their own buttons.
+ * - Warns when the built page changed after it was edited here.
  * - Drop a photo onto an image to replace it, or onto text to insert it.
  * - Save writes each changed region to /api/admin/region.
  */
@@ -67,7 +69,9 @@
   }
   // "Photo to come" placeholders from the site design.
   function isPhotoSlot(e) {
-    return !!(e && e.classList && e.classList.contains('photo') && e.getAttribute('role') === 'img');
+    if (!e || !e.classList) return false;
+    if (e.classList.contains('logo-ph')) return true;
+    return e.classList.contains('photo') && e.getAttribute('role') === 'img';
   }
   function isBlockish(e) {
     if (e.tagName === 'IMG' || e.tagName === 'LI') return true;
@@ -119,7 +123,53 @@
   }
   document.body.appendChild(bar);
   document.body.classList.add('nku-ed-has-bar');
+
+  // ?original=1: the built version of the page, shown read-only for comparison.
+  var previewOriginal = regions.some(function (r) { return r.hasAttribute('data-nku-original'); });
+  if (previewOriginal) {
+    regions = [];
+    var back = location.pathname;
+    renderBar = function () {
+      barRight.innerHTML = '';
+      barRight.appendChild(el('span', 'nku-ed-note', 'Showing the built version of this page (without the edits saved in the admin panel).'));
+      var a = el('a', 'nku-ed-link', 'Back to the live page');
+      a.href = back;
+      barRight.appendChild(a);
+      barRight.appendChild(bPanel);
+    };
+  }
   renderBar();
+
+  var staleRegions = regions.filter(function (r) { return r.hasAttribute('data-nku-stale'); });
+  if (staleRegions.length) {
+    var changedForSure = staleRegions.some(function (r) { return r.getAttribute('data-nku-stale') === 'changed'; });
+    var warn = el('div', 'nku-ed-ui nku-ed-stale');
+    warn.setAttribute('role', 'status');
+    var savedAt = staleRegions.map(function (r) { return r.getAttribute('data-nku-saved-at') || ''; }).sort().pop();
+    var when = savedAt ? new Date(savedAt).toLocaleDateString() : '';
+    warn.appendChild(el('strong', '', changedForSure ? 'This page was updated in the site code after it was edited here.' : 'This page may have been updated in the site code since it was edited here' + (when ? ' (' + when + ')' : '') + '.'));
+    warn.appendChild(el('span', '', ' The edits saved in the admin panel are shown instead, so those updates are hidden. Compare with the built version, then either copy your changes over and use History → Reset to original, or mark this page as up to date.'));
+    var acts = el('span', 'nku-ed-stale-acts');
+    var see = el('a', 'nku-ed-link', 'See the built version');
+    see.href = location.pathname + '?original=1';
+    see.target = '_blank';
+    acts.appendChild(see);
+    acts.appendChild(btn('History / Reset', 'Earlier versions and Reset to original', function () { showHistory(); }));
+    acts.appendChild(btn('Mark as up to date', 'My edits already include the site updates', async function () {
+      if (!confirm('Mark this page as up to date? The warning goes away until the site code changes again.')) return;
+      try {
+        for (var i = 0; i < staleRegions.length; i++) {
+          var r = staleRegions[i];
+          await nkuApi('/api/admin/region', 'POST', { action: 'ack', path: r.getAttribute('data-nku-path'), id: r.getAttribute('data-nku-region'), baseHash: r.getAttribute('data-nku-base') });
+          r.removeAttribute('data-nku-stale');
+        }
+        warn.remove();
+        nkuToast('Marked as up to date.');
+      } catch (ex) { nkuToast(ex.message, 'error'); }
+    }));
+    warn.appendChild(acts);
+    document.body.appendChild(warn);
+  }
 
   // ---------- serialising ----------
   function cleanRegionHtml(region) {
@@ -137,6 +187,13 @@
         Array.from(n.classList).forEach(function (k) { if (k.indexOf('nku-ed-') === 0) n.classList.remove(k); });
         if (!n.classList.length) n.removeAttribute('class');
       }
+      // The browser can rewrite inline styles while editing ("margin:0" -> "margin: 0px;")
+      // or leave empty ones; write them one consistent way so they don't count as a change.
+      if (n.hasAttribute('style')) {
+        var css = n.style ? n.style.cssText : n.getAttribute('style');
+        if (css) n.setAttribute('style', css); else n.removeAttribute('style');
+      }
+      if (n.getAttribute('class') === '') n.removeAttribute('class');
     });
     return c.innerHTML.trim();
   }
@@ -153,6 +210,8 @@
       if (n.getAttribute('data-nku-ed') === 'text') return;
       // Labels wrapping an input etc.: typing there could delete the field.
       if (n.querySelector('input,select,textarea,button')) return;
+      // Picture placeholders are filled by clicking, not typing.
+      if (isPhotoSlot(n) || n.closest('.photo[role="img"], .logo-ph')) return;
       if (editableAncestor(n, region)) return;
       n.setAttribute('data-nku-ed', 'text');
       n.setAttribute('contenteditable', 'true');
@@ -190,6 +249,8 @@
           path: r.getAttribute('data-nku-path'),
           id: r.getAttribute('data-nku-region'),
           html: cleanRegionHtml(r),
+          // A page whose built version changed keeps its warning until it's marked up to date.
+          baseHash: r.hasAttribute('data-nku-stale') ? 'keep' : r.getAttribute('data-nku-base') || undefined,
         });
       }
       dirty = false;
@@ -328,10 +389,99 @@
   grip.setAttribute('draggable', 'true');
   handle.appendChild(grip);
   var hoverBlock = null;
-  handle.appendChild(btn('+', 'Add a paragraph below', function () { if (hoverBlock) addAfter(hoverBlock); }));
+  var bAdd = btn('+', 'Add something below', function () { if (hoverBlock) toggleAddMenu(); });
+  handle.appendChild(bAdd);
   handle.appendChild(btn('⧉', 'Duplicate', function () { if (hoverBlock) duplicate(hoverBlock); }));
   handle.appendChild(btn('🗑', 'Delete', function () { if (hoverBlock) removeBlock(hoverBlock); }));
+  // Shown when the block sits in a card (partner logo box, text card, etc.).
+  var cardGroup = el('div', 'nku-ed-cardgroup');
+  cardGroup.appendChild(el('span', 'nku-ed-cardlabel', 'Card'));
+  cardGroup.appendChild(btn('⧉', 'Duplicate this whole card', function () { var c = hoverCard(); if (c) duplicate(c); }));
+  cardGroup.appendChild(btn('🗑', 'Delete this whole card', function () { var c = hoverCard(); if (c) removeBlock(c); }));
+  cardGroup.addEventListener('mouseenter', function () { var c = hoverCard(); if (c) c.classList.add('nku-ed-cardhover'); });
+  cardGroup.addEventListener('mouseleave', function () { document.querySelectorAll('.nku-ed-cardhover').forEach(function (n) { n.classList.remove('nku-ed-cardhover'); }); });
+  handle.appendChild(cardGroup);
   document.body.appendChild(handle);
+
+  var CARD_SEL = '.logo-box, .card, .card-strong, .sub-card, .stat, .news-card, .modal-col, .partner-card';
+  function cardOf(block) {
+    var c = block && block.parentElement && block.parentElement.closest(CARD_SEL);
+    return c && regionOf(c) && c !== regionOf(c) ? c : (block && block.matches && block.matches(CARD_SEL) ? block : null);
+  }
+  function hoverCard() { return cardOf(hoverBlock); }
+
+  // ---------- "+" menu: add a paragraph, heading, card, logo card, image or button ----------
+  var addMenu = el('div', 'nku-ed-ui nku-ed-addmenu');
+  addMenu.appendChild(el('div', 'nku-ed-addtitle', 'Add below'));
+  function addItem(label, hint, fn) {
+    var b = btn('<strong>' + label + '</strong><span>' + hint + '</span>', label, function () { var t = hoverBlock; hideAddMenu(); if (t) fn(t); });
+    addMenu.appendChild(b);
+  }
+  addItem('Paragraph', 'A line of text', function (t) { addAfter(t); });
+  addItem('Heading', 'A section title', function (t) { insertHtmlAfter(sectionAnchor(t, false), '<h2 class="h2">New heading</h2>'); });
+  addItem('Text card', 'A white box with a heading and text', function (t) {
+    insertHtmlAfter(sectionAnchor(t, true), '<section class="card"><h2 class="h2">New section</h2><p class="p">Write the text for this section here.</p></section>');
+  });
+  addItem('Logo card', 'Logo, name and website link, like the Partners page', function (t) {
+    var card = '<div class="logo-box"><span class="logo-ph">[Logo]</span><h2 class="h3">Organization name</h2><a class="link" href="https://">Visit website →</a></div>';
+    var box = t.closest && t.closest('.logo-box');
+    if (box && regionOf(box)) insertHtmlAfter(box, card);
+    else insertHtmlAfter(sectionAnchor(t, true), '<section class="grid3">' + card + '</section>');
+    nkuToast('Logo card added. Click [Logo] to add the logo, type the name, then select "Visit website" and click 🔗 to set the link.');
+  });
+  addItem('Image', 'Choose a picture to add', async function (t) {
+    var f = (await nkuPickFile())[0];
+    if (f) insertImageAfter(t, f);
+  });
+  addItem('Button', 'A green button that links somewhere', function (t) {
+    insertHtmlAfter(sectionAnchor(t, false), '<div class="btn-row"><a class="btn" href="https://">Button text</a></div>');
+    nkuToast('Button added. Type its text, then select it and click 🔗 to set where it goes.');
+  });
+  document.body.appendChild(addMenu);
+
+  function toggleAddMenu() {
+    if (addMenu.classList.contains('show')) { hideAddMenu(); return; }
+    var r = handle.getBoundingClientRect();
+    addMenu.classList.add('show');
+    var left = r.right + scrollX + 6;
+    if (left + addMenu.offsetWidth > scrollX + document.documentElement.clientWidth - 8) left = Math.max(8, r.left + scrollX - addMenu.offsetWidth - 6);
+    addMenu.style.left = left + 'px';
+    addMenu.style.top = (r.top + scrollY) + 'px';
+  }
+  function hideAddMenu() { addMenu.classList.remove('show'); }
+  document.addEventListener('mousedown', function (e) {
+    if (addMenu.classList.contains('show') && !addMenu.contains(e.target) && e.target !== bAdd) hideAddMenu();
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hideAddMenu(); });
+
+  // Where a new section goes: after the card or top-level block the hovered item is in.
+  function sectionAnchor(block, wholeSection) {
+    var region = regionOf(block);
+    var n = block;
+    if (wholeSection) {
+      // Walk up to the region's direct child (the section/card the block lives in).
+      while (n.parentElement && n.parentElement !== region) n = n.parentElement;
+      return n;
+    }
+    if (n.tagName === 'LI') return n.closest('ul,ol') || n;
+    return n;
+  }
+
+  function insertHtmlAfter(anchor, html) {
+    var tpl = document.createElement('template');
+    tpl.innerHTML = html;
+    var node = tpl.content.firstElementChild;
+    anchor.after(node);
+    makeEditable(node, regionOf(node));
+    markDirty();
+    node.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    var first = node.querySelector('[data-nku-ed="text"]') || (node.getAttribute('data-nku-ed') === 'text' ? node : null);
+    if (first) {
+      placeCaret(first, true);
+      var s = getSelection(); var r = document.createRange(); r.selectNodeContents(first); s.removeAllRanges(); s.addRange(r);
+    }
+    return node;
+  }
 
   function blockFor(node) {
     var n = node && node.nodeType === 3 ? node.parentElement : node;
@@ -355,8 +505,10 @@
 
   function placeHandle(block) {
     hoverBlock = block;
+    hideAddMenu();
     if (!block) { handle.classList.remove('show'); return; }
     var r = block.getBoundingClientRect();
+    cardGroup.style.display = hoverCard() ? 'flex' : 'none';
     handle.classList.add('show');
     var left = r.left + window.scrollX - handle.offsetWidth - 6;
     if (left < 4) left = r.left + window.scrollX + 4;
@@ -364,18 +516,47 @@
     handle.style.top = r.top + window.scrollY + 'px';
   }
 
+  // The handle sits beside the block, so the pointer crosses padding or other
+  // elements on the way to it. Keep it while the pointer is on that path, and
+  // wait a moment before hiding it, so it's still there when you reach it.
+  var switchTimer = null;
+  function setHover(b) {
+    clearTimeout(switchTimer);
+    switchTimer = null;
+    if (b === hoverBlock) return;
+    if (hoverBlock) hoverBlock.classList.remove('nku-ed-hover');
+    if (b) b.classList.add('nku-ed-hover');
+    placeHandle(b);
+  }
+  function onPathToHandle(x, y) {
+    if (!hoverBlock || !handle.classList.contains('show')) return false;
+    var h = handle.getBoundingClientRect();
+    var r = hoverBlock.getBoundingClientRect();
+    var pad = 24;
+    var left = Math.min(h.left, r.left) - pad, right = Math.max(h.right, Math.min(r.right, h.right + 80)) + pad;
+    var top = Math.min(h.top, r.top) - pad, bottom = Math.max(h.bottom, Math.min(r.bottom, r.top + 60)) + pad;
+    return x >= left && x <= right && y >= top && y <= bottom;
+  }
   document.addEventListener('mousemove', function (e) {
     if (!editing || dragging) return;
     // Leave the handle where it is while a button is held (dragging or selecting text).
     if (e.buttons & 1) return;
-    if (handle.contains(e.target)) return;
+    if (handle.contains(e.target) || addMenu.contains(e.target)) { clearTimeout(switchTimer); switchTimer = null; return; }
     var b = blockFor(e.target);
-    if (b !== hoverBlock) {
-      if (hoverBlock) hoverBlock.classList.remove('nku-ed-hover');
-      if (b) b.classList.add('nku-ed-hover');
-      placeHandle(b);
+    if (b === hoverBlock) { clearTimeout(switchTimer); switchTimer = null; return; }
+    if (addMenu.classList.contains('show')) return;
+    // Heading toward the handle: keep it for now.
+    if (onPathToHandle(e.clientX, e.clientY) && (!b || !hoverBlock.contains(b))) {
+      if (!switchTimer) switchTimer = setTimeout(function () { setHover(b); }, 900);
+      return;
     }
+    if (!b) {
+      if (!switchTimer) switchTimer = setTimeout(function () { setHover(null); }, 600);
+      return;
+    }
+    setHover(b);
   });
+  handle.addEventListener('mouseenter', function () { clearTimeout(switchTimer); switchTimer = null; });
 
   function placeCaret(node, atEnd) {
     var r = document.createRange();
@@ -549,11 +730,18 @@
       var r = await nkuUpload(file);
       var img = document.createElement('img');
       img.src = r.url;
-      img.alt = (slot.getAttribute('aria-label') || '').replace(/^Photo to come:\s*/i, '');
-      img.className = 'img-full';
+      if (slot.classList.contains('logo-ph')) {
+        var box = slot.closest('.logo-box');
+        var name = box && box.querySelector('h2,h3,strong');
+        img.alt = name ? name.textContent.trim() + ' logo' : 'Logo';
+        img.className = 'logo-img';
+      } else {
+        img.alt = (slot.getAttribute('aria-label') || '').replace(/^Photo to come:\s*/i, '');
+        img.className = 'img-full';
+      }
       slot.replaceWith(img);
       markDirty();
-      nkuToast('Photo added. Click it to check its description, then Save.');
+      nkuToast((img.className === 'logo-img' ? 'Logo' : 'Photo') + ' added. Click it to check its description, then Save.');
     } catch (ex) {
       slot.classList.remove('nku-ed-busy');
       nkuToast(ex.message, 'error');
@@ -627,7 +815,7 @@
     if (e.target.closest('a, summary')) e.preventDefault();
     if (e.target.closest('button, input[type=submit]')) { e.preventDefault(); e.stopPropagation(); }
     if (e.target.tagName === 'IMG' && !isDecorative(e.target)) { showImgPop(e.target); return; }
-    var slot = e.target.closest('.photo');
+    var slot = e.target.closest('.photo, .logo-ph');
     if (isPhotoSlot(slot)) {
       hideImgPop();
       nkuPickFile().then(function (files) { if (files[0]) fillPhotoSlot(slot, files[0]); });

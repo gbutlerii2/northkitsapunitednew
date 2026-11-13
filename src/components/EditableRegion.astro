@@ -2,22 +2,48 @@
 // Wraps content that can be edited in place from /admin-panel.
 // If an edited version is saved it is shown instead of the built-in content.
 // Scripts from the built-in content are kept, so interactive bits keep working.
-import { extractScripts, getRegion, pagePath } from '../lib/content';
+//
+// For logged-in editors it also marks the region when the built-in content has
+// changed since the edit was saved (data-nku-stale), so the editor can warn that
+// the saved edit is hiding a code update. ?original=1 shows the built version.
+import { contentHash, extractScripts, getRegion, pagePath } from '../lib/content';
+
+declare const __NKU_BUILD_TIME__: string;
 
 interface Props {
   id: string;
+  /** Shared regions (header, footer) use '/_site' so one edit shows on every page. */
+  path?: string;
 }
 
 const { id } = Astro.props;
-const path = pagePath(Astro.url.pathname);
+const path = Astro.props.path || pagePath(Astro.url.pathname);
+const admin = Astro.locals.admin;
 const saved = await getRegion(path, id);
+const showOriginal = !!admin && Astro.url.searchParams.get('original') === '1';
+
 let html = '';
-if (saved) {
-  const original = await Astro.slots.render('default');
-  html = saved.html + '\n' + extractScripts(original);
+let original = '';
+if (saved || admin) original = await Astro.slots.render('default');
+if (saved && !showOriginal) html = saved.html + '\n' + extractScripts(original);
+
+const attrs: Record<string, string> = {};
+if (admin) {
+  const hash = await contentHash(original);
+  attrs['data-nku-base'] = hash;
+  if (saved) {
+    attrs['data-nku-saved-at'] = saved.updatedAt;
+    if (saved.baseHash) {
+      if (saved.baseHash !== hash) attrs['data-nku-stale'] = saved.baseHash === 'stale' ? 'maybe' : 'changed';
+    } else if (typeof __NKU_BUILD_TIME__ === 'string' && saved.updatedAt < __NKU_BUILD_TIME__) {
+      // Saved before change tracking existed, and the site has been rebuilt since.
+      attrs['data-nku-stale'] = 'maybe';
+    }
+  }
+  if (showOriginal) attrs['data-nku-original'] = '1';
 }
 ---
 
-<div data-nku-region={id} data-nku-path={path} style="display: contents">
-  {saved ? <Fragment set:html={html} /> : <slot />}
+<div data-nku-region={id} data-nku-path={path} style="display: contents" {...attrs}>
+  {html ? <Fragment set:html={html} /> : original ? <Fragment set:html={original} /> : <slot />}
 </div>
