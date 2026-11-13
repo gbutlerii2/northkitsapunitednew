@@ -1,13 +1,34 @@
 ---
-// Site header: partner logos, NKU brand and main menu. Generated from build/site.py.
+// Site header: partner logos, NKU brand and main menu (layout from NKU Website Wireframe v5).
+// Donate stays a plain button (no Cash/In-Kind dropdown), per Gerry.
 interface Props { current?: string }
 const { current = '' } = Astro.props;
+const on = (keys: string[]) => (keys.includes(current) ? 'page' : undefined);
 ---
 <header class="site-head">
   <div class="head-inner">
-    <a class="partner-logo" href="/planning-team/ymca-of-pierce-and-kitsap-counties" aria-label="YMCA of Pierce and Kitsap Counties"><img class="partner-logo-img" src="/images/site/ymca-logo.png" alt="YMCA of Pierce and Kitsap Counties logo" width="189" height="145"></a>
-    <a class="brand" href="/"><img class="brand-img" src="/images/site/nku-logo.png" alt="North Kitsap United logo" width="217" height="213"><span class="brand-name">North Kitsap<br>United</span></a>
-    <a class="partner-logo" href="/planning-team/kingston-north-kitsap-rotary-club" aria-label="Kingston North Kitsap Rotary Club"><img class="partner-logo-img" src="/images/site/rotaryknk-logo-blue.png" alt="Kingston North Kitsap Rotary Club logo" width="300" height="85"></a>
+    <a class="partner-logo partner-ymca" href="/planning-team/ymca-of-pierce-and-kitsap-counties" aria-label="YMCA of Pierce and Kitsap Counties"><img class="partner-logo-img" src="/images/site/ymca-logo.png" alt="YMCA of Pierce and Kitsap Counties logo" width="189" height="145"></a>
+    <a class="brand" href="/" aria-label="North Kitsap United home"><img class="brand-img" src="/images/site/nku-logo.png" alt="North Kitsap United logo" width="217" height="213"></a>
+    <a class="partner-logo partner-rotary" href="/planning-team/kingston-north-kitsap-rotary-club" aria-label="Kingston North Kitsap Rotary Club"><img class="partner-logo-img" src="/images/site/rotaryknk-logo-blue.png" alt="Kingston North Kitsap Rotary Club logo" width="300" height="85"></a>
   </div>
-  <nav class="nav" aria-label="Main menu"><div class="nav-inner"><a class="nav-link" href="/" aria-current={current === "home" ? 'page' : undefined}>Home</a><div class="nav-item"><a class="nav-link" href="/partners" aria-current={["partners", "rotary", "ymca", "partners"].includes(current) ? 'page' : undefined}>Partners ▾</a><div class="nav-sub"><a class="nav-sub-link" href="/planning-team/kingston-north-kitsap-rotary-club">Kingston North Kitsap Rotary Club</a><a class="nav-sub-link" href="/planning-team/ymca-of-pierce-and-kitsap-counties">YMCA of Pierce and Kitsap Counties</a><a class="nav-sub-link" href="/partners">Additional Partners and Supporters</a></div></div><a class="nav-link" href="/faq" aria-current={["faq"].includes(current) ? 'page' : undefined}>FAQ</a><a class="nav-link" href="/history" aria-current={["history"].includes(current) ? 'page' : undefined}>History</a><a class="nav-link" href="/get-involved" aria-current={["involved"].includes(current) ? 'page' : undefined}>Get Involved</a><a class="nav-link" href="/materials" aria-current={["materials"].includes(current) ? 'page' : undefined}>Materials</a><a class="nav-link" href="/news" aria-current={["news"].includes(current) ? 'page' : undefined}>News</a><a class="nav-donate" href="/contact-us" aria-current={["contact"].includes(current) ? 'page' : undefined}>Contact</a><a class="nav-donate" href="/donate">Donate</a></div></nav>
+  <nav class="nav" aria-label="Main menu">
+    <div class="nav-inner">
+      <div class="nav-item nav-partners">
+        <a class="nav-link" href="/partners" aria-current={on(['partners', 'rotary', 'ymca'])}>Partners <span class="nav-caret" aria-hidden="true">▾</span></a>
+        <div class="nav-sub">
+          <a class="nav-sub-link" href="/planning-team/kingston-north-kitsap-rotary-club">Kingston North Kitsap Rotary Club</a>
+          <a class="nav-sub-link" href="/planning-team/ymca-of-pierce-and-kitsap-counties">YMCA of Pierce and Kitsap Counties</a>
+          <a class="nav-sub-link" href="/partners">Additional Partners and Supporters</a>
+        </div>
+      </div>
+      <div class="nav-main">
+        <a class="nav-link" href="/faq" aria-current={on(['faq'])}>FAQ</a>
+        <a class="nav-link" href="/contact-us" aria-current={on(['contact'])}>Contact</a>
+        <a class="nav-link nav-donate" href="/donate" aria-current={on(['cash', 'inkind'])}>Donate</a>
+        <a class="nav-link" href="/history" aria-current={on(['history'])}>History</a>
+        <a class="nav-link" href="/get-involved" aria-current={on(['involved'])}>Get Involved</a>
+        <a class="nav-link" href="/materials" aria-current={on(['materials'])}>Materials</a>
+      </div>
+    </div>
+  </nav>
 </header>
