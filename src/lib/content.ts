@@ -103,6 +103,8 @@ export interface RegionContent {
   html: string;
   updatedAt: string;
   updatedBy: string;
+  /** Fingerprint of the built page's own content when this edit was saved. */
+  baseHash?: string;
 }
 
 const regionKey = (path: string, id: string) => `region:${pagePath(path)}::${id}`;
@@ -119,7 +121,12 @@ export async function getRegion(path: string, id: string): Promise<RegionContent
   }
 }
 
-export async function saveRegion(path: string, id: string, html: string, by: string): Promise<RegionContent> {
+/**
+ * baseHash: fingerprint of the built content the edit was made on. 'keep' carries
+ * the previous fingerprint over (or marks it 'stale' if there was none), so saving
+ * a page whose code changed underneath doesn't hide the warning.
+ */
+export async function saveRegion(path: string, id: string, html: string, by: string, baseHash?: string): Promise<RegionContent> {
   const s = store('content');
   const previous = await s.getJSON<RegionContent>(regionKey(path, id));
   if (previous) {
@@ -128,6 +135,8 @@ export async function saveRegion(path: string, id: string, html: string, by: str
     for (const old of versions.slice(0, Math.max(0, versions.length - MAX_VERSIONS))) await s.delete(old);
   }
   const rec: RegionContent = { path: pagePath(path), id, html: cleanHtml(html), updatedAt: new Date().toISOString(), updatedBy: by };
+  if (baseHash === 'keep') rec.baseHash = previous?.baseHash || 'stale';
+  else if (baseHash && /^([a-f0-9]{16,64}|stale)$/.test(baseHash)) rec.baseHash = baseHash;
   await s.setJSON(regionKey(path, id), rec);
   await purgePages();
   return rec;
@@ -158,7 +167,7 @@ export async function restoreVersion(path: string, id: string, ts: string, by: s
   if (!/^\d{1,15}$/.test(ts)) return false;
   const v = await store('content').getJSON<RegionContent>(versionPrefix(path, id) + ts);
   if (!v) return false;
-  await saveRegion(path, id, v.html, by);
+  await saveRegion(path, id, v.html, by, v.baseHash);
   return true;
 }
 
@@ -491,4 +500,22 @@ export async function listSubmissions(limit = 100): Promise<Submission[]> {
   const s = store('content');
   const keys = (await s.list('submission:')).sort().reverse().slice(0, limit);
   return (await Promise.all(keys.map((k) => s.getJSON<Submission>(k)))).filter(Boolean) as Submission[];
+}
+
+/** Fingerprint of a region's built content (scripts and spacing ignored). */
+export async function contentHash(html: string): Promise<string> {
+  const norm = html.replace(/<script\b[\s\S]*?<\/script>/gi, '').replace(/\s+/g, ' ').trim();
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(norm));
+  return Array.from(new Uint8Array(buf).slice(0, 16), (b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/** Mark an edited region as checked against the current built content. */
+export async function acknowledgeRegion(path: string, id: string, baseHash: string): Promise<boolean> {
+  if (!/^[a-f0-9]{16,64}$/.test(baseHash)) return false;
+  const s = store('content');
+  const rec = await s.getJSON<RegionContent>(regionKey(path, id));
+  if (!rec) return false;
+  await s.setJSON(regionKey(path, id), { ...rec, baseHash });
+  await purgePages();
+  return true;
 }

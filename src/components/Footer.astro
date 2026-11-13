@@ -1,4 +1,6 @@
 ---
+// Footer text is editable in the admin panel and shared by every page.
+import EditableRegion from './EditableRegion.astro';
 const currentYear = new Date().getFullYear();
 const footerLinks = [
   { label: 'Privacy Statement', href: '/privacy-statement' },
@@ -7,6 +9,7 @@ const footerLinks = [
 ];
 ---
 <footer class="footer">
+  <EditableRegion id="footer" path="/_site">
   <div class="footer-inner">
     <nav class="footer-links" aria-label="Footer navigation">
       {footerLinks.map((link) => <a class="footer-link" href={link.href}>{link.label}</a>)}
@@ -17,4 +20,5 @@ const footerLinks = [
       Raydient Places + Properties is a landowner and project supporter, but does not operate this website or manage website submissions.
     </p>
   </div>
+  </EditableRegion>
 </footer>

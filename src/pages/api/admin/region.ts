@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { fail, json, readJson } from '../../../lib/api';
-import { listVersions, pagePath, resetRegion, restoreVersion, saveRegion } from '../../../lib/content';
+import { acknowledgeRegion, listVersions, pagePath, resetRegion, restoreVersion, saveRegion } from '../../../lib/content';
 
 const validId = (id: unknown): id is string => typeof id === 'string' && /^[a-z0-9-]{1,40}$/.test(id);
 const validPath = (p: unknown): p is string => typeof p === 'string' && p.startsWith('/') && p.length < 300 && !p.includes('..');
@@ -13,9 +13,9 @@ export const GET: APIRoute = async ({ url }) => {
   return json({ versions: await listVersions(pagePath(path), id) });
 };
 
-// POST { action: 'save' | 'reset' | 'restore', path, id, html?, ts? }
+// POST { action: 'save' | 'reset' | 'restore' | 'ack', path, id, html?, ts?, baseHash? }
 export const POST: APIRoute = async ({ request, locals }) => {
-  const body = await readJson<{ action?: string; path?: string; id?: string; html?: string; ts?: string }>(request);
+  const body = await readJson<{ action?: string; path?: string; id?: string; html?: string; ts?: string; baseHash?: string }>(request);
   const by = locals.admin!.email;
   if (!validPath(body.path) || !validId(body.id)) return fail('Bad page.');
   const path = pagePath(body.path);
@@ -23,9 +23,12 @@ export const POST: APIRoute = async ({ request, locals }) => {
   switch (body.action) {
     case 'save': {
       if (typeof body.html !== 'string' || body.html.length > 2_000_000) return fail('Nothing to save.');
-      const rec = await saveRegion(path, body.id, body.html, by);
+      const rec = await saveRegion(path, body.id, body.html, by, typeof body.baseHash === 'string' ? body.baseHash : undefined);
       return json({ ok: true, updatedAt: rec.updatedAt });
     }
+    case 'ack':
+      // "My edits are up to date with the site": stop warning that the built page changed.
+      return (await acknowledgeRegion(path, body.id, String(body.baseHash || ''))) ? json({ ok: true }) : fail('Nothing to update.');
     case 'reset':
       await resetRegion(path, body.id, by);
       return json({ ok: true });

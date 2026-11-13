@@ -1,16 +1,17 @@
 ---
-// Site header: partner logos, NKU brand and main menu (layout from NKU Website Wireframe v5).
-// Donate stays a plain button (no Cash/In-Kind dropdown), per Gerry.
+// Site header: one banner image (editable in the admin panel, shared by every page)
+// and the main menu. Donate stays a plain button (no Cash/In-Kind dropdown), per Gerry.
+import EditableRegion from './EditableRegion.astro';
 interface Props { current?: string }
 const { current = '' } = Astro.props;
 const on = (keys: string[]) => (keys.includes(current) ? 'page' : undefined);
 ---
 <header class="site-head">
-  <div class="head-inner">
-    <a class="partner-logo partner-ymca" href="/planning-team/ymca-of-pierce-and-kitsap-counties" aria-label="YMCA of Pierce and Kitsap Counties"><img class="partner-logo-img" src="/images/site/ymca-logo.png" alt="YMCA of Pierce and Kitsap Counties logo" width="189" height="145"></a>
-    <a class="brand" href="/" aria-label="North Kitsap United home"><img class="brand-img" src="/images/site/nku-logo.png" alt="North Kitsap United logo" width="217" height="213"></a>
-    <a class="partner-logo partner-rotary" href="/planning-team/kingston-north-kitsap-rotary-club" aria-label="Kingston North Kitsap Rotary Club"><img class="partner-logo-img" src="/images/site/rotaryknk-logo-blue.png" alt="Kingston North Kitsap Rotary Club logo" width="300" height="85"></a>
-  </div>
+  <EditableRegion id="header" path="/_site">
+    <div class="head-inner head-banner">
+      <a class="site-banner" href="/"><img class="site-banner-img" src="/images/site/header-banner.jpg" alt="North Kitsap United. NKU is a project of YMCA of Pierce and Kitsap Counties, and Kingston North Kitsap Rotary Club." width="1087" height="221"></a>
+    </div>
+  </EditableRegion>
   <nav class="nav" aria-label="Main menu">
     <div class="nav-inner">
       <div class="nav-item nav-partners">

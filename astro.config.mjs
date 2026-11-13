@@ -21,6 +21,9 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    // When this version of the site was built. Used to warn editors when a page
+    // they edited earlier has since been changed in the code.
+    define: { __NKU_BUILD_TIME__: JSON.stringify(new Date().toISOString()) },
   },
 
   integrations: [
