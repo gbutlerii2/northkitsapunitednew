@@ -90,6 +90,8 @@
 .qa{border-bottom:1px solid #e8dfd0;padding:14px 0}
 .qa-q{font-size:17px;font-weight:600;color:#1f2937;cursor:pointer;min-height:28px}
 .qa-a{margin:10px 0 0;font-size:16px;line-height:1.65}
+div.qa-a{display:flex;flex-direction:column;gap:10px}
+.qa-a .p,.qa-a .list{font-size:16px}
 .logo-box{background:#ffffff;border:1px solid #e8dfd0;border-radius:10px;min-height:120px;padding:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;font-size:15px;color:#1f2937}
 .logo-ph{width:120px;height:64px;border-radius:8px;background:#e8dfd0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#6b5a3a;text-align:center}
 .logo-img{max-height:72px;max-width:160px;width:auto;height:auto;display:block}
