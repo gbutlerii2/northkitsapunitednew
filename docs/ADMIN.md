@@ -39,7 +39,7 @@ Once a page has been edited in the admin, the saved version is shown instead of 
 - `src/components/EditableRegion.astro` wraps each page's title band (`hero`) and `<main>` content (`main`); `BaseLayout` does this automatically. Forms survive edits (they still post to the NKU Tracker), and form submits are blocked while editing. Saved HTML is cleaned with `sanitize-html` and stored in Netlify Blobs store `nku-content` under `region:<path>::<id>`. Scripts from the original page are re-attached, so interactive pieces keep working.
 - The header banner and footer are shared regions with path `/_site` (ids `header`, `footer`), shown on every page.
 - Stale warning: each save stores `baseHash`, a hash of the region's built HTML. If the current build's hash differs, admins see the warning. Older saves without a hash are flagged as "maybe" when saved before the build time (`__NKU_BUILD_TIME__`). The `ack` action on `/api/admin/region` marks a region as up to date.
-- Pages with live lists use `editable="regions"` and wrap only their static parts (see `src/pages/news/index.astro`).
+- Pages with live lists use `editable="regions"` and wrap only their static parts (see `src/pages/materials.astro`, whose News tab lists the posts).
 - News posts: `news:<id>` in `nku-content`. Images: `nku-media`, served from `/uploads/...`.
 - Accounts: `nku-users`. Passwords are PBKDF2-SHA256 hashes (210,000 rounds). Logins are locked for 15 minutes after 8 failures. The login cookie is HttpOnly, SameSite=Lax, signed with `SESSION_SECRET`, and lasts 8 hours. Admin API calls must come from the same site.
 

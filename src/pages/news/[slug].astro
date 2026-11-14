@@ -17,5 +17,5 @@ const date = new Date(post.date + 'T12:00:00Z').toLocaleDateString('en-US', { ye
     {post.image && <img src={post.image} alt={post.imageAlt || ''} class="img-full" />}
     <div class="prose" set:html={post.body} />
   </article>
-  <div class="btn-row"><a class="btn btn-ghost" href="/news">&larr; All news</a></div>
+  <div class="btn-row"><a class="btn btn-ghost" href="/materials?view=news">&larr; All news</a></div>
 </BaseLayout>

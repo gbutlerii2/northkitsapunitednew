@@ -28,7 +28,7 @@ export default defineConfig({
 
   integrations: [
     sitemap({
-      customPages: SITE_PAGES.map((p) => new URL(p.path, SITE).href).concat(new URL('/news', SITE).href),
+      customPages: SITE_PAGES.map((p) => new URL(p.path, SITE).href),
       filter: (page) => !page.includes('/admin-panel') && !page.includes('/api/'),
     }),
   ],

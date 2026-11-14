@@ -7,7 +7,7 @@ const posts = await listNews({ includeDrafts: true });
 
 <AdminLayout title="News" active="news">
   <div class="flex justify-between items-center mb-6 gap-4">
-    <p class="text-sm">Posts show on the <a href="/news" class="underline text-nku-green-light">News page</a>, newest date first. Drafts stay hidden.</p>
+    <p class="text-sm">Posts show on the News tab of the <a href="/materials?view=news" class="underline text-nku-green-light">Materials / News page</a>, newest date first. Drafts stay hidden.</p>
     <a href="/admin-panel/news/edit" class="nku-btn shrink-0">+ New post</a>
   </div>
   {posts.length === 0 ? (
