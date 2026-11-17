@@ -27,7 +27,7 @@ export function extractScripts(html: string): string {
   return (html.match(/<script\b[\s\S]*?<\/script>/gi) || []).join('\n');
 }
 
-const IFRAME_HOSTS = ['www.youtube.com', 'youtube.com', 'www.youtube-nocookie.com', 'docs.google.com', 'www.google.com', 'player.vimeo.com'];
+const IFRAME_HOSTS = ['www.youtube.com', 'youtube.com', 'www.youtube-nocookie.com', 'docs.google.com', 'drive.google.com', 'www.google.com', 'player.vimeo.com'];
 
 export function cleanHtml(html: string): string {
   return sanitizeHtml(String(html || ''), {
@@ -211,12 +211,28 @@ export interface NewsPost {
 
 const newsKey = (id: string) => `news:${id}`;
 
+/**
+ * Built-in articles (src/data/news.ts) are copied into Admin > News the first time
+ * news is read, so they can be edited (or deleted) there like any other post.
+ * A marker per article stops a deleted one from coming back.
+ */
+async function seedBuiltInNews(): Promise<void> {
+  const s = store('content');
+  for (const b of builtInNews) {
+    const mark = `news-seeded:${b.id}`;
+    if (await s.getJSON(mark)) continue;
+    if (!(await s.getJSON(newsKey(b.id)))) await s.setJSON(newsKey(b.id), b);
+    await s.setJSON(mark, { at: new Date().toISOString() });
+  }
+}
+
 export async function listNews(opts: { includeDrafts?: boolean } = {}): Promise<NewsPost[]> {
   try {
+    await seedBuiltInNews();
     const s = store('content');
     const keys = await s.list('news:');
     const saved = (await Promise.all(keys.map((k) => s.getJSON<NewsPost>(k)))).filter(Boolean) as NewsPost[];
-    const posts = [...saved, ...builtInNews.filter((b) => !saved.some((p) => p.slug === b.slug))];
+    const posts = saved;
     return posts
       .filter((p) => opts.includeDrafts || p.published)
       .sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.createdAt.localeCompare(a.createdAt));
@@ -228,6 +244,7 @@ export async function listNews(opts: { includeDrafts?: boolean } = {}): Promise<
 
 export async function getNews(id: string): Promise<NewsPost | null> {
   if (!/^[a-z0-9-]{4,40}$/.test(id)) return null;
+  await seedBuiltInNews();
   return store('content').getJSON<NewsPost>(newsKey(id));
 }
 
@@ -261,6 +278,7 @@ export async function saveNews(input: Partial<NewsPost>, by: string): Promise<Ne
     summary: String(input.summary || '').trim().slice(0, 600),
     image,
     imageAlt: String(input.imageAlt || '').slice(0, 300),
+    ...(existing?.dateWithWeekday ? { dateWithWeekday: true } : {}),
     body: cleanHtml(String(input.body || '')),
     published: !!input.published,
     createdAt: existing?.createdAt ?? now,

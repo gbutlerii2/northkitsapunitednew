@@ -1,11 +1,20 @@
 ---
 // Home page. First generated from the NKU Website design; now edited here (Round 1 and 2 sheets, Nov 2026).
 import BaseLayout from '../layouts/BaseLayout.astro';
+import EditableRegion from '../components/EditableRegion.astro';
 import { listNews } from '../lib/content';
 import { newsArticleHtml } from '../lib/news-html';
 // Home shows the newest two articles in full; every article is on the News page.
 const latest = (await listNews()).slice(0, 2);
 const newsHtml = latest.map((p) => newsArticleHtml(p)).join('\n');
+// The news section is outside the editable region: articles are edited in Admin > News only.
+const newsSection = `<section class="card" id="news">
+  <h2 class="h2">News</h2>
+  ${newsHtml}
+  <p class="p" style="text-align:center;margin:0"><a class="link" href="/news">Other News →</a></p>
+</section>
+<div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
+`;
 const html = `<img src="/images/site/fronthero.jpg" alt="Kids playing with logo." class="img-full" />
 <section class="card campaign-strip" id="campaign" data-nku-campaign aria-labelledby="campaign-title">
   <div class="campaign-strip-head">
@@ -59,14 +68,12 @@ const html = `<img src="/images/site/fronthero.jpg" alt="Kids playing with logo.
   <p class="note" style="text-align:center">Click either map to see it full size.</p>
 </section>
 
-<section class="card" id="news">
-  <h2 class="h2">News</h2>
-  ${newsHtml}
-  <p class="p" style="text-align:center;margin:0"><a class="link" href="/news">Other News →</a></p>
-</section>
-<div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
 `;
+
 ---
-<BaseLayout title="Home" current="home" heroHidden heroTitle="Creating Lasting Impact" heroSub="A YMCA-centered sports, recreation and well-being campus at Bond Road and Stottlemeyer Road in North Kitsap County." eyebrow="North Kitsap United">
-  <Fragment set:html={html} />
+<BaseLayout title="Home" current="home" heroHidden heroTitle="Creating Lasting Impact" heroSub="A YMCA-centered sports, recreation and well-being campus at Bond Road and Stottlemeyer Road in North Kitsap County." eyebrow="North Kitsap United" editable="regions">
+  <EditableRegion id="home-top">
+    <Fragment set:html={html} />
+  </EditableRegion>
+  <Fragment set:html={newsSection} />
 </BaseLayout>
