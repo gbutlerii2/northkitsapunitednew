@@ -1,6 +1,7 @@
 ---
 // Site header: one banner image (editable in the admin panel, shared by every page)
-// and the main menu. Donate stays a plain button (no Cash/In-Kind dropdown), per Gerry.
+// and the main menu: Home, About (History, Materials, FAQ, News), Partners, Get Involved,
+// Contact, then Donate as a button on the right (Round 2 sheet, Nov 16 2026).
 import EditableRegion from './EditableRegion.astro';
 interface Props { current?: string }
 const { current = '' } = Astro.props;
@@ -14,6 +15,16 @@ const on = (keys: string[]) => (keys.includes(current) ? 'page' : undefined);
   </EditableRegion>
   <nav class="nav" aria-label="Main menu">
     <div class="nav-inner">
+      <a class="nav-link" href="/" aria-current={on(['home'])}>Home</a>
+      <div class="nav-item">
+        <a class="nav-link" href="/history" aria-current={on(['history', 'materials', 'faq', 'news'])}>About <span class="nav-caret" aria-hidden="true">▾</span></a>
+        <div class="nav-sub">
+          <a class="nav-sub-link" href="/history">History</a>
+          <a class="nav-sub-link" href="/materials">Materials</a>
+          <a class="nav-sub-link" href="/faq">FAQ</a>
+          <a class="nav-sub-link" href="/news">News</a>
+        </div>
+      </div>
       <div class="nav-item nav-partners">
         <a class="nav-link" href="/partners" aria-current={on(['partners', 'rotary', 'ymca'])}>Partners <span class="nav-caret" aria-hidden="true">▾</span></a>
         <div class="nav-sub">
@@ -22,14 +33,9 @@ const on = (keys: string[]) => (keys.includes(current) ? 'page' : undefined);
           <a class="nav-sub-link" href="/partners">Additional Partners and Supporters</a>
         </div>
       </div>
-      <div class="nav-main">
-        <a class="nav-link" href="/faq" aria-current={on(['faq'])}>FAQ</a>
-        <a class="nav-link" href="/contact-us" aria-current={on(['contact'])}>Contact</a>
-        <a class="nav-link nav-donate" href="/donate" aria-current={on(['cash', 'inkind'])}>Donate</a>
-        <a class="nav-link" href="/history" aria-current={on(['history'])}>History</a>
-        <a class="nav-link" href="/get-involved" aria-current={on(['involved'])}>Get Involved</a>
-        <a class="nav-link" href="/materials" aria-current={on(['materials', 'news'])}>Materials/News</a>
-      </div>
+      <a class="nav-link" href="/get-involved" aria-current={on(['involved'])}>Get Involved</a>
+      <a class="nav-link" href="/contact-us" aria-current={on(['contact'])}>Contact</a>
+      <a class="nav-link nav-donate" href="/donate" aria-current={on(['cash', 'inkind'])}>Donate</a>
     </div>
   </nav>
 </header>

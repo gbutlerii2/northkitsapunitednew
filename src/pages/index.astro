@@ -1,11 +1,28 @@
 ---
-// Generated from the NKU Website design (build/pages.py). Edit the content there and regenerate.
+// Home page. First generated from the NKU Website design; now edited here (Round 1 and 2 sheets, Nov 2026).
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { listNews } from '../lib/content';
 import { newsArticleHtml } from '../lib/news-html';
-const latest = (await listNews()).slice(0, 1);
+// Home shows the newest two articles in full; every article is on the News page.
+const latest = (await listNews()).slice(0, 2);
 const newsHtml = latest.map((p) => newsArticleHtml(p)).join('\n');
 const html = `<img src="/images/site/fronthero.jpg" alt="Kids playing with logo." class="img-full" />
+<section class="card campaign-strip" id="campaign" data-nku-campaign aria-labelledby="campaign-title">
+  <div class="campaign-strip-head">
+    <h2 class="eyebrow" id="campaign-title" style="color:#8b6914;margin:0">The Campaign</h2>
+    <a class="btn btn-gold" href="/donate">Donate</a>
+  </div>
+  <div class="bar" role="img" aria-label="Campaign progress toward the goal" data-bar-label>
+    <div class="bar-received" data-bar="received" style="width:0%"></div>
+    <div class="bar-pledged" data-bar="pledged" style="width:0%"></div>
+  </div>
+  <div class="legend-row">
+    <span class="legend-item"><span class="swatch swatch-received"></span>Received <span data-stat="received">—</span></span>
+    <span class="legend-item"><span class="swatch swatch-pledged"></span>Pledged <span data-stat="pledged">—</span></span>
+    <span class="legend-item"><span class="swatch swatch-cost"></span>Goal <span data-stat="estimatedCost">—</span></span>
+  </div>
+  <p class="note" data-stat="asOf"></p>
+</section>
 <section class="card card-center">
   <h2 class="h2">The Story</h2>
   <div class="prose" style="text-align:left">
@@ -31,46 +48,23 @@ const html = `<img src="/images/site/fronthero.jpg" alt="Kids playing with logo.
     <div class="figure">
       <a class="img-link" href="/images/site/location-map-temporary.jpg"><img class="img-full" src="/images/site/location-map-temporary.jpg" alt="Location map: the NKU site and the North Kitsap communities around it." style="width:50%;height:auto;margin-left:auto;margin-right:auto;display:block" /></a>
       <h3 class="h3">Location</h3>
-      <p class="p">[Caption to come.]</p>
+      <p class="p">A convenient location between Kingston, Port Gamble and Poulsbo, at Bond Road (SR 307) and Stottlemeyer Road.</p>
     </div>
     <div class="figure">
       <a class="img-link" href="/images/site/site-plan.jpg"><img class="img-full" src="/images/site/site-plan.jpg" alt="Site map of the NKU campus: YMCA, sports fields, outdoor courts, disc golf in the natural area, dog park, ADA playground, community garden, parking, trails and wildlife corridor, next to Port Gamble Forest Heritage Park" /></a>
       <h3 class="h3">Site plan</h3>
-      <p class="p">[Caption to come.]</p>
+      <p class="p">Sports fields, courts, trails, a playground and the YMCA, all on one campus.</p>
     </div>
   </div>
   <p class="note" style="text-align:center">Click either map to see it full size.</p>
 </section>
 
-<section class="card">
-  <h2 class="h2">News / Updates</h2>
+<section class="card" id="news">
+  <h2 class="h2">News</h2>
   ${newsHtml}
-  <div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a></div>
-</section>
-
-<section class="card" id="campaign" data-nku-campaign>
-  <div class="split">
-    <div style="display:flex;flex-direction:column;gap:4px"><span class="eyebrow" style="color:#8b6914">The Campaign</span><h2 class="h2">Overview</h2></div>
-  </div>
-  <div class="stat-grid">
-    <div class="stat"><span class="stat-label">Pledged</span><span class="stat-value" data-stat="pledged">—</span></div>
-    <div class="stat"><span class="stat-label">Received to date</span><span class="stat-value" data-stat="received">—</span></div>
-    <div class="stat"><span class="stat-label">Estimated cost</span><span class="stat-value" data-stat="estimatedCost">—</span></div>
-  </div>
-  <span class="stat-label">Progress toward estimated cost</span>
-  <div class="bar" role="img" aria-label="Campaign progress toward the estimated cost" data-bar-label>
-    <div class="bar-received" data-bar="received" style="width:0%"></div>
-    <div class="bar-pledged" data-bar="pledged" style="width:0%"></div>
-  </div>
-  <div class="legend-row">
-    <span class="legend-item"><span class="swatch swatch-received"></span>Received <span data-stat="received">—</span></span>
-    <span class="legend-item"><span class="swatch swatch-pledged"></span>Pledged <span data-stat="pledged">—</span></span>
-    <span class="legend-item"><span class="swatch swatch-cost"></span>Estimated cost <span data-stat="estimatedCost">—</span></span>
-  </div>
-  <p class="note" data-stat="asOf"></p>
+  <p class="p" style="text-align:center;margin:0"><a class="link" href="/news">Other News →</a></p>
 </section>
 <div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
-
 `;
 ---
 <BaseLayout title="Home" current="home" heroHidden heroTitle="Creating Lasting Impact" heroSub="A YMCA-centered sports, recreation and well-being campus at Bond Road and Stottlemeyer Road in North Kitsap County." eyebrow="North Kitsap United">

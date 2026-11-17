@@ -16,7 +16,9 @@ export const formatNewsDate = (d: string, weekday = false) =>
 export function newsArticleHtml(post: NewsPost, headingTag: 'h2' | 'h3' = 'h3'): string {
   const img = post.image
     ? `<img class="img-full news-article-img" src="${esc(post.image)}" alt="${esc(post.imageAlt || '')}" loading="lazy">`
-    : '';
+    : post.imagePending
+      ? `<div class="photo news-article-img" role="img" aria-label="Photo to come: ${esc(post.imagePending)}"><span class="photo-tag">Photo</span><span>${esc(post.imagePending)}</span></div>`
+      : '';
   return `<article class="news-article" id="${esc(post.slug)}">
   ${img}
   <div class="news-article-body">

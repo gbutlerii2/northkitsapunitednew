@@ -1,5 +1,21 @@
 ---
-// News now lives on the combined Materials / News page (News tab).
-// Individual posts stay at /news/<slug>.
-return Astro.redirect('/materials?view=news', 301);
+// News: every article, newest first, each in full (photo, date, headline, whole text).
+// Articles come from src/data/news.ts (built into the code) and Admin > News.
+// The Home page shows the newest two; individual articles stay at /news/<slug>.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import EditableRegion from '../../components/EditableRegion.astro';
+import { listNews } from '../../lib/content';
+import { newsArticleHtml } from '../../lib/news-html';
+const posts = await listNews();
 ---
+<BaseLayout title="News" current="news" heroTitle="News" heroSub="The latest news from North Kitsap United." eyebrow="About · News" editable="regions">
+  <EditableRegion id="intro">
+    <p class="lead" style="text-align:center">The latest news, meeting announcements and project milestones from North Kitsap United.</p>
+  </EditableRegion>
+  <section class="card">
+    {posts.length === 0
+      ? <p class="p">No news has been posted yet. Please check back soon.</p>
+      : <Fragment set:html={posts.map((p) => newsArticleHtml(p, 'h2')).join('\n')} />}
+  </section>
+  <div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
+</BaseLayout>

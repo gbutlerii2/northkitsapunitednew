@@ -197,6 +197,8 @@ export interface NewsPost {
   date: string; // YYYY-MM-DD
   /** Show the day of the week with the date (built-in articles only). */
   dateWithWeekday?: boolean;
+  /** Built-in articles whose photo has not arrived yet: placeholder label. */
+  imagePending?: string;
   summary: string;
   image?: string;
   imageAlt?: string;
