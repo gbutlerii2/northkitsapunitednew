@@ -1,4 +1,5 @@
 // Editable content: page regions, news posts and uploaded images.
+import { builtInNews } from '../data/news';
 import sanitizeHtml from 'sanitize-html';
 import { store } from './store';
 
@@ -111,9 +112,17 @@ const regionKey = (path: string, id: string) => `region:${pagePath(path)}::${id}
 const versionPrefix = (path: string, id: string) => `version:${pagePath(path)}::${id}::`;
 const MAX_VERSIONS = 15;
 
+/**
+ * Admin edits saved before this time are no longer shown: their content was copied
+ * into the page code (Nov 2026 Round 1 changes), so the code is the source again.
+ * The old saves stay in the store and in each region's History.
+ */
+const REGION_CUTOFF = '2026-11-17T00:30:00.000Z';
+
 export async function getRegion(path: string, id: string): Promise<RegionContent | null> {
   try {
-    return await store('content').getJSON<RegionContent>(regionKey(path, id));
+    const rec = await store('content').getJSON<RegionContent>(regionKey(path, id));
+    return rec && rec.updatedAt >= REGION_CUTOFF ? rec : null;
   } catch (err) {
     // If storage is unreachable, show the page as built rather than failing.
     console.error('[nku] could not read region', path, id, err);
@@ -186,6 +195,8 @@ export interface NewsPost {
   slug: string;
   title: string;
   date: string; // YYYY-MM-DD
+  /** Show the day of the week with the date (built-in articles only). */
+  dateWithWeekday?: boolean;
   summary: string;
   image?: string;
   imageAlt?: string;
@@ -202,13 +213,14 @@ export async function listNews(opts: { includeDrafts?: boolean } = {}): Promise<
   try {
     const s = store('content');
     const keys = await s.list('news:');
-    const posts = (await Promise.all(keys.map((k) => s.getJSON<NewsPost>(k)))).filter(Boolean) as NewsPost[];
+    const saved = (await Promise.all(keys.map((k) => s.getJSON<NewsPost>(k)))).filter(Boolean) as NewsPost[];
+    const posts = [...saved, ...builtInNews.filter((b) => !saved.some((p) => p.slug === b.slug))];
     return posts
       .filter((p) => opts.includeDrafts || p.published)
       .sort((a, b) => (b.date || '').localeCompare(a.date || '') || b.createdAt.localeCompare(a.createdAt));
   } catch (err) {
     console.error('[nku] could not list news', err);
-    return [];
+    return [...builtInNews].sort((a, b) => b.date.localeCompare(a.date));
   }
 }
 

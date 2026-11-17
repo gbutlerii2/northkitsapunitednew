@@ -1,5 +1,6 @@
 ---
-// Donate page: five buttons, each opening its form in a popup (<dialog>).
+// Donate page: five buttons. Four open their form in a popup (<dialog>); In Kind
+// Donation goes to the In-Kind page (/donate/in-kind), which has the full form.
 // Hand-edited on 2026-11-09 to add the popups; the "NKU Website" design canvas
 // still shows the older one-long-page layout.
 // Forms post to the NKU Tracker through public/js/nku-site.js (data-nku-form="KIND").
@@ -9,20 +10,20 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
 ---
 <BaseLayout title="Donate" current="cash" heroTitle="Donate" heroSub="Build more than fields. Build opportunity." eyebrow="Donate · Cash">
   <div class="btn-row">
-    <button class="btn" type="button" data-open="zeffy">Donate Cash/ACH</button>
+    <button class="btn" type="button" data-open="zeffy">Donate Now</button>
     <button class="btn" type="button" data-open="investments">Donate with Investments</button>
     <button class="btn" type="button" data-open="other-ways">Pledge a Donation</button>
-    <button class="btn" type="button" data-open="in-kind">In Kind Donation</button>
+    <a class="btn" href="/donate/in-kind">In Kind Donation</a>
     <button class="btn" type="button" data-open="other">Other Donations</button>
   </div>
 
   <img class="img-flier" src="/images/site/sponsorship-levels.jpg" alt="Build More Than Fields, Build Opportunity: the nine sponsorship levels from Legacy Partner at $1,000,000 to Rising Star Sponsor at $1,000, with photos of youth soccer, swimming, mountain biking and the fields" />
 
-  <!-- 1. Donate Cash/ACH (Zeffy) -->
+  <!-- 1. Donate Now (Zeffy) -->
   <dialog class="modal" id="zeffy" aria-labelledby="zeffy-title">
     <div class="modal-body">
       <button class="modal-close" type="button" data-close aria-label="Close">×</button>
-      <h2 class="h2" id="zeffy-title">Donate Cash/ACH</h2>
+      <h2 class="h2" id="zeffy-title">Donate Now</h2>
       <h3 class="h3">Card or bank transfer (EFT): one-time, monthly or quarterly</h3>
       <p class="p">Tell us a little about your gift, then continue to Zeffy to pay. This lets us thank you and list you the way you’d like.</p>
       <form class="form" data-nku-form="zeffy" novalidate>
@@ -49,7 +50,7 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
         </div>
         <p class="status" role="status" aria-live="polite"></p>
       </form>
-      <p class="p">Card (up to $4,999 a payment) or bank transfer (EFT, up to $20,000). Card and bank details are handled by Zeffy and its processor, Stripe, and never touch this site.</p>
+      <p class="p">Card (up to $4,999 a payment) or bank transfer (EFT, up to $20,000). Card and bank details are handled by Zeffy and its processor, Stripe, and are not retained on this website.</p>
       <p class="p">You will receive a receipt.</p>
       <p class="p">Zeffy is free for the Foundation. At checkout, Zeffy asks for an optional contribution to Zeffy; you can change it to $0. Every dollar of your gift goes to NKU.</p>
     </div>
@@ -78,7 +79,7 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
           <p class="status" role="status" aria-live="polite"></p>
         </form>
       </div>
-      <p class="p">An Ameriprise representative will contact you shortly to discuss the options available for donation through investment.</p>
+      <p class="p">An NKU team member will contact you shortly to discuss the options available for donation through investment.</p>
       <div class="grid3">
         <div class="modal-col">
           <h4 class="h4">Wire transfer</h4>
@@ -142,38 +143,7 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
     </div>
   </dialog>
 
-  <!-- 4. In Kind Donation. Posts as "inkind"; the Tracker requires a company name, so a hidden copy of Name is sent as "company". -->
-  <dialog class="modal" id="in-kind" aria-labelledby="in-kind-title">
-    <div class="modal-body">
-      <button class="modal-close" type="button" data-close aria-label="Close">×</button>
-      <h2 class="h2" id="in-kind-title">In Kind Donation</h2>
-      <p class="p">Fill out the form below and someone from our team will contact you to set up the particulars of your In Kind Donation.</p>
-      <form class="form" data-nku-form="inkind" novalidate>
-        <Fragment set:html={hp} />
-        <input type="hidden" name="company" data-copy-of="name">
-        <div class="row">
-          <label class="field">Name *<input class="input" type="text" name="name" autocomplete="name" required></label>
-          <label class="field">Email *<input class="input" type="email" name="email" autocomplete="email" required></label>
-          <label class="field">Phone<input class="input" type="tel" name="phone" autocomplete="tel"></label>
-        </div>
-        <label class="field">Mailing address<input class="input" type="text" name="address" autocomplete="street-address"></label>
-        <fieldset class="fieldset">
-          <legend class="legend">Type of In Kind Donation (check any)</legend>
-          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Goods"> Goods</label>
-          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Supplies"> Supplies</label>
-          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Equipment"> Equipment</label>
-          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Property"> Property</label>
-          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Professional services"> Professional services</label>
-          <label class="check"><input class="check-input" type="checkbox" name="inkindType" value="Expertise"> Expertise</label>
-        </fieldset>
-        <label class="field">Description of In Kind Donation *<span class="field-hint">Detailed inventory of items or services, including quantities, model/brand names, and physical condition (new, used, or refurbished).</span><textarea class="textarea" name="offer" rows="5" required></textarea></label>
-        <div class="btn-row-left"><button class="btn" type="submit">Send</button></div>
-        <p class="status" role="status" aria-live="polite"></p>
-      </form>
-    </div>
-  </dialog>
-
-  <!-- 5. Other Donations (contact form) -->
+  <!-- 4. Other Donations (contact form) -->
   <dialog class="modal" id="other" aria-labelledby="other-title">
     <div class="modal-body">
       <button class="modal-close" type="button" data-close aria-label="Close">×</button>
@@ -191,6 +161,7 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
           <label class="field">Email *<input class="input" type="email" name="email" autocomplete="email" required></label>
           <label class="field">Phone<input class="input" type="tel" name="phone" autocomplete="tel"></label>
         </div>
+        <label class="field">Address<input class="input" type="text" name="address" autocomplete="street-address"></label>
         <label class="field">How would you like to donate? *<textarea class="textarea" name="message" rows="4" required></textarea></label>
         <div class="btn-row-left"><button class="btn" type="submit">Send</button></div>
         <p class="status" role="status" aria-live="polite"></p>
@@ -217,7 +188,9 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
 <script is:inline>
   (function () {
     // Old addresses (#one-time, #pledge, ...) still open the matching popup.
-    var alias = { 'one-time': 'zeffy', 'pledge': 'other-ways', 'inkind': 'in-kind', 'tell-us': 'investments', 'other-gifts': 'investments', 'contact': 'other' };
+    var alias = { 'one-time': 'zeffy', 'pledge': 'other-ways', 'tell-us': 'investments', 'other-gifts': 'investments', 'contact': 'other' };
+    // The In Kind form lives on its own page now.
+    if (location.hash === '#inkind' || location.hash === '#in-kind') { location.replace('/donate/in-kind'); return; }
     function open(id) {
       var d = document.getElementById(alias[id] || id);
       if (!d || d.tagName !== 'DIALOG' || d.open) return;
@@ -227,7 +200,7 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
       var s = d.querySelector('.status'); if (s) { s.textContent = ''; s.classList.remove('is-error'); }
       var first = d.querySelector('.input'); if (first) first.focus({ preventScroll: true });
     }
-    // Hidden fields that mirror another field (the In Kind form's company = name).
+    // Hidden fields that mirror another field (none on this page at the moment).
     document.querySelectorAll('input[data-copy-of]').forEach(function (h) {
       var src = h.form && h.form.elements[h.getAttribute('data-copy-of')];
       if (src) src.addEventListener('input', function () { h.value = src.value; });

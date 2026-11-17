@@ -1,7 +1,32 @@
 ---
 // Generated from the NKU Website design (build/pages.py). Edit the content there and regenerate.
 import BaseLayout from '../../layouts/BaseLayout.astro';
-const html = "\n<section class=\"card\">\n  <div class=\"aside\">\n    <div class=\"aside-logo\"><img class=\"partner-logo-img\" src=\"/images/site/ymca-logo.png\" alt=\"YMCA of Pierce and Kitsap Counties logo\"></div>\n    <div class=\"aside-body\">\n      <p class=\"p\">The Y is the leading nonprofit committed to strengthening community by connecting all people to their potential, purpose, and each other.</p>\n      <p class=\"p\">The organization works locally to empower young people, improve health and well-being, and inspire community action by bringing together diverse groups.</p>\n    </div>\n  </div>\n</section>\n<div class=\"grid2\">\n  <section class=\"card\"><h2 class=\"h2\">North Kitsap Presence</h2><p class=\"p\">More than 3,300 households in North Kitsap are currently YMCA members. A new community center would expand service capacity and reduce commute times for existing members.</p></section>\n  <section class=\"card\"><h2 class=\"h2\">Market Interest</h2><p class=\"p\">A 2016 market report indicated 66% of North Kitsap respondents were very likely to use a YMCA facility.</p></section>\n</div>\n<section class=\"card\">\n  <h2 class=\"h2\">Community Impact</h2>\n  <ul class=\"list\"><li>$2.5 million in financial assistance to 11,000+ members</li><li>1,312 kids in foster care received free memberships</li><li>1 of 5 campers (overnight and day camp) received financial assistance</li><li>1 of 3 kids in Before- and After-School Care received financial assistance</li><li>165 members in Poulsbo already receive financial assistance today</li></ul>\n</section>\n<section class=\"card\">\n  <h2 class=\"h2\">Programs Beyond Fitness</h2>\n  <ul class=\"list\"><li><strong>Late Nite</strong> provides free evening programs for teens.</li><li><strong>Safety Around Water</strong> offers free drowning prevention education to 600 kids.</li><li><strong>LIVESTRONG</strong> is a 12-week physical activity program showing a 33.3% decrease in perceived pain.</li><li>The organization also operates a <strong>Shower Access Program</strong> for neighbors in need.</li></ul>\n</section>\n<div class=\"photo\" role=\"img\" aria-label=\"Photo to come: YMCA programs in action\"><span class=\"photo-tag\">Photo</span><span>YMCA programs in action</span></div>\n<div class=\"grid3\"><div class=\"photo\" role=\"img\" aria-label=\"Photo to come: YMCA facility rendering 1\"><span class=\"photo-tag\">Photo</span><span>YMCA facility rendering 1</span></div><div class=\"photo\" role=\"img\" aria-label=\"Photo to come: YMCA facility rendering 2\"><span class=\"photo-tag\">Photo</span><span>YMCA facility rendering 2</span></div><div class=\"photo\" role=\"img\" aria-label=\"Photo to come: YMCA facility rendering 3\"><span class=\"photo-tag\">Photo</span><span>YMCA facility rendering 3</span></div></div>\n<div class=\"btn-row\"><a class=\"btn btn-gold\" href=\"/donate\">Donate</a><a class=\"btn btn-ghost\" href=\"/get-involved\">Get Involved</a></div>\n";
+const html = `<section class="card">
+  <div class="aside">
+    <div class="aside-logo"><img class="partner-logo-img" src="/images/site/ymca-logo.png" alt="YMCA of Pierce and Kitsap Counties logo" /></div>
+    <div class="aside-body">
+      <p class="p">The Y is the leading nonprofit committed to strengthening community by connecting all people to their potential, purpose, and each other.</p>
+      <p class="p">The organization works locally to empower young people, improve health and well-being, and inspire community action by bringing together diverse groups.</p>
+    </div>
+  </div>
+</section>
+<div class="grid2">
+  <section class="card"><h2 class="h2">North Kitsap Presence</h2><p class="p">Nearly 3,300 households in North Kitsap are currently YMCA members. A new community center would expand service capacity and reduce commute times for existing members.</p></section>
+  <section class="card"><h2 class="h2">Market Interest</h2><p class="p">A 2016 market report indicated 66% of North Kitsap respondents were very likely to use a YMCA facility.</p></section>
+</div>
+<section class="card">
+  <h2 class="h2">Community Impact</h2>
+  <ul class="list"><li>$2.5 million in financial assistance to 11,000+ members</li><li>1,312 kids in foster care received free memberships</li><li>1 of 5 campers (overnight and day camp) received financial assistance</li><li>1 of 3 kids in Before- and After-School Care received financial assistance</li><li>165 members in Poulsbo already receive financial assistance today</li></ul>
+</section>
+<section class="card">
+  <h2 class="h2">Programs Beyond Fitness</h2>
+  <ul class="list"><li><strong>Late Nite</strong> provides free evening programs for teens.</li><li><strong>Safety Around Water</strong> offers free drowning prevention education to 600 kids.</li><li><strong>LIVESTRONG</strong> is a 12-week physical activity program showing a 33.3% decrease in perceived pain.</li><li>The organization also operates a <strong>Shower Access Program</strong> for neighbors in need.</li></ul>
+</section>
+<img src="/images/site/y1-ymca-programs-photo-ymca.jpg" alt="YMCA members: older adults visiting, a family in the pool, and a woman lifting weights." class="img-full" />
+<div class="grid3"><img src="/images/site/y2-y4-ymca-facilities-photos-ymca.jpg" alt="YMCA facilities: an indoor running track, a building exterior, an indoor pool, a staff member greeting a member, a climbing wall and an exercise studio." class="img-full" /></div>
+<div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
+
+`;
 ---
 <BaseLayout title="YMCA of Pierce and Kitsap Counties" current="ymca" heroTitle="YMCA of Pierce and Kitsap Counties" heroSub="Strengthening community through health and wellness" eyebrow="Partners · YMCA">
   <Fragment set:html={html} />
