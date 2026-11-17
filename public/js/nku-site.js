@@ -155,7 +155,7 @@
         if (r) r.style.width = d.bar.receivedPct + "%";
         if (p) p.style.width = d.bar.pledgedPct + "%";
         var bar = campaign.querySelector("[data-bar-label]");
-        if (bar) bar.setAttribute("aria-label", "Campaign progress: received " + money(d.received) + " and pledged " + money(d.pledged) + " of the " + money(d.estimatedCost) + " estimated cost");
+        if (bar) bar.setAttribute("aria-label", "Campaign progress: received " + money(d.received) + " and pledged " + money(d.pledged) + " of the " + money(d.estimatedCost) + " goal");
         var asOf = campaign.querySelector('[data-stat="asOf"]');
         if (asOf) asOf.textContent = "Live from the NKU Tracker, " + new Date(d.asOf).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }) + ".";
       })

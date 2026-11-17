@@ -1,7 +1,31 @@
 ---
 // Generated from the NKU Website design (build/pages.py). Edit the content there and regenerate.
 import BaseLayout from '../layouts/BaseLayout.astro';
-const html = "\n<div class=\"photo photo-tall\" role=\"img\" aria-label=\"Photo to come: Drone photo of the site\"><span class=\"photo-tag\">Photo</span><span>Drone photo of the site</span></div>\n<section class=\"card\" aria-label=\"Timeline\">\n  <div class=\"timeline\"><div class=\"tl-item\"><span class=\"tl-dot\" aria-hidden=\"true\"></span><span class=\"tl-date\">[DATE]</span><h2 class=\"h3\">[Milestone title]</h2><p class=\"p\">[One to three sentences.]</p></div><div class=\"tl-item\"><span class=\"tl-dot\" aria-hidden=\"true\"></span><span class=\"tl-date\">[DATE]</span><h2 class=\"h3\">[Milestone title]</h2><p class=\"p\">[One to three sentences.]</p></div><div class=\"tl-item\"><span class=\"tl-dot\" aria-hidden=\"true\"></span><span class=\"tl-date\">[DATE]</span><h2 class=\"h3\">[Milestone title]</h2><p class=\"p\">[One to three sentences.]</p></div><div class=\"tl-item\"><span class=\"tl-dot\" aria-hidden=\"true\"></span><span class=\"tl-date\">[DATE]</span><h2 class=\"h3\">[Milestone title]</h2><p class=\"p\">[One to three sentences.]</p></div><div class=\"tl-item\"><span class=\"tl-dot\" aria-hidden=\"true\"></span><span class=\"tl-date\">[DATE]</span><h2 class=\"h3\">[Milestone title]</h2><p class=\"p\">[One to three sentences.]</p></div></div>\n</section>\n<div class=\"btn-row\"><a class=\"btn btn-gold\" href=\"/donate\">Donate</a><a class=\"btn btn-ghost\" href=\"/get-involved\">Get Involved</a></div>\n";
+const html = `
+<figure class="figure">
+  <div class="photo-row">
+    <img class="img-full" src="/images/site/history-jon-rose.jpg" alt="Jon Rose speaking at a North Kitsap United presentation.">
+    <img class="img-full" src="/images/site/history-charlie-davis.jpg" alt="Charlie Davis speaking at a North Kitsap United presentation.">
+    <img class="img-full" src="/images/site/history-clint-boxman.jpg" alt="Clint Boxman speaking at a North Kitsap United presentation, in front of a slide of past Rotary projects.">
+  </div>
+  <figcaption class="figcap" style="text-align:center">Jon Rose, Charlie Davis, and Clint Boxman.</figcaption>
+</figure>
+<section class="card">
+  <h2 class="h2">A brief history</h2>
+  <div class="prose">
+    <p class="p">On June 27th, 2023, Raydient Places + Properties, the YMCA of Pierce and Kitsap Counties, and the Rotary Club of Kingston North Kitsap announced to the community that they were working together to explore an idea.</p>
+    <p class="p">The concept originally entailed Raydient rezoning the centrally-located 400 acres it owns on SR307 resulting in an increase in the number of single-family residential lots—from 20 to 80—and use "lot clustering" to create 100 to 200 acres of open space. Within a portion of the open space, the goal would then be to find a home for a new YMCA and a sports/recreation complex. The complex would be central to all North Kitsap Communities and adjacent to the Port Gamble Forest Heritage Park, thus "uniting" both our communities and a multitude of healthy activities. The rezone would have facilitated a donation of a portion of the land; however, following the Kitsap County Commissioners' decision on June 23, 2025, the project has transitioned to a purchase-and-sale model led by the Rotary and its conservation partners.</p>
+    <p class="p">Because of this, the Kingston North Kitsap Rotary Club and the YMCA are actively engaged with another non-profit organization - among other partners - to raise enough funds to buy the land and continue the project and vision without Raydient and any concepts having to do with housing. The decision to press forward spawned on December 16, 2025. More than 60 Government and Non-Profit Organizations and 3,750+ households in North Kitsap have publicly endorsed this project. On March 10, 2026, the community overwhelmingly responded and donated over $125k to the Kingston North Kitsap Rotary Club and NKU project, and it was the #1 fundraiser at the 2026 Great Give event.</p>
+    <p class="p">Kingston North Kitsap Rotarians and the YMCA of Pierce and Kitsap Counties staged a funding campaign launch with a fundraising gala on Oct 11, 2026. Highlighting the evening was the presentation of a $1-million dollar pledge by the Port Gamble S'Klallam Tribe in support of the much-needed playfields and YMCA. With that event funds raised in donations and pledges reached $8.5 million of an expected project cost of $25 million. This is separate from the YMCA construction cost which will be funded by the Y.</p>
+  </div>
+</section>
+<!-- Timeline hidden until its content is ready (Round 1, HIS-03).
+<section class="card" aria-label="Timeline">
+  <div class="timeline"><div class="tl-item"><span class="tl-dot" aria-hidden="true"></span><span class="tl-date">[DATE]</span><h2 class="h3">[Milestone title]</h2><p class="p">[One to three sentences.]</p></div><div class="tl-item"><span class="tl-dot" aria-hidden="true"></span><span class="tl-date">[DATE]</span><h2 class="h3">[Milestone title]</h2><p class="p">[One to three sentences.]</p></div><div class="tl-item"><span class="tl-dot" aria-hidden="true"></span><span class="tl-date">[DATE]</span><h2 class="h3">[Milestone title]</h2><p class="p">[One to three sentences.]</p></div><div class="tl-item"><span class="tl-dot" aria-hidden="true"></span><span class="tl-date">[DATE]</span><h2 class="h3">[Milestone title]</h2><p class="p">[One to three sentences.]</p></div><div class="tl-item"><span class="tl-dot" aria-hidden="true"></span><span class="tl-date">[DATE]</span><h2 class="h3">[Milestone title]</h2><p class="p">[One to three sentences.]</p></div></div>
+</section>
+-->
+<div class="btn-row"><a class="btn btn-gold" href="/donate">Donate</a><a class="btn btn-ghost" href="/get-involved">Get Involved</a></div>
+`;
 ---
 <BaseLayout title="History" current="history" heroTitle="How We Got Here" heroSub="[Brief history to come.]" eyebrow="History">
   <Fragment set:html={html} />

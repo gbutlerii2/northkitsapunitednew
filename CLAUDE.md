@@ -25,7 +25,7 @@ This is an informational website for the North Kitsap United community project, 
 
 ### Layout
 
-`BaseLayout.astro` wraps every page: `<SiteHeader current=…>` (one banner image `public/images/site/header-banner.jpg`, editable as shared region `header` at path `/_site`; main menu: Partners dropdown, plain Donate button; layout from NKU Website Wireframe v5) → title band (`eyebrow`, `heroTitle`, `heroSub` props; editable region `hero`; `heroHidden` keeps it for screen readers only, used on Home) → `<main class="main"><slot /></main>` (editable region `main`) → `<Footer />` (editable shared region `footer` at `/_site`). Pass `editable="regions"` for pages with live lists (Materials / News) or `"none"` to switch editing off. Title format: `"Page Title | North Kitsap United - New"` (the " - New" marks this build in browser tabs while the old site is still up; remove it at launch).
+`BaseLayout.astro` wraps every page: `<SiteHeader current=…>` (one banner image `public/images/site/header-banner.jpg`, editable as shared region `header` at path `/_site`; main menu: Home, About ▾ (History, Materials, FAQ, News), Partners ▾, Get Involved, Contact, Donate button; Round 2 sheet, Nov 2026) → title band (`eyebrow`, `heroTitle`, `heroSub` props; editable region `hero`; `heroHidden` keeps it for screen readers only, used on Home) → `<main class="main"><slot /></main>` (editable region `main`) → `<Footer />` (editable shared region `footer` at `/_site`). Pass `editable="regions"` for pages with live lists (News) or `"none"` to switch editing off. Title format: `"Page Title | North Kitsap United - New"` (the " - New" marks this build in browser tabs while the old site is still up; remove it at launch).
 
 ### Styling
 
@@ -51,3 +51,7 @@ Pages mirror the original site's URL paths. The `_redirects` file maps old paths
 
 - **Partner pages** live at `/planning-team/` (Rotary, YMCA); other partners and supporters are on `/partners`
 - **Donate** is `/donate` (cash, pledges, gift notices) and `/donate/in-kind`
+
+### News
+
+Articles come from two places, merged newest first by `listNews()`: built-in articles in `src/data/news.ts` and posts written in Admin > News (Netlify Blobs). `/news` lists every article in full; the Home page shows the newest two (`src/lib/news-html.ts` renders both). Admin region saves made before `REGION_CUTOFF` in `src/lib/content.ts` (2026-11-17) are ignored, because their content was copied into the page code.
