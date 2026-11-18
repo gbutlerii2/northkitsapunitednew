@@ -1,36 +1,41 @@
-## Accessibility Statement
+# Accessibility Statement
 
-**Effective Date:** March 19, 2026
+**Effective Date: November 17, 2026**
 
-The **Rotary Club of Kingston North Kitsap**, operating this website publicly as **North Kitsap United**, is committed to improving the accessibility of this website for all visitors.
+The Rotary Club of Kingston-North Kitsap is committed to improving access for visitors, including people who use assistive technologies.
 
-We aim to make the North Kitsap United website accessible and usable for as many people as possible, including people using assistive technologies.
+## Our Accessibility Approach
 
-### Our commitment
-We aim to follow the **Web Content Accessibility Guidelines (WCAG) 2.2 Level AA** as a guide for ongoing accessibility improvements.
+We use the Web Content Accessibility Guidelines (WCAG) 2.2 Level AA as an aspirational guide for ongoing improvement. Accessibility is an evolving effort, not a representation that every page, document, form, video, map, third-party tool, or feature will satisfy every guideline at all times. Content changes, legacy files, volunteer-created materials, and third-party services may present limitations.
 
-Accessibility is an ongoing effort. We recognize that some parts of the website may not yet be fully accessible at all times, especially as content changes, third-party materials are added, or embedded tools are used.
+## Ongoing Practices
 
-### Ongoing improvement
 We are committed to ongoing efforts to improve accessibility, which may include:
+
 - Reviewing website content and structure
-- Improving headings, labels, and navigation
-- Supporting keyboard navigation where practical
-- Improving color contrast and readability
-- Reviewing images and media for accessible alternatives where feasible
-- Considering accessibility when adding new content, documents, forms, and embedded media
 
-### Third-party content
-Some parts of this website may rely on third-party tools or content, such as embedded videos, downloadable PDFs, maps, or form providers. While we may not control all third-party accessibility features, we will make reasonable efforts to choose and use tools in a way that supports accessibility.
+- use of meaningful headings, labels, link text, page titles, and navigation;
 
-### Feedback and assistance
-If you experience difficulty accessing any part of this website, notice an accessibility barrier, or need information in an alternate format, please contact us:
+- support keyboard access and visible focus where the site platform permits;
 
-**Email:** kingstonsportscomplex@gmail.com
+- considerations in color contrast, text resizing, readability, captions, transcripts, and alternative text;
 
-When reaching out, it may help to include:
-- The webpage or feature you were trying to use
-- A description of the problem
-- The device, browser, or assistive technology you were using, if relevant
+- review forms for instructions, errors, labels, and accessible completion;
 
-We welcome feedback and will use it to support ongoing accessibility improvements.
+- reviewing images and media for accessible alternatives where feasible;
+
+- consider accessibility when procuring or embedding new tools, donation pages, documents, maps, or media;
+
+- provide reasonable assistance or an alternate format when practical; and
+
+- prioritize reported barriers based on impact, feasibility, available resources, and control over the affected content.
+
+## Third-Party and Downloadable Content
+
+Some content and functions are provided by third parties, including Zeffy donation pages, Stripe payment processing, embedded videos, maps, social-media content, documents, or form and analytics providers. We may not control their accessibility. We will consider accessibility when selecting and configuring services and may offer a reasonable alternative where practical, but we cannot warrant a third party’s conformance or continued availability.
+
+## Feedback and Assistance
+
+If you have difficulty using the website, identify a barrier, or need information in another format, email <nku@rotaryknk.org>. Please identify the page or feature, describe the issue, state the format or assistance requested, and, if useful, identify the device, browser, and assistive technology. Please do not include sensitive medical or disability information unless necessary. We will review requests in good faith and respond within a reasonable time based on complexity, resources, and third-party involvement. This process is not an emergency service.
+
+We welcome feedback and use it to support ongoing improvement. No statement here waives any defense, limitation, exemption, or right available under applicable law, and no statement should be read as an admission that a particular law applies.
