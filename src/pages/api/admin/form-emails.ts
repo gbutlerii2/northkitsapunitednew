@@ -1,11 +1,12 @@
 import type { APIRoute } from 'astro';
 import { fail, json, readJson } from '../../../lib/api';
 import { buildFormEmail, parseEmailList, saveFormEmailSettings } from '../../../lib/content';
-import { sendMail } from '../../../lib/mail';
+import { saveMailAccount, sendMail } from '../../../lib/mail';
 
 // POST { action: 'save', defaultTo, perForm }  |  { action: 'test', to }
+//      { action: 'account', host, port, user, from, password, clear }  (the password is never sent back)
 export const POST: APIRoute = async ({ request, locals }) => {
-  const body = await readJson<{ action?: string; defaultTo?: string; perForm?: Record<string, string>; to?: string; sendToTracker?: boolean; zeffyCardUrl?: string; zeffyEftUrl?: string }>(request);
+  const body = await readJson<{ action?: string; defaultTo?: string; perForm?: Record<string, string>; to?: string; sendToTracker?: boolean; zeffyCardUrl?: string; zeffyEftUrl?: string; host?: string; port?: number | string; user?: string; from?: string; password?: string; clear?: boolean }>(request);
   const by = locals.admin!.email;
 
   if (body.action === 'save') {
@@ -20,6 +21,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
       by,
     );
     return json({ ok: true, settings: saved });
+  }
+
+  if (body.action === 'account') {
+    const a = body as { host?: string; port?: number | string; user?: string; from?: string; password?: string; clear?: boolean };
+    try {
+      const account = await saveMailAccount({ host: a.host, port: a.port, user: a.user, from: a.from, password: a.password, clear: !!a.clear }, by);
+      return json({ ok: true, account });
+    } catch (err) {
+      return fail((err as Error).message);
+    }
   }
 
   if (body.action === 'test') {

@@ -175,7 +175,9 @@ export async function sendSmtp(account: SmtpAccount, msg: SmtpMessage): Promise<
   const c = new SmtpConnection(socket);
   const timeout = setTimeout(() => c.close(), 20_000);
   try {
-    const greet = await c.reply();
+    const greet = await c.reply().catch((err) => {
+      throw new Error(`Couldn't connect to the mail server ${account.host}:${account.port} (${(err as Error).message || err}).`);
+    });
     if (greet.code !== 220) throw new Error(`Mail server is not ready: ${greet.text.slice(0, 200)}`);
     const helo = 'EHLO nku-web';
     await c.cmd(helo, 250, 'EHLO');

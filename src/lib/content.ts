@@ -399,6 +399,8 @@ export interface FormEmailSettings {
 }
 
 const FORM_SETTINGS_KEY = 'settings:form-emails';
+/** The project's mailbox. Form emails go here when no list is filled in on Forms & emails. */
+export const SITE_EMAIL = 'nku@rotaryknk.org';
 const EMAIL_RE = /^[^\s@<>;,]+@[^\s@<>;,]+\.[^\s@<>;,]+$/;
 
 /** Splits "a@x.org; b@y.org" (semicolons, commas or new lines) into valid addresses. */
@@ -463,7 +465,8 @@ export async function saveFormEmailSettings(
 
 export async function recipientsFor(kind: string): Promise<string[]> {
   const s = await getFormEmailSettings();
-  return parseEmailList(s.perForm[kind] || s.defaultTo).valid;
+  const list = parseEmailList(s.perForm[kind] || s.defaultTo).valid;
+  return list.length ? list : [SITE_EMAIL];
 }
 
 /** "firstName" / "first_name" -> "First name" */

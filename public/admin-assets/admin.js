@@ -160,6 +160,25 @@
     render();
   }
 
+  // ---- sending account (the password is never sent back) ----
+  var ma = $('#mail-account');
+  if (ma) {
+    var saveAccount = async function (payload, done) {
+      try {
+        await nkuApi('/api/admin/form-emails', 'POST', Object.assign({ action: 'account' }, payload));
+        $('#mailPass').value = '';
+        nkuToast(done);
+        setTimeout(function () { location.reload(); }, 900);
+      } catch (ex) { nkuToast(ex.message, 'error'); }
+    };
+    ma.addEventListener('submit', function (e) {
+      e.preventDefault();
+      saveAccount({ user: $('#mailUser').value, password: $('#mailPass').value, from: $('#mailFrom').value, host: $('#mailHost').value, port: $('#mailPort').value }, 'Sending account saved. Send a test email to check it.');
+    });
+    var clr = $('#mailClear');
+    if (clr) clr.addEventListener('click', function () { saveAccount({ clear: true }, 'Sending account removed.'); });
+  }
+
   // ---- form emails ----
   var fe = $('#form-emails');
   if (fe) {

@@ -3,7 +3,7 @@
 import type { APIRoute } from 'astro';
 import { fail, json, readJson } from '../../../lib/api';
 import { buildFormEmail, FORM_KINDS, getFormEmailSettings, recipientsFor, saveSubmission, updateSubmission } from '../../../lib/content';
-import { mailMethod, sendMail } from '../../../lib/mail';
+import { mailStatus, sendMail } from '../../../lib/mail';
 import { store } from '../../../lib/store';
 import { clientIp } from 'nku:platform';
 
@@ -54,7 +54,7 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
   const to = await recipientsFor(kind);
   const rec = await saveSubmission({ kind, data, labels, emailedTo: [] });
 
-  if (to.length && mailMethod()) {
+  if (to.length && (await mailStatus()).method) {
     try {
       await sendMail({ to, ...buildFormEmail(kind, data, labels) });
       rec.emailedTo = to;
