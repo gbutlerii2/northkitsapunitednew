@@ -5,7 +5,8 @@
 import { webcrypto as crypto } from 'node:crypto';
 import readline from 'node:readline';
 
-const ITERATIONS = 210_000;
+// 100,000 is the most Cloudflare Workers allow (the production host).
+const ITERATIONS = 100_000;
 
 async function hash(password) {
   const salt = crypto.getRandomValues(new Uint8Array(16));

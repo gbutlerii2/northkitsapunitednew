@@ -4,6 +4,7 @@
 //   Resend (recommended):  RESEND_API_KEY, MAIL_FROM
 //   Any SMTP mailbox:      SMTP_HOST, SMTP_PORT (587 or 465), SMTP_USER, SMTP_PASS, MAIL_FROM (optional, defaults to SMTP_USER)
 import { getSecret } from 'astro:env/server';
+import { sendSmtp } from 'nku:platform';
 
 function env(name: string): string {
   return (getSecret(name) ?? process.env[name] ?? '').toString().trim();
@@ -44,13 +45,8 @@ export async function sendMail(mail: Mail): Promise<void> {
     return;
   }
 
-  const nodemailer = (await import('nodemailer')).default;
-  const port = Number(env('SMTP_PORT') || 587);
-  const transport = nodemailer.createTransport({
-    host: env('SMTP_HOST'),
-    port,
-    secure: port === 465,
-    auth: { user: env('SMTP_USER'), pass: env('SMTP_PASS') },
-  });
-  await transport.sendMail({ from: mailFrom(), to: mail.to.join(', '), subject, text: mail.text, replyTo });
+  await sendSmtp(
+    { host: env('SMTP_HOST'), port: Number(env('SMTP_PORT') || 587), user: env('SMTP_USER'), pass: env('SMTP_PASS') },
+    { from: mailFrom(), to: mail.to, subject, text: mail.text, replyTo },
+  );
 }

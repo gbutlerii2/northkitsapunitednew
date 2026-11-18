@@ -1,12 +1,13 @@
 import type { APIRoute } from 'astro';
 import { checkLogin, clearFailures, createSessionCookie, isLockedOut, recordFailure, SESSION_COOKIE } from '../../../lib/auth';
 import { fail, json, readJson } from '../../../lib/api';
+import { clientIp } from 'nku:platform';
 
 export const POST: APIRoute = async ({ request, cookies, clientAddress, url }) => {
   const { email = '', password = '' } = await readJson<{ email?: string; password?: string }>(request);
   let ip = 'unknown';
   try {
-    ip = request.headers.get('x-nf-client-connection-ip') || clientAddress || 'unknown';
+    ip = clientIp(request) || clientAddress || 'unknown';
   } catch {
     /* clientAddress can throw in some environments */
   }

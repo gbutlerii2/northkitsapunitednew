@@ -13,6 +13,15 @@ function setHeader(res: Response, name: string, value: string) {
   }
 }
 
+// Same as public/_headers. Netlify adds those to every response, but Cloudflare only
+// adds them to static files, so pages get them here.
+const SECURITY_HEADERS: Record<string, string> = {
+  'X-Content-Type-Options': 'nosniff',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
 export const onRequest = defineMiddleware(async (ctx, next) => {
   const { pathname } = ctx.url;
   const method = ctx.request.method.toUpperCase();
@@ -45,6 +54,7 @@ export const onRequest = defineMiddleware(async (ctx, next) => {
   }
 
   const res = await next();
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) setHeader(res, name, value);
 
   if (isAdminApi || isAdminPage || isFormApi) {
     setHeader(res, 'Cache-Control', 'private, no-store');

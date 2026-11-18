@@ -43,6 +43,8 @@ Once a page has been edited in the admin, the saved version is shown instead of 
 - News posts: `news:<id>` in `nku-content`. Images: `nku-media`, served from `/uploads/...`.
 - Accounts: `nku-users`. Passwords are PBKDF2-SHA256 hashes (210,000 rounds). Logins are locked for 15 minutes after 8 failures. The login cookie is HttpOnly, SameSite=Lax, signed with `SESSION_SECRET`, and lasts 8 hours. Admin API calls must come from the same site.
 
+> Production runs on Cloudflare, where data is in the R2 bucket `nku-site-data` instead of Netlify Blobs. See `docs/HOSTING.md`.
+
 ## Setup on Netlify
 
 Set these environment variables on the Netlify site (Site configuration → Environment variables). Never commit them.
