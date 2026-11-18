@@ -1,14 +1,16 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { FORM_KINDS, getFormEmailSettings, listSubmissions } from '../../lib/content';
-import { mailFrom, mailMethod } from '../../lib/mail';
+import { FORM_KINDS, SITE_EMAIL, getFormEmailSettings, listSubmissions } from '../../lib/content';
+import { getMailAccountView, mailStatus } from '../../lib/mail';
 
 const settings = await getFormEmailSettings();
 const submissions = await listSubmissions(50);
 const humanizeKey = (k: string) => k.replace(/[_-]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (c) => c.toUpperCase());
 const show = (v: unknown) => (Array.isArray(v) ? v.join(', ') : String(v ?? ''));
-const method = mailMethod();
-const from = mailFrom();
+const status = await mailStatus();
+const method = status.method;
+const from = status.from;
+const account = await getMailAccountView();
 const donateKinds = ['zeffy', 'gift', 'pledge', 'donation-question', 'inkind'];
 const otherKinds = Object.keys(FORM_KINDS).filter((k) => !donateKinds.includes(k));
 const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/Los_Angeles' }) : '');
@@ -17,13 +19,58 @@ const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-US', { dat
 <AdminLayout title="Forms & emails" active="form-emails">
   {method ? (
     <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-900 text-sm">
-      Email sending is on ({method === 'resend' ? 'Resend' : 'SMTP'}), from <strong>{from}</strong>.
+      Email sending is on, from <strong>{from}</strong> ({status.source === 'admin' ? 'the sending account below' : method === 'resend' ? 'Resend, set on the host' : 'mail settings on the host'}).
     </div>
   ) : (
     <div class="mb-6 p-4 rounded-lg bg-yellow-100 border border-yellow-300 text-yellow-900 text-sm">
-      <strong>Email sending isn't set up yet.</strong> You can save the addresses now. Emails start once the email settings are added in Netlify (see docs/ADMIN.md, "Form emails").
+      <strong>Email sending isn't set up yet.</strong> You can save the addresses now. Emails start once the sending account is filled in below.
     </div>
   )}
+
+  {status.problem && (
+    <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm">{status.problem}</div>
+  )}
+
+  <form id="mail-account" class="nku-card mb-6 space-y-4" autocomplete="off">
+    <h2 class="text-lg font-bold text-nku-green">Sending account</h2>
+    <p class="text-sm">The email account the website sends from. For NKU this is the Gmail account <strong>{SITE_EMAIL}</strong>. Use a Google <strong>App Password</strong> here, never the account's normal password: sign in to Google as that account, turn on 2-Step Verification, then create one at <a class="underline" href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">myaccount.google.com/apppasswords</a>.</p>
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-medium mb-1" for="mailUser">Account email</label>
+        <input id="mailUser" class="nku-input" type="email" value={account.user} placeholder={SITE_EMAIL} autocomplete="off" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium mb-1" for="mailPass">App Password</label>
+        <input id="mailPass" class="nku-input" type="password" value="" autocomplete="new-password" placeholder={account.hasPassword ? 'Saved. Leave empty to keep it' : '16 letters from Google'} />
+      </div>
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium mb-1" for="mailFrom">"From" line <span class="font-normal text-nku-gray-light">(optional)</span></label>
+        <input id="mailFrom" class="nku-input" value={account.from} placeholder={`North Kitsap United <${SITE_EMAIL}>`} />
+      </div>
+    </div>
+    <details class="text-sm">
+      <summary class="cursor-pointer text-nku-gray-light">Mail server (only change this for a non-Gmail account)</summary>
+      <div class="grid sm:grid-cols-2 gap-4 mt-3">
+        <div>
+          <label class="block text-sm font-medium mb-1" for="mailHost">Server</label>
+          <input id="mailHost" class="nku-input" value={account.host} />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1" for="mailPort">Port</label>
+          <select id="mailPort" class="nku-input">
+            <option value="465" selected={account.port === 465}>465 (SSL)</option>
+            <option value="587" selected={account.port === 587}>587 (STARTTLS)</option>
+          </select>
+        </div>
+      </div>
+    </details>
+    <p class="text-xs text-nku-gray-light">The password is stored encrypted and is never shown again, not even to admins. Anyone with an admin login can change or remove it.</p>
+    <div class="flex flex-wrap gap-3 items-center">
+      <button type="submit" class="nku-btn">Save sending account</button>
+      {account.hasPassword && <button type="button" id="mailClear" class="nku-btn nku-btn-ghost">Remove saved account</button>}
+      {account.updatedAt && <span class="text-xs text-nku-gray-light">Last saved {fmt(account.updatedAt)} by {account.updatedBy}</span>}
+    </div>
+  </form>
 
   <form id="form-emails" class="space-y-6">
     <div class="nku-card space-y-4">
@@ -60,9 +107,9 @@ const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-US', { dat
 
     <div class="nku-card space-y-3">
       <h2 class="text-lg font-bold text-nku-green">Who gets the forms</h2>
-      <p class="text-sm">Enter email addresses separated by semicolons, for example <code>treasurer@example.org; gerry@example.org</code>. Everyone here gets a copy of every form that doesn't have its own list below.</p>
+      <p class="text-sm">Enter email addresses separated by semicolons, for example <code>treasurer@example.org; gerry@example.org</code>. Everyone here gets a copy of every form that doesn't have its own list below. If this is left empty, forms go to <strong>{SITE_EMAIL}</strong>.</p>
       <label class="block text-sm font-medium" for="defaultTo">All forms</label>
-      <textarea id="defaultTo" rows="2" class="nku-input" placeholder="name@example.org; other@example.org">{settings.defaultTo}</textarea>
+      <textarea id="defaultTo" rows="2" class="nku-input" placeholder={SITE_EMAIL}>{settings.defaultTo}</textarea>
       <p class="text-xs text-nku-gray-light">Each email's subject is the form name, a dash, then the person's name (for example "Pledge - Jane Smith"), so you can set up mail filters. Every field is on its own line, and hitting Reply goes to the person who filled in the form.</p>
     </div>
 

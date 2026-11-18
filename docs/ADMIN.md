@@ -67,18 +67,25 @@ The Netlify site builds from this GitHub repo. Merging to `main` deploys. Admin 
 
 ## Form emails
 
-Admin panel → **Forms & emails** sets who receives a copy of each website form by email. Enter addresses separated by semicolons. One list covers all forms, and each form (Online Donation, Gift Notice, Pledge, Donation Question, In-Kind Donation, Contact, Volunteer, Updates Signup) can have its own list instead.
+Admin panel → **Forms & emails** sets who receives a copy of each website form by email. Enter addresses separated by semicolons. If no list is filled in, forms go to the project mailbox, `nku@rotaryknk.org`. One list covers all forms, and each form (Online Donation, Gift Notice, Pledge, Donation Question, In-Kind Donation, Contact, Volunteer, Updates Signup) can have its own list instead.
 
 - Subject: `<Form name> - <person's name>` (for example `Pledge - Jane Smith`), handy for mail filters. Signups with no name use their email.
 - Body: one field per line (`Label: value`), then the form name, page and time. Reply goes to the person who filled in the form.
 - Forms still go to the NKU Tracker as before; the email is an extra copy sent at the same time (`public/js/nku-site.js` → `/api/forms/<kind>`). Bot submissions (hidden `website` field filled in) are dropped, and each visitor is limited to 12 submissions per 10 minutes.
 
-Sending needs one of these on Netlify (Environment variables, mark passwords/keys secret):
+**Sending account (recommended).** Admin panel → **Forms & emails** → **Sending account**. For NKU: account email `nku@rotaryknk.org` and a Google **App Password** (sign in as that account, turn on 2-Step Verification, create one at myaccount.google.com/apppasswords; never the normal Google password). Server `smtp.gmail.com`, port `465` are filled in already. This works on any host (Netlify or Cloudflare) because it is saved in the site's own storage, not in host settings.
+
+- The password is encrypted (AES-GCM, key derived from `SESSION_SECRET`) and is never sent back to the browser. If `SESSION_SECRET` is ever changed, the page says so and the App Password must be entered again.
+- Any admin can change or remove it, so only give admin logins to people you trust. If it may have leaked, delete the App Password in the Google account and make a new one.
+- Gmail allows about 500 emails a day, far more than the forms need.
+
+**Fallback: host environment variables.** Used only when no sending account is saved in the admin panel (mark passwords/keys secret):
 
 | Option | Variables |
 | --- | --- |
-| Resend (recommended, free tier) | `RESEND_API_KEY`, `MAIL_FROM` (an address on a domain verified in Resend, e.g. `NKU Website <forms@gb2solutions.net>`) |
-| Any mailbox over SMTP | `SMTP_HOST`, `SMTP_PORT` (587, or 465), `SMTP_USER`, `SMTP_PASS`, optional `MAIL_FROM`. Gmail / Google Workspace: `smtp.gmail.com`, an App Password. Microsoft 365: `smtp.office365.com` (SMTP AUTH must be enabled for the mailbox). |
+| Gmail | `SMTP_HOST` = `smtp.gmail.com`, `SMTP_PORT` = `465`, `SMTP_USER` = `nku@rotaryknk.org`, `SMTP_PASS` = the App Password, `MAIL_FROM` = `North Kitsap United <nku@rotaryknk.org>` |
+| Resend | `RESEND_API_KEY`, `MAIL_FROM` (an address on a domain verified in Resend) |
+| Any other mailbox over SMTP | `SMTP_HOST`, `SMTP_PORT` (587, or 465), `SMTP_USER`, `SMTP_PASS`, optional `MAIL_FROM`. Microsoft 365: `smtp.office365.com` (SMTP AUTH must be enabled for the mailbox). |
 
 Use **Send a test email** on the Form emails page to check it.
 
