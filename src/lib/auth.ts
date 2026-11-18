@@ -170,7 +170,8 @@ function env(name: string): string {
 }
 
 let devSecret: string | null = null;
-function sessionSecret(): string {
+/** The site's SESSION_SECRET (also used to encrypt saved email passwords). */
+export function sessionSecret(): string {
   const s = env('SESSION_SECRET');
   if (s && s.length >= 32) return s;
   if (process.env.NETLIFY === 'true' || import.meta.env.PROD) {
