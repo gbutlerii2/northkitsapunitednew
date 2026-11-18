@@ -1,6 +1,6 @@
 ---
 import AdminLayout from '../../layouts/AdminLayout.astro';
-import { FORM_KINDS, getFormEmailSettings, listSubmissions } from '../../lib/content';
+import { FORM_KINDS, SITE_EMAIL, getFormEmailSettings, listSubmissions } from '../../lib/content';
 import { mailFrom, mailMethod } from '../../lib/mail';
 
 const settings = await getFormEmailSettings();
@@ -60,9 +60,9 @@ const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-US', { dat
 
     <div class="nku-card space-y-3">
       <h2 class="text-lg font-bold text-nku-green">Who gets the forms</h2>
-      <p class="text-sm">Enter email addresses separated by semicolons, for example <code>treasurer@example.org; gerry@example.org</code>. Everyone here gets a copy of every form that doesn't have its own list below.</p>
+      <p class="text-sm">Enter email addresses separated by semicolons, for example <code>treasurer@example.org; gerry@example.org</code>. Everyone here gets a copy of every form that doesn't have its own list below. If this is left empty, forms go to <strong>{SITE_EMAIL}</strong>.</p>
       <label class="block text-sm font-medium" for="defaultTo">All forms</label>
-      <textarea id="defaultTo" rows="2" class="nku-input" placeholder="name@example.org; other@example.org">{settings.defaultTo}</textarea>
+      <textarea id="defaultTo" rows="2" class="nku-input" placeholder={SITE_EMAIL}>{settings.defaultTo}</textarea>
       <p class="text-xs text-nku-gray-light">Each email's subject is the form name, a dash, then the person's name (for example "Pledge - Jane Smith"), so you can set up mail filters. Every field is on its own line, and hitting Reply goes to the person who filled in the form.</p>
     </div>
 

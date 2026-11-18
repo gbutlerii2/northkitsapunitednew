@@ -67,7 +67,7 @@ The Netlify site builds from this GitHub repo. Merging to `main` deploys. Admin 
 
 ## Form emails
 
-Admin panel → **Forms & emails** sets who receives a copy of each website form by email. Enter addresses separated by semicolons. One list covers all forms, and each form (Online Donation, Gift Notice, Pledge, Donation Question, In-Kind Donation, Contact, Volunteer, Updates Signup) can have its own list instead.
+Admin panel → **Forms & emails** sets who receives a copy of each website form by email. Enter addresses separated by semicolons. If no list is filled in, forms go to the project mailbox, `nku@rotaryknk.org`. One list covers all forms, and each form (Online Donation, Gift Notice, Pledge, Donation Question, In-Kind Donation, Contact, Volunteer, Updates Signup) can have its own list instead.
 
 - Subject: `<Form name> - <person's name>` (for example `Pledge - Jane Smith`), handy for mail filters. Signups with no name use their email.
 - Body: one field per line (`Label: value`), then the form name, page and time. Reply goes to the person who filled in the form.
@@ -77,8 +77,11 @@ Sending needs one of these on Netlify (Environment variables, mark passwords/key
 
 | Option | Variables |
 | --- | --- |
-| Resend (recommended, free tier) | `RESEND_API_KEY`, `MAIL_FROM` (an address on a domain verified in Resend, e.g. `NKU Website <forms@gb2solutions.net>`) |
-| Any mailbox over SMTP | `SMTP_HOST`, `SMTP_PORT` (587, or 465), `SMTP_USER`, `SMTP_PASS`, optional `MAIL_FROM`. Gmail / Google Workspace: `smtp.gmail.com`, an App Password. Microsoft 365: `smtp.office365.com` (SMTP AUTH must be enabled for the mailbox). |
+| **Gmail (what NKU uses)**, sends from `nku@rotaryknk.org` | `SMTP_HOST` = `smtp.gmail.com`, `SMTP_PORT` = `465`, `SMTP_USER` = `nku@rotaryknk.org`, `SMTP_PASS` = a Google App Password (16 letters, made at myaccount.google.com/apppasswords after turning on 2-Step Verification; never the normal Google password), `MAIL_FROM` = `North Kitsap United <nku@rotaryknk.org>` |
+| Resend | `RESEND_API_KEY`, `MAIL_FROM` (an address on a domain verified in Resend) |
+| Any other mailbox over SMTP | `SMTP_HOST`, `SMTP_PORT` (587, or 465), `SMTP_USER`, `SMTP_PASS`, optional `MAIL_FROM`. Microsoft 365: `smtp.office365.com` (SMTP AUTH must be enabled for the mailbox). |
+
+If both Resend and SMTP variables are set, Resend wins, so remove `RESEND_API_KEY` when switching to Gmail. Gmail allows about 500 emails a day, far more than the forms need. After changing variables, redeploy the site (Deploys → Trigger deploy) so they take effect.
 
 Use **Send a test email** on the Form emails page to check it.
 

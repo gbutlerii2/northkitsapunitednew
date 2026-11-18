@@ -2,6 +2,7 @@
 //
 // Two ways to send, picked by which Netlify environment variables are set:
 //   Resend (recommended):  RESEND_API_KEY, MAIL_FROM
+//   Gmail (NKU):          SMTP_HOST=smtp.gmail.com, SMTP_PORT=465, SMTP_USER=nku@rotaryknk.org, SMTP_PASS=<Google App Password>
 //   Any SMTP mailbox:      SMTP_HOST, SMTP_PORT (587 or 465), SMTP_USER, SMTP_PASS, MAIL_FROM (optional, defaults to SMTP_USER)
 import { getSecret } from 'astro:env/server';
 
