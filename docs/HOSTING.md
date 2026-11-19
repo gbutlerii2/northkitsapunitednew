@@ -8,6 +8,7 @@ The same code runs on two hosts:
 | Host | Netlify, project `northkitsapunitednew` | Cloudflare **Workers** (not Pages), Worker `nku-web` |
 | Admin data | Netlify Blobs (`nku-content`, `nku-media`, `nku-users`) | R2 bucket `nku-site-data`, bound as `NKU_DATA` (one folder per store) |
 | Email | nodemailer | built-in SMTP client over Cloudflare sockets (`src/lib/platform/cloudflare.ts`) |
+| Page titles | "… \| North Kitsap United - New" | "… \| North Kitsap United" |
 | Page cache | Netlify CDN, purged on every admin save | none (each page is rendered by the Worker; R2 is strongly consistent) |
 
 ## How the build picks the host
@@ -27,6 +28,8 @@ The import `nku:platform` is pointed at `src/lib/platform/netlify.ts` or `src/li
 
 ## Setting up production on Cloudflare (at go-live)
 
+The full step-by-step list, including copying the content, is in `docs/GO-LIVE.md`. Summary:
+
 Do this in the Cloudflare account that owns northkitsapunited.com (Nku@rotaryknk.org's account).
 
 1. **R2 bucket:** R2 → Create bucket → name `nku-site-data`.
@@ -39,9 +42,10 @@ Do this in the Cloudflare account that owns northkitsapunited.com (Nku@rotaryknk
    - `ADMIN_EMAIL`
    - `ADMIN_PASSWORD_HASH` (a new one from `npm run hash-password`)
    - `SESSION_SECRET` (32+ random characters; use the Netlify value if form-email passwords saved in the admin should keep working)
+   - `TRANSFER_TOKEN` (same value as on Netlify; turns on Admin → Copy content)
    - Email, only if not set in the admin panel: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` (or `RESEND_API_KEY` + `MAIL_FROM`)
 4. **Domain:** Worker → Settings → Domains & Routes → add `www.northkitsapunited.com` (and the bare domain), after removing it from the old Pages project.
-5. **Content:** page edits, News posts, images and accounts made on the test site live in Netlify Blobs and do not move by themselves. Copy them over (or re-enter them) before switching the domain.
+5. **Content:** page edits, News posts, images, accounts and settings made on the test site live in Netlify Blobs. Copy them with **Admin → Copy content** on the Cloudflare site (needs the same `TRANSFER_TOKEN` on both sites). It reads `GET /api/transfer` on the other site, in batches, with big images in 4 MB parts.
 
 ## Trying the Cloudflare build locally
 
