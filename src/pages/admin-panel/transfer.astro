@@ -1,0 +1,94 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { HOST } from 'nku:platform';
+import { transferToken } from '../../lib/transfer';
+
+const ready = transferToken().length >= 32;
+const otherSite = HOST === 'cloudflare' ? 'https://northkitsapunitednew.netlify.app' : 'https://www.northkitsapunited.com';
+const hereName = HOST === 'cloudflare' ? 'Cloudflare (production)' : 'Netlify (test site)';
+---
+
+<AdminLayout title="Copy content" active="transfer">
+  <div class="space-y-6">
+    <div class="nku-card space-y-3 text-sm">
+      <p>This copies everything made in the admin panel from another copy of the site into <strong>this one ({hereName})</strong>: page edits and their history, News posts, images, the people who can log in, form email settings, the sending account and recent form submissions.</p>
+      <p>Anything with the same name here is replaced. Things that only exist here are kept. The other site is only read, never changed. You can run it again at any time, for example just before switching the domain.</p>
+      {ready ? (
+        <p class="text-nku-green font-medium">Copying is switched on for this site.</p>
+      ) : (
+        <p class="font-medium text-red-700">Copying is off. Add the environment variable <code>TRANSFER_TOKEN</code> (32 or more random characters, the same value on both sites) and deploy again. See docs/GO-LIVE.md.</p>
+      )}
+    </div>
+
+    <form id="transfer-form" class="nku-card space-y-3">
+      <label class="block text-sm font-medium" for="source">Copy from</label>
+      <input id="source" class="nku-input" type="url" required value={otherSite} disabled={!ready} />
+      <button class="nku-btn" type="submit" disabled={!ready}>Copy everything into this site</button>
+    </form>
+
+    <div id="transfer-progress" class="nku-card hidden space-y-2 text-sm">
+      <div class="h-2 bg-gray-200 rounded"><div id="transfer-bar" class="h-2 bg-nku-green rounded" style="width:0%"></div></div>
+      <p id="transfer-status"></p>
+      <ul id="transfer-warnings" class="list-disc pl-5 text-red-700"></ul>
+    </div>
+  </div>
+
+  <script is:inline>
+    (function () {
+      var form = document.getElementById('transfer-form');
+      if (!form) return;
+      var box = document.getElementById('transfer-progress');
+      var bar = document.getElementById('transfer-bar');
+      var status = document.getElementById('transfer-status');
+      var warnList = document.getElementById('transfer-warnings');
+      var LABELS = { content: 'page edits, News and settings', media: 'images', users: 'accounts' };
+
+      function warn(text) {
+        var li = document.createElement('li');
+        li.textContent = text;
+        warnList.appendChild(li);
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var source = document.getElementById('source').value.trim();
+        if (!confirm('Copy everything from ' + source + ' into this site? Items with the same name here will be replaced.')) return;
+        var btn = form.querySelector('button');
+        btn.disabled = true;
+        box.classList.remove('hidden');
+        warnList.textContent = '';
+        bar.style.width = '0%';
+        status.textContent = 'Reading the list from ' + source + '…';
+        try {
+          var list = await nkuApi('/api/admin/transfer', 'POST', { action: 'list', source: source });
+          var stores = ['users', 'content', 'media'];
+          var total = stores.reduce(function (n, s) { return n + list.keys[s].length; }, 0);
+          var done = 0, copied = 0, missing = 0;
+          for (var s of stores) {
+            var keys = list.keys[s];
+            // Images are copied a few at a time; small records in bigger batches.
+            var size = s === 'media' ? 3 : 15;
+            for (var i = 0; i < keys.length; i += size) {
+              var batch = keys.slice(i, i + size);
+              status.textContent = 'Copying ' + LABELS[s] + '… ' + done + ' of ' + total;
+              var r = await nkuApi('/api/admin/transfer', 'POST', { action: 'copy', source: source, store: s, keys: batch });
+              copied += r.copied;
+              missing += r.missing.length;
+              (r.warnings || []).forEach(warn);
+              done += batch.length;
+              bar.style.width = Math.round((done / Math.max(total, 1)) * 100) + '%';
+            }
+          }
+          await nkuApi('/api/admin/transfer', 'POST', { action: 'done', source: source });
+          bar.style.width = '100%';
+          status.textContent = 'Done. Copied ' + copied + ' items' + (missing ? ' (' + missing + ' were deleted on the other site while copying)' : '') + '. Check a few pages, News and Images.';
+          nkuToast('Content copied.');
+        } catch (ex) {
+          status.textContent = 'Stopped: ' + ex.message + ' Nothing already copied is lost; you can run it again.';
+          nkuToast(ex.message, 'error');
+        }
+        btn.disabled = false;
+      });
+    })();
+  </script>
+</AdminLayout>

@@ -1,4 +1,5 @@
 ---
+import { HOST } from 'nku:platform';
 import '../styles/global.css';
 import '../styles/site.css';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -46,8 +47,9 @@ try {
 const sendTracker = formSettings.sendToTracker;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-// " - New" marks this build in browser tabs while the old site is still up; remove it at launch.
-const fullTitle = title === 'Home' ? 'North Kitsap United - New' : `${title} | North Kitsap United - New`;
+// " - New" marks the Netlify test site in browser tabs. Production (Cloudflare) shows the plain name.
+const siteName = HOST === 'cloudflare' ? 'North Kitsap United' : 'North Kitsap United - New';
+const fullTitle = title === 'Home' ? siteName : `${title} | ${siteName}`;
 // The NKU Tracker serves the campaign figures and receives the website's forms.
 const trackerApi = import.meta.env.PUBLIC_TRACKER_API || 'https://nku-tracker.com';
 ---
