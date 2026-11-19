@@ -2,6 +2,7 @@
 import { builtInNews } from '../data/news';
 import sanitizeHtml from 'sanitize-html';
 import { store } from './store';
+import { purgeCache } from 'nku:platform';
 
 export const CACHE_TAG = 'nku-pages';
 
@@ -87,13 +88,7 @@ export function cleanHtml(html: string): string {
 }
 
 export async function purgePages(): Promise<void> {
-  if (process.env.NETLIFY !== 'true' && !process.env.NETLIFY_PURGE_API_TOKEN) return;
-  try {
-    const { purgeCache } = await import('@netlify/cache');
-    await purgeCache({ tags: [CACHE_TAG] });
-  } catch (err) {
-    console.warn('[nku] cache purge failed', err);
-  }
+  await purgeCache(CACHE_TAG);
 }
 
 // ---------- page regions ----------

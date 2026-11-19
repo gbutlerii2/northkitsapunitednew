@@ -3,10 +3,10 @@
 // Passwords are never stored in plain text. They are hashed with PBKDF2-SHA256
 // (Web Crypto) and stored as "pbkdf2:<iterations>:<saltB64>:<hashB64>".
 //
-// The very first admin comes from two Netlify environment variables:
+// The very first admin comes from two environment variables on the host:
 //   ADMIN_EMAIL           e.g. the site owner's email
 //   ADMIN_PASSWORD_HASH   output of `npm run hash-password`
-// After that first login the account is copied into Netlify Blobs, and passwords
+// After that first login the account is copied into site storage, and passwords
 // are changed from the admin panel. SESSION_SECRET (a long random string) signs
 // the login cookie.
 import { getSecret } from 'astro:env/server';
@@ -14,7 +14,9 @@ import { store } from './store';
 
 export const SESSION_COOKIE = 'nku_session';
 const SESSION_HOURS = 8;
-const ITERATIONS = 210_000;
+// 100,000 is the most Cloudflare Workers allow. Older hashes made with more rounds
+// still work on Netlify and are re-saved at this level on the next login there.
+const ITERATIONS = 100_000;
 
 export interface AdminUser {
   email: string;
@@ -65,8 +67,18 @@ export async function verifyPassword(password: string, stored: string): Promise<
   if (parts.length !== 4 || parts[0] !== 'pbkdf2') return false;
   const iterations = Number(parts[1]);
   if (!Number.isFinite(iterations) || iterations < 10_000) return false;
-  const hash = await pbkdf2(password, fromB64(parts[2]), iterations);
-  return timingSafeEqual(hash, fromB64(parts[3]));
+  try {
+    const hash = await pbkdf2(password, fromB64(parts[2]), iterations);
+    return timingSafeEqual(hash, fromB64(parts[3]));
+  } catch (err) {
+    // Cloudflare refuses more than 100,000 rounds.
+    console.warn('[nku] password check failed', err);
+    return false;
+  }
+}
+
+function hashRounds(stored: string): number {
+  return Number((stored || '').trim().split(/[:$]/)[1]) || 0;
 }
 
 export function passwordProblem(pw: string): string | null {
@@ -104,7 +116,15 @@ export async function checkLogin(emailIn: string, password: string): Promise<Adm
   const email = normEmail(emailIn);
   if (!email || !password) return null;
   const existing = await getUser(email);
-  if (existing) return (await verifyPassword(password, existing.hash)) ? existing : null;
+  if (existing) {
+    if (!(await verifyPassword(password, existing.hash))) return null;
+    if (hashRounds(existing.hash) !== ITERATIONS) {
+      // Re-save older hashes at the current level so the account also works on Cloudflare.
+      existing.hash = await hashPassword(password);
+      await saveUser(existing);
+    }
+    return existing;
+  }
 
   const bootEmail = normEmail(env('ADMIN_EMAIL'));
   const bootHash = env('ADMIN_PASSWORD_HASH');

@@ -14,12 +14,12 @@ Requires Node.js >= 22.12.0. No test framework is configured.
 
 ## Architecture
 
-This is an informational website for the North Kitsap United community project, built with **Astro** and **Tailwind CSS 4**, deployed to **Netlify** (project `northkitsapunitednew`).
+This is an informational website for the North Kitsap United community project, built with **Astro** and **Tailwind CSS 4**, tested on **Netlify** (project `northkitsapunitednew`) and published from the `nku-rotaryknk/nku-web` repo on **Cloudflare Workers**. See `docs/HOSTING.md`.
 
 **The pages are generated from the "NKU Website" Design canvas** (claude.ai artifact UQenrFEvnNf9sGLw3BHRJX). Each page in `src/pages/` (except the three legal pages) holds its markup in a `html` string built from that design; the classes it uses are defined in `src/styles/site.css`. Edit the design and regenerate rather than hand-editing a page, or the two will drift apart.
 
-- **Server output on Netlify** — `output: 'server'` with `@astrojs/netlify`, so `/admin-panel` edits go live without a rebuild. Pages are cached on Netlify's CDN (cache tag `nku-pages`), purged on every admin save. Netlify only: drag-and-drop deploys and Cloudflare Pages won't run it.
-- **Admin panel** at `/admin-panel` — email/password login, on-page editing, News, image uploads, users. Data lives in Netlify Blobs. See `docs/ADMIN.md`. Admin edits to a page override that page's generated `html` until "Reset to original" is used, so regenerating a page from the design won't show on an edited page until it's reset.
+- **Server output, two hosts** — `output: 'server'`, so `/admin-panel` edits go live without a rebuild. `astro.config.mjs` picks `@astrojs/netlify` or `@astrojs/cloudflare` (env `NKU_HOST`, auto-detected in Cloudflare's builds) and points the import `nku:platform` at `src/lib/platform/netlify.ts` or `cloudflare.ts`. Keep all host-specific code (storage, cache purge, email sending, client IP) in those two files. On Netlify pages are cached on the CDN (cache tag `nku-pages`), purged on every admin save. Cloudflare limits: 25 MB per file in `public/`, PBKDF2 at most 100,000 rounds. Drag-and-drop deploys and Cloudflare Pages won't run it.
+- **Admin panel** at `/admin-panel` — email/password login, on-page editing, News, image uploads, users. Data lives in Netlify Blobs on Netlify and in the R2 bucket `nku-site-data` (binding `NKU_DATA`) on Cloudflare. See `docs/ADMIN.md`. Admin edits to a page override that page's generated `html` until "Reset to original" is used, so regenerating a page from the design won't show on an edited page until it's reset.
 - **No framework islands** — vanilla JS only (mobile menu toggle, dropdown accordions)
 - **No content collections** — ~14 pages with infrequent changes, all hardcoded `.astro` files
 

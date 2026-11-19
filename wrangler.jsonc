@@ -1,0 +1,13 @@
+// Cloudflare Workers settings for the production site (nku-web).
+// Used only when the site is built for Cloudflare; Netlify ignores this file.
+// See docs/HOSTING.md.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "nku-web",
+  "compatibility_date": "2026-11-16",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  // Page edits, News posts, uploaded images, users and settings.
+  "r2_buckets": [{ "binding": "NKU_DATA", "bucket_name": "nku-site-data" }],
+  "observability": { "enabled": true }
+}

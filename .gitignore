@@ -7,3 +7,5 @@ deploy/
 .DS_Store
 .netlify/
 .nku-data/
+.wrangler/
+.dev.vars*

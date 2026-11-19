@@ -8,6 +8,7 @@
 //      Gmail (NKU):       SMTP_HOST=smtp.gmail.com, SMTP_PORT=465, SMTP_USER=nku@rotaryknk.org, SMTP_PASS=<Google App Password>
 //      Any SMTP mailbox:  SMTP_HOST, SMTP_PORT (587 or 465), SMTP_USER, SMTP_PASS, MAIL_FROM (optional, defaults to SMTP_USER)
 import { getSecret } from 'astro:env/server';
+import { sendSmtp } from 'nku:platform';
 import { sessionSecret } from './auth';
 import { store } from './store';
 
@@ -179,15 +180,11 @@ export async function sendMail(mail: Mail): Promise<void> {
     return;
   }
 
-  const nodemailer = (await import('nodemailer')).default;
-  const transport = nodemailer.createTransport({
-    host: config.host,
-    port: config.port,
-    secure: config.port === 465,
-    auth: { user: config.user, pass: config.pass },
-  });
   try {
-    await transport.sendMail({ from: config.from, to: mail.to.join(', '), subject, text: mail.text, replyTo });
+    await sendSmtp(
+      { host: config.host, port: config.port, user: config.user, pass: config.pass },
+      { from: config.from, to: mail.to, subject, text: mail.text, replyTo },
+    );
   } catch (err) {
     const msg = String((err as Error).message || err);
     if (/535|Username and Password not accepted|BadCredentials/i.test(msg)) {

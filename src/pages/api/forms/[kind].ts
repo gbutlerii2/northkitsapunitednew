@@ -5,6 +5,7 @@ import { fail, json, readJson } from '../../../lib/api';
 import { buildFormEmail, FORM_KINDS, getFormEmailSettings, recipientsFor, saveSubmission, updateSubmission } from '../../../lib/content';
 import { mailStatus, sendMail } from '../../../lib/mail';
 import { store } from '../../../lib/store';
+import { clientIp } from 'nku:platform';
 
 const MAX_PER_WINDOW = 12;
 const WINDOW_MS = 10 * 60 * 1000;
@@ -33,7 +34,7 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
 
   let ip = 'unknown';
   try {
-    ip = request.headers.get('x-nf-client-connection-ip') || clientAddress || 'unknown';
+    ip = clientIp(request) || clientAddress || 'unknown';
   } catch {
     /* ignore */
   }

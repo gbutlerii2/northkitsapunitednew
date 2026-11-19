@@ -9,3 +9,5 @@
 /planning-team/raydient-places-plus-properties  /partners  301
 /planning-team              /partners     301
 /donate/cash                /donate       301
+# One 35 MB file was too big for Cloudflare (25 MB limit per file); the report is in two parts.
+/media/nku-feasibility-report-dec-2023.pdf  /media/feasibility-report-part-1.pdf  301
