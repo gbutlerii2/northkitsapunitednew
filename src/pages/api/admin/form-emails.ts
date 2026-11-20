@@ -6,7 +6,7 @@ import { saveMailAccount, sendMail } from '../../../lib/mail';
 // POST { action: 'save', defaultTo, perForm }  |  { action: 'test', to }
 //      { action: 'account', host, port, user, from, password, clear }  (the password is never sent back)
 export const POST: APIRoute = async ({ request, locals }) => {
-  const body = await readJson<{ action?: string; defaultTo?: string; perForm?: Record<string, string>; to?: string; sendToTracker?: boolean; zeffyCardUrl?: string; zeffyEftUrl?: string; host?: string; port?: number | string; user?: string; from?: string; password?: string; clear?: boolean }>(request);
+  const body = await readJson<{ action?: string; defaultTo?: string; perForm?: Record<string, string>; to?: string; sendToTracker?: boolean; zeffyCardUrl?: string; zeffyEftUrl?: string; zeffyEnabled?: boolean; host?: string; port?: number | string; user?: string; from?: string; password?: string; clear?: boolean }>(request);
   const by = locals.admin!.email;
 
   if (body.action === 'save') {
@@ -17,7 +17,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       if (u && !/^https:\/\/\S+$/.test(u.trim())) return fail('Zeffy links must start with https://');
     }
     const saved = await saveFormEmailSettings(
-      { defaultTo: body.defaultTo, perForm: body.perForm, sendToTracker: body.sendToTracker, zeffyCardUrl: body.zeffyCardUrl, zeffyEftUrl: body.zeffyEftUrl },
+      { defaultTo: body.defaultTo, perForm: body.perForm, sendToTracker: body.sendToTracker, zeffyCardUrl: body.zeffyCardUrl, zeffyEftUrl: body.zeffyEftUrl, zeffyEnabled: body.zeffyEnabled },
       by,
     );
     return json({ ok: true, settings: saved });

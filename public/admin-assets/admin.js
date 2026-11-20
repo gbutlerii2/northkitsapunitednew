@@ -187,10 +187,10 @@
       var perForm = {};
       $$('[data-kind]', fe).forEach(function (i) { perForm[i.dataset.kind] = i.value; });
       try {
-        var r = await nkuApi('/api/admin/form-emails', 'POST', { action: 'save', defaultTo: $('#defaultTo').value, perForm: perForm, sendToTracker: $('#sendToTracker').checked, zeffyCardUrl: $('#zeffyCardUrl').value, zeffyEftUrl: $('#zeffyEftUrl').value });
+        var r = await nkuApi('/api/admin/form-emails', 'POST', { action: 'save', defaultTo: $('#defaultTo').value, perForm: perForm, sendToTracker: $('#sendToTracker').checked, zeffyCardUrl: $('#zeffyCardUrl').value, zeffyEftUrl: $('#zeffyEftUrl').value, zeffyEnabled: $('#zeffyEnabled').checked });
         $('#defaultTo').value = r.settings.defaultTo;
         $$('[data-kind]', fe).forEach(function (i) { i.value = r.settings.perForm[i.dataset.kind] || ''; });
-        nkuToast(r.settings.sendToTracker ? 'Saved. Forms go to the Tracker and email.' : 'Saved. Forms go to email only (Tracker off).');
+        nkuToast((r.settings.sendToTracker ? 'Saved. Forms go to the Tracker and email.' : 'Saved. Forms go to email only (Tracker off).') + (r.settings.zeffyEnabled ? '' : ' Zeffy is off: Donate Now shows a Send button.'));
       } catch (ex) { nkuToast(ex.message, 'error'); }
     });
     $('#form-emails-test').addEventListener('submit', async function (e) {
