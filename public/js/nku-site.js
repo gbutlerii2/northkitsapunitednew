@@ -12,6 +12,13 @@
     // Remove the parts that don't apply, so hidden buttons can't submit the form.
     document.querySelectorAll(ZEFFY_OFF ? "[data-zeffy-only]" : "[data-zeffy-off]").forEach(function (el) { el.remove(); });
     if (!ZEFFY_OFF) return;
+    // Pledge form in an older saved copy of the page: reword the Zeffy payment option.
+    document.querySelectorAll('form[data-nku-form="pledge"] input[name="payment"]').forEach(function (box) {
+      if (!/zeffy/i.test(box.value)) return;
+      var label = box.closest("label");
+      box.value = "Cash or bank transfer, monthly or quarterly";
+      if (label) { label.textContent = ""; label.appendChild(box); label.appendChild(document.createTextNode(" " + box.value)); }
+    });
     // A copy of the page saved in the admin panel before the switch existed has no Send button: add one.
     document.querySelectorAll('form[data-nku-form="zeffy"]').forEach(function (form) {
       if (form.querySelector('button[value="contact"]')) return;

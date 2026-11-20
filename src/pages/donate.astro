@@ -133,7 +133,8 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
         <label class="field">Mailing address<input class="input" type="text" name="address" autocomplete="street-address"></label>
         <fieldset class="fieldset">
           <legend class="legend">How do you plan to pay? (check any)</legend>
-          <label class="check"><input class="check-input" type="checkbox" name="payment" value="Card or bank transfer (EFT) through Zeffy, monthly or quarterly"> Card or bank transfer (EFT) through Zeffy, monthly or quarterly</label>
+          <label class="check" data-zeffy-only><input class="check-input" type="checkbox" name="payment" value="Card or bank transfer (EFT) through Zeffy, monthly or quarterly"> Card or bank transfer (EFT) through Zeffy, monthly or quarterly</label>
+          <label class="check" data-zeffy-off><input class="check-input" type="checkbox" name="payment" value="Cash or bank transfer, monthly or quarterly"> Cash or bank transfer, monthly or quarterly</label>
           <label class="check"><input class="check-input" type="checkbox" name="payment" value="Check"> Check</label>
           <label class="check"><input class="check-input" type="checkbox" name="payment" value="Wire transfer"> Wire transfer</label>
           <label class="check"><input class="check-input" type="checkbox" name="payment" value="Stock, bonds or mutual funds"> Stock, bonds or mutual funds</label>
