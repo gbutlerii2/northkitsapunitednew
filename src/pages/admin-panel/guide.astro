@@ -1,0 +1,41 @@
+---
+// Admin user guide (training material for new admins). Only logged-in admins
+// can open it: the middleware sends everyone else to the login page.
+// Text: src/data/admin-guide.md. Screenshots: public/admin-assets/guide/.
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import { Content, getHeadings } from '../../data/admin-guide.md';
+
+const sections = getHeadings().filter((h) => h.depth === 2);
+---
+
+<AdminLayout title="User guide" active="guide">
+  <div class="nku-card mb-6 text-sm">
+    <p class="font-semibold text-nku-green mb-2">Contents</p>
+    <ol class="guide-toc">
+      {sections.map((h) => <li><a href={`#${h.slug}`} class="underline hover:text-nku-green">{h.text}</a></li>)}
+    </ol>
+    <p class="mt-3 text-nku-gray-light">Tip: press Ctrl+P (Cmd+P on a Mac) to print this guide or save it as a PDF.</p>
+  </div>
+  <article class="nku-card prose guide max-w-none">
+    <Content />
+  </article>
+</AdminLayout>
+
+<style is:global>
+  .guide-toc { columns: 2; column-gap: 2rem; list-style: none; padding: 0; margin: 0; }
+  .guide-toc li { margin: 0.15rem 0; }
+  .guide h2 { scroll-margin-top: 1rem; border-top: 1px solid #e5e0d5; padding-top: 1.5rem; margin-top: 2rem; }
+  .guide h2:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+  .guide img { display: block; max-width: 100%; height: auto; margin: 0.75rem 0 1.25rem; border: 1px solid #e5e0d5; border-radius: 0.5rem; box-shadow: 0 1px 3px rgb(0 0 0 / 0.08); }
+  .guide table { width: 100%; border-collapse: collapse; margin: 0.75rem 0 1.25rem; font-size: 0.9rem; }
+  .guide th, .guide td { border: 1px solid #e5e0d5; padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+  .guide th { background: #f5f0e8; }
+  .guide ul ul { margin-top: 0.25rem; }
+  .guide .guide-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .guide .guide-pair p { margin: 0; }
+  @media (max-width: 640px) { .guide-toc { columns: 1; } .guide .guide-pair { grid-template-columns: 1fr; } }
+  @media print {
+    aside, #nku-logout-m, .nku-toast { display: none !important; }
+    .guide img { break-inside: avoid; }
+  }
+</style>
