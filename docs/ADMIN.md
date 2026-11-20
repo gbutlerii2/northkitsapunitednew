@@ -25,6 +25,8 @@ The admin lets approved people change the website without touching code.
 
 Edits go live as soon as you click **Save**. There is no rebuild.
 
+A step-by-step guide for new admins, with screenshots, is in the admin panel under **User guide** (`/admin-panel/guide`). Its text is `src/data/admin-guide.md` and its pictures are in `public/admin-assets/guide/`; update both when the admin panel changes.
+
 ## What is not editable in place
 
 - The top menu buttons (change these in `src/components/SiteHeader.astro`). The banner above the menu and the footer are editable.
