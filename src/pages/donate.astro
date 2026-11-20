@@ -19,13 +19,16 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
 
   <img class="img-flier" src="/images/site/sponsorship-levels.jpg" alt="Build More Than Fields, Build Opportunity: the nine sponsorship levels from Legacy Partner at $1,000,000 to Rising Star Sponsor at $1,000, with photos of youth soccer, swimming, mountain biking and the fields" />
 
-  <!-- 1. Donate Now (Zeffy) -->
+  <!-- 1. Donate Now. Admin > Forms & emails can switch Zeffy off: then the
+       data-zeffy-only parts go and the data-zeffy-off parts show (see nku-site.js). -->
   <dialog class="modal" id="zeffy" aria-labelledby="zeffy-title">
     <div class="modal-body">
       <button class="modal-close" type="button" data-close aria-label="Close">×</button>
       <h2 class="h2" id="zeffy-title">Donate Now</h2>
-      <h3 class="h3">Card or bank transfer (EFT): one-time, monthly or quarterly</h3>
-      <p class="p">Tell us a little about your gift, then continue to Zeffy to pay. This lets us thank you and list you the way you’d like.</p>
+      <h3 class="h3" data-zeffy-only>Card or bank transfer (EFT): one-time, monthly or quarterly</h3>
+      <p class="p" data-zeffy-only>Tell us a little about your gift, then continue to Zeffy to pay. This lets us thank you and list you the way you’d like.</p>
+      <h3 class="h3" data-zeffy-off>One-time, monthly or quarterly</h3>
+      <p class="p" data-zeffy-off>Tell us a little about your gift and send the form. It goes to the North Kitsap United team, and we’ll contact you about payment. This also lets us thank you and list you the way you’d like.</p>
       <form class="form" data-nku-form="zeffy" novalidate>
         <Fragment set:html={hp} />
         <div class="row">
@@ -44,15 +47,16 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
         </div>
         <label class="check"><input class="check-input" type="checkbox" name="anonymous" value="yes"> Please keep my gift anonymous</label>
         <label class="field">Why I gave (optional)<textarea class="textarea" name="whyIGave" rows="3"></textarea></label>
-        <div class="btn-row-left">
+        <div class="btn-row-left" data-zeffy-only>
           <button class="btn" type="submit" name="via" value="card">Continue to Zeffy: card</button>
           <button class="btn" type="submit" name="via" value="eft">Continue to Zeffy: bank transfer (EFT)</button>
         </div>
+        <div class="btn-row-left" data-zeffy-off><button class="btn" type="submit" name="via" value="contact">Send</button></div>
         <p class="status" role="status" aria-live="polite"></p>
       </form>
-      <p class="p">Card (up to $4,999 a payment) or bank transfer (EFT, up to $20,000). Card and bank details are handled by Zeffy and its processor, Stripe, and are not retained on this website.</p>
+      <p class="p" data-zeffy-only>Card (up to $4,999 a payment) or bank transfer (EFT, up to $20,000). Card and bank details are handled by Zeffy and its processor, Stripe, and are not retained on this website.</p>
       <p class="p">You will receive a receipt.</p>
-      <p class="p">Zeffy is free for the Foundation. At checkout, Zeffy asks for an optional contribution to Zeffy; you can change it to $0. Every dollar of your gift goes to NKU.</p>
+      <p class="p" data-zeffy-only>Zeffy is free for the Foundation. At checkout, Zeffy asks for an optional contribution to Zeffy; you can change it to $0. Every dollar of your gift goes to NKU.</p>
     </div>
   </dialog>
 
@@ -181,6 +185,7 @@ const hp = '<label class="hp" aria-hidden="true">Leave this empty<input type="te
   .modal .h2{padding-right:44px}
   .modal-col{display:flex;flex-direction:column;gap:8px}
   body.modal-open{overflow:hidden}
+  html:not([data-zeffy="off"]) [data-zeffy-off],html[data-zeffy="off"] [data-zeffy-only]{display:none!important}
   .field-hint{display:block;font-weight:400;font-size:14px;color:#6b7280}
   @media (max-width:760px){.modal-body{padding:28px 20px}}
 </style>

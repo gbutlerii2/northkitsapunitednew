@@ -5,6 +5,33 @@
   var API = (document.documentElement.getAttribute("data-tracker-api") || "https://nku-tracker.com").replace(/\/$/, "");
   // Set in Admin > Forms. When "0", forms go only to this website (email + log), not the Tracker.
   var SEND_TRACKER = document.documentElement.getAttribute("data-send-tracker") !== "0";
+  // Admin > Forms & emails can switch Zeffy off for the Donate page's Donate Now form.
+  var ZEFFY_OFF = document.documentElement.getAttribute("data-zeffy") === "off";
+  var ZEFFY_OFF_MSG = "Thank you. Your gift details have been sent to the North Kitsap United team, and we’ll contact you about payment.";
+  (function () {
+    // Remove the parts that don't apply, so hidden buttons can't submit the form.
+    document.querySelectorAll(ZEFFY_OFF ? "[data-zeffy-only]" : "[data-zeffy-off]").forEach(function (el) { el.remove(); });
+    if (!ZEFFY_OFF) return;
+    // A copy of the page saved in the admin panel before the switch existed has no Send button: add one.
+    document.querySelectorAll('form[data-nku-form="zeffy"]').forEach(function (form) {
+      if (form.querySelector('button[value="contact"]')) return;
+      var zb = form.querySelectorAll('button[type=submit]');
+      if (!zb.length) return;
+      var row = zb[0].parentNode;
+      Array.prototype.forEach.call(zb, function (b) { b.remove(); });
+      var send = document.createElement("button");
+      send.className = "btn"; send.type = "submit"; send.name = "via"; send.value = "contact"; send.textContent = "Send";
+      row.appendChild(send);
+      var dlg = form.closest("dialog") || form.parentNode;
+      dlg.querySelectorAll("p, h3").forEach(function (el) {
+        if (/zeffy/i.test(el.textContent)) el.remove();
+      });
+      var note = document.createElement("p");
+      note.className = "p";
+      note.textContent = "Send the form and it goes to the North Kitsap United team. We’ll contact you about payment.";
+      form.parentNode.insertBefore(note, form);
+    });
+  })();
 
   // ---------------------------------------------------------------- forms ---
   function collect(form, submitter) {
@@ -113,9 +140,10 @@
       .then(function (r) { return r.json().catch(function () { return { ok: false }; }).then(function (j) { j.status = r.status; return j; }); })
       .then(function (j) {
         if (!j.ok) throw new Error(j.error || "Sorry, that didn't send. Please try again in a moment.");
-        say(form, j.message || "Thank you. Your message has been sent to the North Kitsap United team, and we’ll get back to you soon.");
-        var redirect = j.redirect;
-        if (kind === "zeffy") {
+        var zeffyOff = kind === "zeffy" && ZEFFY_OFF;
+        say(form, zeffyOff ? ZEFFY_OFF_MSG : (j.message || "Thank you. Your message has been sent to the North Kitsap United team, and we’ll get back to you soon."));
+        var redirect = zeffyOff ? null : j.redirect;
+        if (kind === "zeffy" && !zeffyOff) {
           // Zeffy links set in Admin > Forms & emails take priority.
           var via = (collect(form, submitter).via || "card");
           var html = document.documentElement;

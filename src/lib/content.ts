@@ -394,6 +394,8 @@ export interface FormEmailSettings {
   /** Zeffy links used when the Tracker is off (it normally supplies them). */
   zeffyCardUrl: string;
   zeffyEftUrl: string;
+  /** Donate Now uses Zeffy. When off, the popup has a Send button and NKU contacts the donor about payment. */
+  zeffyEnabled: boolean;
   updatedAt?: string;
   updatedBy?: string;
 }
@@ -418,6 +420,7 @@ export async function getFormEmailSettings(): Promise<FormEmailSettings> {
     sendToTracker: saved?.sendToTracker ?? true,
     zeffyCardUrl: saved?.zeffyCardUrl ?? '',
     zeffyEftUrl: saved?.zeffyEftUrl ?? '',
+    zeffyEnabled: saved?.zeffyEnabled ?? true,
     updatedAt: saved?.updatedAt,
     updatedBy: saved?.updatedBy,
   };
@@ -438,7 +441,7 @@ const httpsUrl = (s: unknown) => {
 };
 
 export async function saveFormEmailSettings(
-  input: { defaultTo?: string; perForm?: Record<string, string>; sendToTracker?: boolean; zeffyCardUrl?: string; zeffyEftUrl?: string },
+  input: { defaultTo?: string; perForm?: Record<string, string>; sendToTracker?: boolean; zeffyCardUrl?: string; zeffyEftUrl?: string; zeffyEnabled?: boolean },
   by: string,
 ): Promise<FormEmailSettings> {
   const before = await getFormEmailSettings();
@@ -454,12 +457,13 @@ export async function saveFormEmailSettings(
     sendToTracker: typeof input.sendToTracker === 'boolean' ? input.sendToTracker : before.sendToTracker,
     zeffyCardUrl: input.zeffyCardUrl === undefined ? before.zeffyCardUrl : httpsUrl(input.zeffyCardUrl),
     zeffyEftUrl: input.zeffyEftUrl === undefined ? before.zeffyEftUrl : httpsUrl(input.zeffyEftUrl),
+    zeffyEnabled: typeof input.zeffyEnabled === 'boolean' ? input.zeffyEnabled : before.zeffyEnabled,
     updatedAt: new Date().toISOString(),
     updatedBy: by,
   };
   await store('content').setJSON(FORM_SETTINGS_KEY, rec);
-  // Pages carry the Tracker on/off switch, so refresh the cached copies.
-  if (rec.sendToTracker !== before.sendToTracker || rec.zeffyCardUrl !== before.zeffyCardUrl || rec.zeffyEftUrl !== before.zeffyEftUrl) await purgePages();
+  // Pages carry the Tracker and Zeffy on/off switches, so refresh the cached copies.
+  if (rec.sendToTracker !== before.sendToTracker || rec.zeffyEnabled !== before.zeffyEnabled || rec.zeffyCardUrl !== before.zeffyCardUrl || rec.zeffyEftUrl !== before.zeffyEftUrl) await purgePages();
   return rec;
 }
 

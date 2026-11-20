@@ -89,8 +89,15 @@ const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString('en-US', { dat
 
     <div class="nku-card space-y-4">
       <h2 class="text-lg font-bold text-nku-green">Zeffy (online giving)</h2>
+      <label class="flex items-start gap-3 cursor-pointer">
+        <input type="checkbox" id="zeffyEnabled" class="w-5 h-5 mt-0.5" checked={settings.zeffyEnabled} />
+        <span>
+          <span class="font-medium">Use Zeffy for "Donate Now"</span>
+          <span class="block text-sm text-nku-gray-light">When this is off, the Donate Now popup on the Donate page has no Zeffy buttons and doesn't mention Zeffy. Instead it has a Send button and tells the donor the form goes to NKU and someone will contact them about payment, like the other Donate popups. The links below are kept for when you turn it back on.</span>
+        </span>
+      </label>
       <p class="text-sm">After someone fills in the "Give online" form on the Donate page, they're sent to Zeffy to pay. Paste the links of your Zeffy donation forms here: one for card payments and one for bank transfer (EFT). If only one is filled in, it's used for both. No Zeffy password or login is needed for this, only the public links.</p>
-      {!settings.zeffyCardUrl && !settings.zeffyEftUrl && (
+      {settings.zeffyEnabled && !settings.zeffyCardUrl && !settings.zeffyEftUrl && (
         <p class="p-3 rounded bg-yellow-100 border border-yellow-300 text-yellow-900 text-sm">No Zeffy links yet.{settings.sendToTracker ? " Until they're added, the Tracker's own Zeffy links are used, if it has them." : " Until they're added, the \"Give online\" form tells donors online giving isn't available yet."}</p>
       )}
       <div class="grid sm:grid-cols-2 gap-4">

@@ -67,8 +67,10 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
 
   // With the Tracker off, this is what the visitor's browser waits on.
   // The Zeffy form then needs to send the donor on to Zeffy itself.
+  // With Zeffy switched off, Donate Now is a plain form: NKU contacts the donor about payment.
+  const zeffyOn = settings.zeffyEnabled !== false;
   let redirect: string | undefined;
-  if (kind === 'zeffy' && !settings.sendToTracker) {
+  if (kind === 'zeffy' && zeffyOn && !settings.sendToTracker) {
     redirect = (data.via === 'eft' ? settings.zeffyEftUrl : settings.zeffyCardUrl) || settings.zeffyCardUrl || settings.zeffyEftUrl || undefined;
     if (!redirect) return fail('Online giving is not available right now. Please contact us and we will help you give.', 503);
   }
@@ -76,6 +78,6 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
     ok: true,
     emailed: rec.emailedTo.length > 0,
     redirect,
-    message: kind === 'zeffy' ? 'Thank you. Taking you to Zeffy to complete your gift…' : undefined,
+    message: kind !== 'zeffy' ? undefined : zeffyOn ? 'Thank you. Taking you to Zeffy to complete your gift…' : 'Thank you. Your gift details have been sent to the North Kitsap United team, and we’ll contact you about payment.',
   });
 };
