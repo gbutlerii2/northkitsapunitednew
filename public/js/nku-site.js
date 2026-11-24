@@ -60,21 +60,36 @@
     return out;
   }
 
-  function missingRequired(form) {
-    var bad = null;
-    Array.prototype.forEach.call(form.querySelectorAll("[required]"), function (el) {
-      var empty = !String(el.value || "").trim();
-      el.setAttribute("aria-invalid", empty ? "true" : "false");
-      if (empty && !bad) bad = el;
+  // Checks the fields marked * (required), plus the format of any email and
+  // amount fields, and returns the first one that needs fixing with a message.
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  function problemWith(form) {
+    var first = null;
+    Array.prototype.forEach.call(form.querySelectorAll("input, select, textarea"), function (el) {
+      if (!el.name || el.type === "hidden" || el.type === "submit" || el.closest(".hp")) return;
+      var v = String(el.value || "").trim();
+      var msg = "";
+      if (el.required && !v) msg = "Please fill in the fields marked *.";
+      else if (v && el.type === "email" && !EMAIL_RE.test(v)) msg = "Please check the email address.";
+      else if (v && el.name === "amount" && !/^\$?\s*[0-9][0-9,]*(\.[0-9]{1,2})?$/.test(v)) msg = "Please enter the amount as a number, for example 250.";
+      if (msg || el.hasAttribute("aria-invalid")) el.setAttribute("aria-invalid", msg ? "true" : "false");
+      if (msg && !first) first = { el: el, msg: msg };
     });
-    return bad;
+    return first;
   }
+
+  // Clear a field's red outline as soon as it is filled in.
+  document.addEventListener("input", function (ev) {
+    var el = ev.target;
+    if (el && el.getAttribute && el.getAttribute("aria-invalid") === "true" && String(el.value || "").trim()) el.setAttribute("aria-invalid", "false");
+  });
 
   function say(form, text, isError) {
     var s = form.querySelector(".status");
     if (!s) return;
     s.textContent = text;
     s.classList.toggle("is-error", !!isError);
+    if (isError && s.scrollIntoView) s.scrollIntoView({ block: "nearest" });
   }
 
   // The question or label a field belongs to, for the notification email.
@@ -119,34 +134,44 @@
     if (!kind) return;
     ev.preventDefault();
     var submitter = ev.submitter || form.querySelector("button[type=submit]");
-    var bad = missingRequired(form);
+    var bad = problemWith(form);
     if (bad) {
-      say(form, "Please fill in the fields marked *.", true);
-      bad.focus();
+      say(form, bad.msg, true);
+      bad.el.focus();
       return;
     }
     var buttons = form.querySelectorAll("button[type=submit]");
     Array.prototype.forEach.call(buttons, function (b) { b.disabled = true; });
     say(form, "Sending…");
     var request;
+    // Give up after 30 seconds rather than leave "Sending…" up forever.
+    var ctl = typeof AbortController === "function" ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 30000) : null;
     if (SEND_TRACKER) {
       notifyByEmail(kind, form, submitter);
       request = fetch(API + "/api/submit/" + encodeURIComponent(kind), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(collect(form, submitter)),
+        signal: ctl ? ctl.signal : undefined,
       });
     } else {
       request = fetch("/api/forms/" + encodeURIComponent(kind), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(siteData(form, submitter)),
+        signal: ctl ? ctl.signal : undefined,
       });
     }
     request
       .then(function (r) { return r.json().catch(function () { return { ok: false }; }).then(function (j) { j.status = r.status; return j; }); })
       .then(function (j) {
-        if (!j.ok) throw new Error(j.error || "Sorry, that didn't send. Please try again in a moment.");
+        if (!j.ok) {
+          if (window.console) console.warn("[nku] form " + kind + " was not sent (HTTP " + j.status + ")", j);
+          throw new Error(j.error || (j.status === 429
+            ? "Too many messages from this connection. Please wait a few minutes and try again."
+            : "Sorry, that didn't send (error " + j.status + "). Please try again in a moment, or email nku@rotaryknk.org."));
+        }
         var zeffyOff = kind === "zeffy" && ZEFFY_OFF;
         say(form, zeffyOff ? ZEFFY_OFF_MSG : (j.message || "Thank you. Your message has been sent to the North Kitsap United team, and we’ll get back to you soon."));
         var redirect = zeffyOff ? null : j.redirect;
@@ -162,11 +187,15 @@
         if (redirect) setTimeout(function () { location.href = redirect; }, 900);
       })
       .catch(function (e) {
-        var msg = e && e.message && e.message !== "Failed to fetch" ? e.message
+        var msg = e && e.name === "AbortError" ? "Sorry, that is taking too long. Please try again in a moment, or email nku@rotaryknk.org."
+          : e && e.message && e.message !== "Failed to fetch" && !/NetworkError|Load failed/i.test(e.message) ? e.message
           : "Sorry, that didn't send. Please check your connection and try again.";
         say(form, msg, true);
       })
-      .then(function () { Array.prototype.forEach.call(buttons, function (b) { b.disabled = false; }); });
+      .then(function () {
+        if (timer) clearTimeout(timer);
+        Array.prototype.forEach.call(buttons, function (b) { b.disabled = false; });
+      });
   });
 
   // ------------------------------------------------- campaign (Home page) ---

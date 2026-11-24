@@ -21,7 +21,27 @@ async function tooMany(ip: string): Promise<boolean> {
   return next.count > MAX_PER_WINDOW;
 }
 
-export const POST: APIRoute = async ({ params, request, clientAddress }) => {
+// Never let the email hold up the visitor for long: the form is already saved
+// (Admin > Forms & emails > Recent) before the email is tried.
+const EMAIL_WAIT_MS = 15_000;
+function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const t = setTimeout(() => reject(new Error(`The mail server didn't answer within ${ms / 1000} seconds.`)), ms);
+    p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
+  });
+}
+
+export const POST: APIRoute = async (ctx) => {
+  try {
+    return await handle(ctx);
+  } catch (err) {
+    // Always answer in JSON so the visitor sees a clear message (and the log says why).
+    console.error('[nku] form failed', ctx.params.kind, err);
+    return fail("Sorry, that didn't send because of a problem on our side. Please try again in a moment, or email nku@rotaryknk.org.", 500);
+  }
+};
+
+const handle: APIRoute = async ({ params, request, clientAddress }) => {
   const kind = String(params.kind || '');
   if (!FORM_KINDS[kind]) return fail('Unknown form.', 404);
 
@@ -54,15 +74,15 @@ export const POST: APIRoute = async ({ params, request, clientAddress }) => {
   const to = await recipientsFor(kind);
   const rec = await saveSubmission({ kind, data, labels, emailedTo: [] });
 
-  if (to.length && (await mailStatus()).method) {
+  if (to.length && (await mailStatus().catch(() => ({ method: null }))).method) {
     try {
-      await sendMail({ to, ...buildFormEmail(kind, data, labels) });
+      await withTimeout(sendMail({ to, ...buildFormEmail(kind, data, labels) }), EMAIL_WAIT_MS);
       rec.emailedTo = to;
     } catch (err) {
       console.error('[nku] form email failed', kind, err);
       rec.emailError = String((err as Error).message || err).slice(0, 300);
     }
-    await updateSubmission(rec);
+    await updateSubmission(rec).catch((err) => console.error('[nku] could not update the form log', err));
   }
 
   // With the Tracker off, this is what the visitor's browser waits on.
