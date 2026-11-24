@@ -137,6 +137,11 @@ export async function sendSmtp(account: SmtpAccount, msg: SmtpMessage): Promise<
     port: account.port,
     secure: account.port === 465,
     auth: { user: account.user, pass: account.pass },
+    // Fail fast instead of nodemailer's minutes-long defaults, so a slow mail
+    // server can't run the request past Netlify's function time limit.
+    connectionTimeout: 10_000,
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
   });
   await transport.sendMail({ from: msg.from, to: msg.to.join(', '), subject: msg.subject, text: msg.text, replyTo: msg.replyTo });
 }
